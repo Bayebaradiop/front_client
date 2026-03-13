@@ -4,6 +4,7 @@ import 'package:iconsax/iconsax.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../core/widgets/custom_button.dart';
+import '../../../core/widgets/user_avatar.dart';
 import '../controllers/rendezvous_controller.dart';
 import '../../../translate/translation_keys.dart';
 
@@ -59,6 +60,15 @@ class RdvDetailView extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<RendezvousController>();
 
+    // Set selectedRdv from navigation arguments, then refresh from API
+    // so the timeline always reflects the latest status from the database.
+    final args = Get.arguments;
+    if (args != null && args is Map && args.containsKey('rdv')) {
+      final rdvArg = args['rdv'] as Map<String, dynamic>;
+      controller.selectedRdv.value = rdvArg;
+      controller.loadRdvDetail(rdvArg['id'] as int);
+    }
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Obx(() {
@@ -67,11 +77,12 @@ class RdvDetailView extends StatelessWidget {
           return Center(child: Text(Tr.appointmentNotFound.tr));
         }
 
-        final statut = rdv['statut'] as String;
+        final statut = (rdv['statut'] as String?) ?? 'EN_ATTENTE';
         final color = _statusColor(statut);
-        final heureDebut =
-            (rdv['heureDebut'] as String).substring(0, 5);
-        final heureFin = (rdv['heureFin'] as String).substring(0, 5);
+        final rawDebut = (rdv['heureDebut'] as String?) ?? '';
+        final rawFin = (rdv['heureFin'] as String?) ?? '';
+        final heureDebut = rawDebut.length >= 5 ? rawDebut.substring(0, 5) : rawDebut;
+        final heureFin = rawFin.length >= 5 ? rawFin.substring(0, 5) : rawFin;
 
         return CustomScrollView(
           slivers: [
@@ -146,18 +157,12 @@ class RdvDetailView extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
-                          CircleAvatar(
+                          UserAvatar(
+                            photoUrl: rdv['medecinPhoto'] as String?,
+                            initials: '${((rdv['medecinPrenom'] as String?) ?? '').isNotEmpty ? (rdv['medecinPrenom'] as String)[0] : ''}'
+                                '${((rdv['medecinNom'] as String?) ?? '').isNotEmpty ? (rdv['medecinNom'] as String)[0] : ''}',
                             radius: 26,
-                            backgroundColor:
-                                AppColors.primary.withValues(alpha: 0.1),
-                            child: Text(
-                              '${(rdv['medecinPrenom'] as String)[0]}${(rdv['medecinNom'] as String)[0]}',
-                              style: const TextStyle(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
+                            fontSize: 16,
                           ),
                           const SizedBox(width: 14),
                           Expanded(

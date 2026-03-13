@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import '../../../models/cabinet_model.dart';
+import '../../../models/specialite_model.dart';
+import '../../../models/rendezvous_model.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../core/widgets/custom_card.dart';
 import '../../../core/widgets/shimmer_loading.dart';
+import '../../../core/widgets/user_avatar.dart';
 import '../../../routes/app_routes.dart';
 import '../controllers/home_controller.dart';
 import '../../rendezvous/views/mes_rdv_view.dart';
@@ -68,7 +72,7 @@ class _HomeContent extends StatelessWidget {
     return SafeArea(
       child: RefreshIndicator(
         color: AppColors.primary,
-        onRefresh: () async => controller.simulateLoading(),
+        onRefresh: () => controller.refresh(),
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           child: Column(
@@ -89,11 +93,14 @@ class _HomeContent extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const CircleAvatar(
+                        UserAvatar(
+                          photoUrl: controller.currentUser.value?.photo,
+                          initials: '${(controller.currentUser.value?.prenom ?? '').isNotEmpty ? controller.currentUser.value!.prenom![0] : ''}'
+                              '${(controller.currentUser.value?.nom ?? '').isNotEmpty ? controller.currentUser.value!.nom![0] : ''}',
                           radius: 24,
                           backgroundColor: Colors.white24,
-                          child: Icon(Iconsax.user,
-                              color: Colors.white, size: 24),
+                          textColor: Colors.white,
+                          fontSize: 16,
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -101,7 +108,7 @@ class _HomeContent extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '${Tr.hello.tr}, ${controller.userName.value} 👋',
+                                '${Tr.hello.tr}, ${controller.currentUser.value?.prenom ?? ''} 👋',
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -244,7 +251,7 @@ class _HomeContent extends StatelessWidget {
 
 // ─── PROCHAIN RDV CARD ─────────────────────────────────────────
 class _ProchainRdvCard extends StatelessWidget {
-  final Map<String, dynamic> rdv;
+  final RendezVousModel rdv;
   const _ProchainRdvCard({required this.rdv});
 
   @override
@@ -271,10 +278,14 @@ class _ProchainRdvCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const CircleAvatar(
+              UserAvatar(
+                photoUrl: rdv.medecinPhoto,
+                initials: '${(rdv.medecinPrenom ?? '').isNotEmpty ? rdv.medecinPrenom![0] : ''}'
+                    '${(rdv.medecinNom ?? '').isNotEmpty ? rdv.medecinNom![0] : ''}',
                 radius: 22,
                 backgroundColor: Colors.white24,
-                child: Icon(Iconsax.user, color: Colors.white),
+                textColor: Colors.white,
+                fontSize: 14,
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -282,7 +293,7 @@ class _ProchainRdvCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Dr. ${rdv['medecinPrenom']} ${rdv['medecinNom']}',
+                      'Dr. ${rdv.medecinPrenom} ${rdv.medecinNom}',
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -290,7 +301,7 @@ class _ProchainRdvCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      rdv['medecinSpecialite'] ?? '',
+                      rdv.medecinSpecialite ?? '',
                       style: const TextStyle(
                           color: Colors.white70, fontSize: 13),
                     ),
@@ -305,7 +316,7 @@ class _ProchainRdvCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  rdv['statut'] ?? '',
+                  rdv.statut ?? '',
                   style: const TextStyle(
                       color: Colors.white,
                       fontSize: 11,
@@ -327,14 +338,14 @@ class _ProchainRdvCard extends StatelessWidget {
                     color: Colors.white, size: 16),
                 const SizedBox(width: 8),
                 Text(
-                  rdv['date'] ?? '',
+                  rdv.date ?? '',
                   style: const TextStyle(color: Colors.white, fontSize: 13),
                 ),
                 const SizedBox(width: 16),
                 const Icon(Iconsax.clock, color: Colors.white, size: 16),
                 const SizedBox(width: 8),
                 Text(
-                  '${(rdv['heureDebut'] as String).substring(0, 5)} - ${(rdv['heureFin'] as String).substring(0, 5)}',
+                  '${(rdv.heureDebut ?? '').length >= 5 ? rdv.heureDebut!.substring(0, 5) : ''} - ${(rdv.heureFin ?? '').length >= 5 ? rdv.heureFin!.substring(0, 5) : ''}',
                   style: const TextStyle(color: Colors.white, fontSize: 13),
                 ),
               ],
@@ -348,12 +359,12 @@ class _ProchainRdvCard extends StatelessWidget {
 
 // ─── CABINET HORIZONTAL CARD ───────────────────────────────────
 class _CabinetHorizontalCard extends StatelessWidget {
-  final Map<String, dynamic> cabinet;
+  final CabinetModel cabinet;
   const _CabinetHorizontalCard({required this.cabinet});
 
   @override
   Widget build(BuildContext context) {
-    final color = AppColors.fromHex(cabinet['couleurPrimaire'] ?? '#007bff');
+    final color = AppColors.fromHex(cabinet.couleurPrimaire ?? '#007bff');
     return GestureDetector(
       onTap: () => Get.toNamed(AppRoutes.cabinetDetail, arguments: cabinet),
       child: Container(
@@ -386,7 +397,7 @@ class _CabinetHorizontalCard extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              cabinet['nom'] ?? '',
+              cabinet.nom ?? '',
               style: AppTextStyles.bodyBold,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -398,7 +409,7 @@ class _CabinetHorizontalCard extends StatelessWidget {
                 const SizedBox(width: 4),
                 Expanded(
                   child: Text(
-                    cabinet['adresse'] ?? '',
+                    cabinet.adresse ?? '',
                     style: AppTextStyles.caption,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -415,7 +426,7 @@ class _CabinetHorizontalCard extends StatelessWidget {
 
 // ─── SPECIALITES GRID ──────────────────────────────────────────
 class _SpecialitesGrid extends StatelessWidget {
-  final List<Map<String, dynamic>> specialites;
+  final List<SpecialiteModel> specialites;
   const _SpecialitesGrid({required this.specialites});
 
   IconData _getIcon(String icon) {
@@ -455,7 +466,7 @@ class _SpecialitesGrid extends StatelessWidget {
           final spec = specialites[i];
           return GestureDetector(
             onTap: () => Get.toNamed(AppRoutes.medecins,
-                arguments: {'specialiteId': spec['id']}),
+                arguments: {'specialiteId': spec.id}),
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -477,12 +488,12 @@ class _SpecialitesGrid extends StatelessWidget {
                       color: AppColors.primary.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(_getIcon(spec['icon'] ?? ''),
+                  child: Icon(_getIcon(''),
                         color: AppColors.primary, size: 24),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    spec['nom'] ?? '',
+                    spec.nom ?? '',
                     style: AppTextStyles.caption
                         .copyWith(fontWeight: FontWeight.w500),
                     textAlign: TextAlign.center,
@@ -609,22 +620,26 @@ class _ProfileContent extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(height: 20),
-            const CircleAvatar(
-              radius: 50,
-              backgroundColor: AppColors.primary,
-              child: Icon(Iconsax.user, color: Colors.white, size: 48),
-            ),
+            Obx(() => UserAvatar(
+                  photoUrl: controller.currentUser.value?.photo,
+                  initials: '${(controller.currentUser.value?.prenom ?? '').isNotEmpty ? controller.currentUser.value!.prenom![0] : ''}'
+                      '${(controller.currentUser.value?.nom ?? '').isNotEmpty ? controller.currentUser.value!.nom![0] : ''}',
+                  radius: 50,
+                  backgroundColor: AppColors.primary,
+                  textColor: Colors.white,
+                  fontSize: 32,
+                )),
             const SizedBox(height: 16),
             Obx(() => Text(
-                  controller.userName.value,
+                  '${controller.currentUser.value?.prenom ?? ''} ${controller.currentUser.value?.nom ?? ''}',
                   style: AppTextStyles.heading2,
                 )),
-            Text('fatou.sall@email.com', style: AppTextStyles.body),
+            Text(controller.currentUser.value?.email ?? '', style: AppTextStyles.body),
             const SizedBox(height: 32),
             _ProfileMenuItem(
               icon: Iconsax.user_edit,
               title: Tr.myProfile.tr,
-              onTap: () {},
+              onTap: () => Get.toNamed(AppRoutes.profile),
             ),
             _ProfileMenuItem(
               icon: Iconsax.calendar_1,
@@ -661,7 +676,10 @@ class _ProfileContent extends StatelessWidget {
                         child: Text(Tr.cancel.tr),
                       ),
                       ElevatedButton(
-                        onPressed: () => Get.offAllNamed('/login'),
+                        onPressed: () {
+                          Get.back();
+                          Get.offAllNamed('/login');
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.error,
                         ),

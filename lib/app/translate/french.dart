@@ -34,6 +34,9 @@ const Map<String, String> fr = {
   Tr.noAccount: 'Pas encore de compte ?',
   Tr.registerSuccess: 'Inscription réussie',
   Tr.passwordMismatch: 'Les mots de passe ne correspondent pas',
+  Tr.loginFailed: 'Email ou mot de passe incorrect',
+  Tr.connectionError: 'Erreur de connexion au serveur',
+  Tr.registerError: 'Erreur lors de l\'inscription',
   Tr.disconnectConfirm: 'Êtes-vous sûr de vouloir vous déconnecter ?',
   Tr.disconnect: 'Déconnexion',
 
@@ -127,4 +130,24 @@ const Map<String, String> fr = {
   Tr.statusConfirmed: 'Confirmé',
   Tr.statusCompleted: 'Terminé',
   Tr.statusCancelled: 'Annulé',
+
+  // Profile
+  Tr.editProfile: 'Modifier le profil',
+  Tr.save: 'Enregistrer',
+  Tr.success: 'Succès',
+  Tr.profileUpdated: 'Profil mis à jour avec succès',
+  Tr.profileUpdateError: 'Erreur lors de la mise à jour du profil',
+
+  // Error messages (viewmodels)
+  Tr.loadingError: 'Erreur lors du chargement',
+  Tr.loadingCabinetsError: 'Erreur chargement cabinets',
+  Tr.loadingSpecialtiesError: 'Erreur chargement spécialités',
+  Tr.loadingDoctorsError: 'Erreur chargement médecins',
+  Tr.loadingDoctorError: 'Erreur chargement médecin',
+  Tr.loadingSlotsError: 'Erreur chargement disponibilités',
+  Tr.loadingAppointmentsError: 'Erreur chargement rendez-vous',
+  Tr.createAppointmentError: 'Erreur création rendez-vous',
+  Tr.cancelAppointmentError: 'Erreur annulation rendez-vous',
+  Tr.noResults: 'Aucun résultat',
+  Tr.allFilter: 'Toutes',
 };

@@ -8,6 +8,7 @@ import '../../../core/widgets/custom_app_bar.dart';
 import '../../../core/widgets/custom_card.dart';
 import '../../../core/widgets/shimmer_loading.dart';
 import '../../../core/widgets/empty_state.dart';
+import '../../../core/widgets/user_avatar.dart';
 import '../../../routes/app_routes.dart';
 import '../controllers/medecin_controller.dart';
 import '../../../translate/translation_keys.dart';
@@ -86,7 +87,7 @@ class MedecinsView extends StatelessWidget {
               }
               return RefreshIndicator(
                 color: AppColors.primary,
-                onRefresh: () async => controller.simulateLoading(),
+                onRefresh: () async => controller.refresh(),
                 child: AnimationLimiter(
                   child: ListView.builder(
                     padding: const EdgeInsets.symmetric(vertical: 8),
@@ -108,18 +109,11 @@ class MedecinsView extends StatelessWidget {
                               child: Row(
                                 children: [
                                   // Avatar
-                                  CircleAvatar(
+                                  UserAvatar(
+                                    photoUrl: med['photo'] as String?,
+                                    initials: '${(med['prenom'] as String)[0]}${(med['nom'] as String)[0]}',
                                     radius: 28,
-                                    backgroundColor: AppColors.primary
-                                        .withValues(alpha: 0.1),
-                                    child: Text(
-                                      '${(med['prenom'] as String)[0]}${(med['nom'] as String)[0]}',
-                                      style: const TextStyle(
-                                        color: AppColors.primary,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
-                                      ),
-                                    ),
+                                    fontSize: 18,
                                   ),
                                   const SizedBox(width: 14),
                                   Expanded(

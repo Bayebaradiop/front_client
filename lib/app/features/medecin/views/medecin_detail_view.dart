@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
@@ -6,6 +7,7 @@ import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/empty_state.dart';
+import '../../../core/widgets/user_avatar.dart';
 import '../controllers/medecin_controller.dart';
 import '../../../translate/translation_keys.dart';
 
@@ -51,17 +53,13 @@ class MedecinDetailView extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const SizedBox(height: 30),
-                        CircleAvatar(
+                        UserAvatar(
+                          photoUrl: medecin['photo'] as String?,
+                          initials: '${(medecin['prenom'] as String)[0]}${(medecin['nom'] as String)[0]}',
                           radius: 42,
                           backgroundColor: Colors.white24,
-                          child: Text(
-                            '${(medecin['prenom'] as String)[0]}${(medecin['nom'] as String)[0]}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 28,
-                            ),
-                          ),
+                          textColor: Colors.white,
+                          fontSize: 28,
                         ),
                         const SizedBox(height: 12),
                         Text(
@@ -111,12 +109,10 @@ class MedecinDetailView extends StatelessWidget {
                     const SizedBox(height: 12),
 
                     // Calendrier horizontal (7 jours)
-                    SizedBox(
-                      height: 85,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: 7,
-                        itemBuilder: (_, i) {
+                    Obx(() => SizedBox(
+                      height: 90,
+                      child: Row(
+                        children: List.generate(7, (i) {
                           final date =
                               DateTime.now().add(Duration(days: i));
                           final isSelected = controller
@@ -131,77 +127,86 @@ class MedecinDetailView extends StatelessWidget {
                           final monthName =
                               DateFormat('MMM', 'fr_FR').format(date);
 
-                          return GestureDetector(
-                            onTap: () => controller.selectDate(date),
-                            child: AnimatedContainer(
-                              duration:
-                                  const Duration(milliseconds: 200),
-                              width: 65,
-                              margin:
-                                  const EdgeInsets.only(right: 10),
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? AppColors.primary
-                                    : AppColors.cardBackground,
-                                borderRadius:
-                                    BorderRadius.circular(16),
-                                border: isSelected
-                                    ? null
-                                    : Border.all(
-                                        color: AppColors.divider),
-                                boxShadow: isSelected
-                                    ? [
-                                        BoxShadow(
-                                          color: AppColors.primary
-                                              .withValues(alpha: 0.3),
-                                          blurRadius: 8,
-                                          offset:
-                                              const Offset(0, 3),
-                                        )
-                                      ]
-                                    : null,
-                              ),
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    dayName,
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w500,
-                                      color: isSelected
-                                          ? Colors.white70
-                                          : AppColors.textLight,
-                                    ),
+                          return Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                HapticFeedback.lightImpact();
+                                controller.selectDate(date);
+                              },
+                              child: AnimatedScale(
+                                scale: isSelected ? 1.08 : 1.0,
+                                duration:
+                                    const Duration(milliseconds: 200),
+                                child: AnimatedContainer(
+                                  duration:
+                                      const Duration(milliseconds: 200),
+                                  margin:
+                                      const EdgeInsets.symmetric(horizontal: 3),
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? AppColors.primary
+                                        : AppColors.cardBackground,
+                                    borderRadius:
+                                        BorderRadius.circular(16),
+                                    border: isSelected
+                                        ? null
+                                        : Border.all(
+                                            color: AppColors.divider),
+                                    boxShadow: isSelected
+                                        ? [
+                                            BoxShadow(
+                                              color: AppColors.primary
+                                                  .withValues(alpha: 0.3),
+                                              blurRadius: 10,
+                                              offset:
+                                                  const Offset(0, 4),
+                                            )
+                                          ]
+                                        : null,
                                   ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    dayNum,
-                                    style: TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                      color: isSelected
-                                          ? Colors.white
-                                          : AppColors.textPrimary,
-                                    ),
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        dayName,
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w500,
+                                          color: isSelected
+                                              ? Colors.white70
+                                              : AppColors.textLight,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        dayNum,
+                                        style: TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold,
+                                          color: isSelected
+                                              ? Colors.white
+                                              : AppColors.textPrimary,
+                                        ),
+                                      ),
+                                      Text(
+                                        monthName,
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          color: isSelected
+                                              ? Colors.white70
+                                              : AppColors.textLight,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Text(
-                                    monthName,
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: isSelected
-                                          ? Colors.white70
-                                          : AppColors.textLight,
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
                             ),
                           );
-                        },
+                        }),
                       ),
-                    ),
+                    )),
                     const SizedBox(height: 24),
 
                     // Créneaux disponibles

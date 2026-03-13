@@ -10,6 +10,7 @@ import '../../../core/widgets/shimmer_loading.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../routes/app_routes.dart';
 import '../controllers/specialite_controller.dart';
+import '../../../models/specialite_model.dart';
 import '../../../translate/translation_keys.dart';
 
 class SpecialitesView extends StatelessWidget {
@@ -28,12 +29,12 @@ class SpecialitesView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(SpecialiteController());
+    final controller = Get.find<SpecialiteController>();
 
     return Scaffold(
       appBar: CustomAppBar(title: Tr.specialties.tr),
       body: Obx(() {
-        if (controller.isLoading.value) {
+        if (controller.isLoading) {
           return const ShimmerLoading(itemCount: 6, height: 90);
         }
         if (controller.specialites.isEmpty) {
@@ -44,13 +45,13 @@ class SpecialitesView extends StatelessWidget {
         }
         return RefreshIndicator(
           color: AppColors.primary,
-          onRefresh: () async => controller.simulateLoading(),
+          onRefresh: () async => controller.refresh(),
           child: AnimationLimiter(
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: 12),
               itemCount: controller.specialites.length,
               itemBuilder: (context, index) {
-                final spec = controller.specialites[index];
+                final SpecialiteModel spec = controller.specialites[index];
                 return AnimationConfiguration.staggeredList(
                   position: index,
                   duration: const Duration(milliseconds: 400),
@@ -59,7 +60,7 @@ class SpecialitesView extends StatelessWidget {
                     child: FadeInAnimation(
                       child: CustomCard(
                         onTap: () => Get.toNamed(AppRoutes.medecins,
-                            arguments: {'specialiteId': spec['id']}),
+                            arguments: {'specialiteId': spec.id}),
                         child: Row(
                           children: [
                             Container(
@@ -71,7 +72,7 @@ class SpecialitesView extends StatelessWidget {
                                     BorderRadius.circular(14),
                               ),
                               child: Icon(
-                                _getSpecialiteIcon(spec['nom'] ?? ''),
+                                _getSpecialiteIcon(spec.nom ?? ''),
                                 color: AppColors.primary,
                                 size: 26,
                               ),
@@ -82,11 +83,11 @@ class SpecialitesView extends StatelessWidget {
                                 crossAxisAlignment:
                                     CrossAxisAlignment.start,
                                 children: [
-                                  Text(spec['nom'] ?? '',
+                                  Text(spec.nom ?? '',
                                       style: AppTextStyles.bodyBold),
                                   const SizedBox(height: 2),
                                   Text(
-                                    spec['description'] ?? '',
+                                    spec.description ?? '',
                                     style: AppTextStyles.caption,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
@@ -99,7 +100,7 @@ class SpecialitesView extends StatelessWidget {
                                           color: AppColors.textLight),
                                       const SizedBox(width: 4),
                                       Text(
-                                        spec['cabinetNom'] ?? '',
+                                        spec.cabinetNom ?? '',
                                         style: AppTextStyles.caption
                                             .copyWith(fontSize: 11),
                                       ),

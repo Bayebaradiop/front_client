@@ -32,6 +32,9 @@ abstract class Tr {
   static const noAccount = 'no_account';
   static const registerSuccess = 'register_success';
   static const passwordMismatch = 'password_mismatch';
+  static const loginFailed = 'login_failed';
+  static const connectionError = 'connection_error';
+  static const registerError = 'register_error';
   static const disconnectConfirm = 'disconnect_confirm';
   static const disconnect = 'disconnect';
 
@@ -125,4 +128,24 @@ abstract class Tr {
   static const statusConfirmed = 'status_confirmed';
   static const statusCompleted = 'status_completed';
   static const statusCancelled = 'status_cancelled';
+
+  // Profile
+  static const editProfile = 'edit_profile';
+  static const save = 'save';
+  static const success = 'success';
+  static const profileUpdated = 'profile_updated';
+  static const profileUpdateError = 'profile_update_error';
+
+  // Error messages (viewmodels)
+  static const loadingError = 'loading_error';
+  static const loadingCabinetsError = 'loading_cabinets_error';
+  static const loadingSpecialtiesError = 'loading_specialties_error';
+  static const loadingDoctorsError = 'loading_doctors_error';
+  static const loadingDoctorError = 'loading_doctor_error';
+  static const loadingSlotsError = 'loading_slots_error';
+  static const loadingAppointmentsError = 'loading_appointments_error';
+  static const createAppointmentError = 'create_appointment_error';
+  static const cancelAppointmentError = 'cancel_appointment_error';
+  static const noResults = 'no_results';
+  static const allFilter = 'all_filter';
 }

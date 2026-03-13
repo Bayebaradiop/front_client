@@ -34,6 +34,9 @@ const Map<String, String> en = {
   Tr.noAccount: 'Don\'t have an account?',
   Tr.registerSuccess: 'Registration successful',
   Tr.passwordMismatch: 'Passwords do not match',
+  Tr.loginFailed: 'Invalid email or password',
+  Tr.connectionError: 'Unable to connect to the server',
+  Tr.registerError: 'Registration error',
   Tr.disconnectConfirm: 'Are you sure you want to logout?',
   Tr.disconnect: 'Logout',
 
@@ -127,4 +130,24 @@ const Map<String, String> en = {
   Tr.statusConfirmed: 'Confirmed',
   Tr.statusCompleted: 'Completed',
   Tr.statusCancelled: 'Cancelled',
+
+  // Profile
+  Tr.editProfile: 'Edit profile',
+  Tr.save: 'Save',
+  Tr.success: 'Success',
+  Tr.profileUpdated: 'Profile updated successfully',
+  Tr.profileUpdateError: 'Error updating profile',
+
+  // Error messages (viewmodels)
+  Tr.loadingError: 'Loading error',
+  Tr.loadingCabinetsError: 'Error loading cabinets',
+  Tr.loadingSpecialtiesError: 'Error loading specialties',
+  Tr.loadingDoctorsError: 'Error loading doctors',
+  Tr.loadingDoctorError: 'Error loading doctor',
+  Tr.loadingSlotsError: 'Error loading available slots',
+  Tr.loadingAppointmentsError: 'Error loading appointments',
+  Tr.createAppointmentError: 'Error creating appointment',
+  Tr.cancelAppointmentError: 'Error cancelling appointment',
+  Tr.noResults: 'No results',
+  Tr.allFilter: 'All',
 };

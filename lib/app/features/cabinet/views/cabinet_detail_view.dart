@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import '../../../models/cabinet_model.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../core/widgets/custom_card.dart';
@@ -14,11 +15,12 @@ class CabinetDetailView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<CabinetController>();
-    final cabinet = controller.selectedCabinet.value ?? Get.arguments;
+    final cabinet = controller.selectedCabinet.value ??
+        (Get.arguments is CabinetModel ? Get.arguments as CabinetModel : null);
     final color =
-        AppColors.fromHex(cabinet?['couleurPrimaire'] ?? '#007bff');
+        AppColors.fromHex(cabinet?.couleurPrimaire ?? '#007bff');
     final secondaryColor =
-        AppColors.fromHex(cabinet?['couleurSecondaire'] ?? '#ffffff');
+        AppColors.fromHex(cabinet?.couleurSecondaire ?? '#ffffff');
 
     return Scaffold(
       body: CustomScrollView(
@@ -36,7 +38,7 @@ class CabinetDetailView extends StatelessWidget {
             ),
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
-                cabinet?['nom'] ?? '',
+                cabinet?.nom ?? '',
                 style: TextStyle(
                   color: secondaryColor,
                   fontWeight: FontWeight.bold,
@@ -87,19 +89,19 @@ class CabinetDetailView extends StatelessWidget {
                   _InfoRow(
                     icon: Iconsax.location,
                     label: Tr.address.tr,
-                    value: cabinet?['adresse'] ?? '',
+                    value: cabinet?.adresse ?? '',
                     color: color,
                   ),
                   _InfoRow(
                     icon: Iconsax.call,
                     label: Tr.phone.tr,
-                    value: cabinet?['telephone'] ?? '',
+                    value: cabinet?.telephone ?? '',
                     color: color,
                   ),
                   _InfoRow(
                     icon: Iconsax.sms,
                     label: Tr.email.tr,
-                    value: cabinet?['email'] ?? '',
+                    value: cabinet?.email ?? '',
                     color: color,
                   ),
                   const SizedBox(height: 24),
@@ -107,14 +109,19 @@ class CabinetDetailView extends StatelessWidget {
                   // Spécialités du cabinet
                   Text(Tr.specialties.tr, style: AppTextStyles.heading3),
                   const SizedBox(height: 12),
-                  Obx(() => Column(
+                  Obx(() {
+                        if (controller.isLoadingSpecialites.value) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        return Column(
                         children: controller.specialitesDuCabinet.map((spec) {
                           return CustomCard(
                             margin: const EdgeInsets.only(bottom: 8),
                             onTap: () => Get.toNamed(AppRoutes.medecins,
                                 arguments: {
-                                  'specialiteId': spec['id'],
-                                  'cabinetId': cabinet?['id'],
+                                  'specialiteId': spec.id,
+                                  'cabinetId': cabinet?.id,
                                 }),
                             child: Row(
                               children: [
@@ -134,10 +141,10 @@ class CabinetDetailView extends StatelessWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(spec['nom'] ?? '',
+                                      Text(spec.nom ?? '',
                                           style: AppTextStyles.bodyBold),
                                       Text(
-                                        spec['description'] ?? '',
+                                        spec.description ?? '',
                                         style: AppTextStyles.caption,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
@@ -151,7 +158,8 @@ class CabinetDetailView extends StatelessWidget {
                             ),
                           );
                         }).toList(),
-                      )),
+                        );
+                      }),
 
                   const SizedBox(height: 20),
 
@@ -161,7 +169,7 @@ class CabinetDetailView extends StatelessWidget {
                     height: 52,
                     child: ElevatedButton.icon(
                       onPressed: () => Get.toNamed(AppRoutes.medecins,
-                          arguments: {'cabinetId': cabinet?['id']}),
+                          arguments: {'cabinetId': cabinet?.id}),
                       icon: const Icon(Iconsax.user_search),
                       label: Text(Tr.seeDoctors.tr),
                       style: ElevatedButton.styleFrom(

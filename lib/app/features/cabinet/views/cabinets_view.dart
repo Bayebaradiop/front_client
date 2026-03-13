@@ -34,7 +34,7 @@ class CabinetsView extends StatelessWidget {
         }
         return RefreshIndicator(
           color: AppColors.primary,
-          onRefresh: () async => controller.simulateLoading(),
+          onRefresh: () => controller.refresh(),
           child: AnimationLimiter(
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: 12),
@@ -42,7 +42,7 @@ class CabinetsView extends StatelessWidget {
               itemBuilder: (context, index) {
                 final cabinet = controller.cabinets[index];
                 final color = AppColors.fromHex(
-                    cabinet['couleurPrimaire'] ?? '#007bff');
+                    cabinet.couleurPrimaire ?? '#007bff');
                 return AnimationConfiguration.staggeredList(
                   position: index,
                   duration: const Duration(milliseconds: 400),
@@ -73,7 +73,7 @@ class CabinetsView extends StatelessWidget {
                                 crossAxisAlignment:
                                     CrossAxisAlignment.start,
                                 children: [
-                                  Text(cabinet['nom'] ?? '',
+                                  Text(cabinet.nom ?? '',
                                       style: AppTextStyles.bodyBold),
                                   const SizedBox(height: 4),
                                   Row(
@@ -84,7 +84,7 @@ class CabinetsView extends StatelessWidget {
                                       const SizedBox(width: 4),
                                       Expanded(
                                         child: Text(
-                                          cabinet['adresse'] ?? '',
+                                          cabinet.adresse ?? '',
                                           style: AppTextStyles.caption,
                                           maxLines: 1,
                                           overflow:
@@ -101,7 +101,7 @@ class CabinetsView extends StatelessWidget {
                                           color: AppColors.textLight),
                                       const SizedBox(width: 4),
                                       Text(
-                                        cabinet['telephone'] ?? '',
+                                        cabinet.telephone ?? '',
                                         style: AppTextStyles.caption,
                                       ),
                                     ],

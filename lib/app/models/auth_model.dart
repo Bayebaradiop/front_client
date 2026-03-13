@@ -3,6 +3,8 @@ class AuthModel {
   final String? prenom;
   final String? nom;
   final String? email;
+  final String? telephone;
+  final String? photo;
   final String? role;
 
   AuthModel({
@@ -10,6 +12,8 @@ class AuthModel {
     this.prenom,
     this.nom,
     this.email,
+    this.telephone,
+    this.photo,
     this.role,
   });
 
@@ -19,7 +23,21 @@ class AuthModel {
       prenom: json['prenom'],
       nom: json['nom'],
       email: json['email'],
+      telephone: json['telephone'],
+      photo: json['photo'],
       role: json['role'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'prenom': prenom,
+      'nom': nom,
+      'email': email,
+      'telephone': telephone,
+      'photo': photo,
+      'role': role,
+    };
   }
 }

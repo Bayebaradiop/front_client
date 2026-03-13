@@ -1,86 +1,50 @@
 import 'package:get/get.dart';
+import '../../../core/mixins/snackbar_mixin.dart';
+import '../../../models/cabinet_model.dart';
+import '../../../models/specialite_model.dart';
+import '../viewmodel/cabinet_viewmodel.dart';
 
-class CabinetController extends GetxController {
-  final isLoading = false.obs;
-  final selectedCabinet = Rxn<Map<String, dynamic>>();
+class CabinetController extends GetxController with SnackbarMixin {
+  final CabinetViewModel _viewModel;
 
-  final cabinets = <Map<String, dynamic>>[
-    {
-      'id': 1,
-      'nom': 'Cabinet Médical Medibook',
-      'adresse': '123 Avenue de la Santé, Dakar',
-      'telephone': '+221 33 123 45 67',
-      'email': 'contact@medibook.com',
-      'couleurPrimaire': '#007bff',
-      'couleurSecondaire': '#ffffff',
-    },
-    {
-      'id': 2,
-      'nom': 'Clinique du Plateau',
-      'adresse': '45 Rue Carnot, Dakar Plateau',
-      'telephone': '+221 33 456 78 90',
-      'email': 'contact@plateau-clinique.com',
-      'couleurPrimaire': '#6f42c1',
-      'couleurSecondaire': '#ffffff',
-    },
-    {
-      'id': 3,
-      'nom': 'Centre Médical Almadies',
-      'adresse': '78 Route des Almadies, Dakar',
-      'telephone': '+221 33 789 01 23',
-      'email': 'contact@almadies-medical.com',
-      'couleurPrimaire': '#e83e8c',
-      'couleurSecondaire': '#ffffff',
-    },
-  ].obs;
+  CabinetController(this._viewModel);
 
-  final specialitesDuCabinet = <Map<String, dynamic>>[].obs;
+  // Raccourcis vers le ViewModel
+  RxList<CabinetModel> get cabinets => _viewModel.cabinets;
+  RxList<SpecialiteModel> get specialitesDuCabinet => _viewModel.specialitesDuCabinet;
+  RxBool get isLoading => _viewModel.isLoading;
+  RxBool get isLoadingSpecialites => _viewModel.isLoadingSpecialites;
+
+  // État UI propre au controller
+  final selectedCabinet = Rxn<CabinetModel>();
 
   @override
   void onInit() {
     super.onInit();
-    if (Get.arguments != null) {
-      selectedCabinet.value = Get.arguments as Map<String, dynamic>;
+    if (Get.arguments != null && Get.arguments is CabinetModel) {
+      selectedCabinet.value = Get.arguments as CabinetModel;
       loadSpecialites();
     }
-    simulateLoading();
   }
 
-  void simulateLoading() {
-    isLoading.value = true;
-    Future.delayed(const Duration(milliseconds: 800), () {
-      isLoading.value = false;
-    });
+  Future<void> refresh() async {
+    final error = await _viewModel.fetchCabinets();
+    if (error != null) {
+      showError(error);
+    }
   }
 
-  void selectCabinet(Map<String, dynamic> cabinet) {
+  void selectCabinet(CabinetModel cabinet) {
     selectedCabinet.value = cabinet;
     loadSpecialites();
   }
 
-  void loadSpecialites() {
-    specialitesDuCabinet.value = [
-      {
-        'id': 1,
-        'nom': 'Médecine Générale',
-        'description': 'Consultations de médecine générale',
-        'cabinetId': selectedCabinet.value?['id'],
-        'cabinetNom': selectedCabinet.value?['nom'],
-      },
-      {
-        'id': 2,
-        'nom': 'Cardiologie',
-        'description': 'Soins du cœur et du système cardiovasculaire',
-        'cabinetId': selectedCabinet.value?['id'],
-        'cabinetNom': selectedCabinet.value?['nom'],
-      },
-      {
-        'id': 3,
-        'nom': 'Dermatologie',
-        'description': 'Soins de la peau',
-        'cabinetId': selectedCabinet.value?['id'],
-        'cabinetNom': selectedCabinet.value?['nom'],
-      },
-    ];
+  Future<void> loadSpecialites() async {
+    final id = selectedCabinet.value?.id;
+    if (id == null) return;
+    final error = await _viewModel.fetchSpecialitesByCabinet(id);
+    if (error != null) {
+      showError(error);
+    }
   }
 }

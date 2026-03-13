@@ -1,5 +1,109 @@
 import 'package:get/get.dart';
+import '../../../models/medecin_model.dart';
+import '../../../models/creneau_model.dart';
+import '../../../translate/translation_keys.dart';
+import '../repository/medecin_repository.dart';
 
 class MedecinViewModel extends GetxController {
-  // TODO: Implement with MedecinRepository
+  final MedecinRepository _repo;
+
+  MedecinViewModel(this._repo);
+
+  final medecins = <MedecinModel>[].obs;
+  final selectedMedecin = Rxn<MedecinModel>();
+  final disponibilites = <CreneauModel>[].obs;
+  final isLoading = false.obs;
+  final isLoadingDetail = false.obs;
+  final isLoadingDispos = false.obs;
+  final errorMessage = ''.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchMedecins();
+  }
+
+
+  Future<String?> fetchMedecins({int? specialiteId, int? cabinetId}) async {
+    isLoading.value = true;
+    errorMessage.value = '';
+    try {
+      final Response response;
+      if (specialiteId != null) {
+        response = await _repo.getMedecinsBySpecialite(specialiteId);
+      } else if (cabinetId != null) {
+        response = await _repo.getMedecinsByCabinet(cabinetId);
+      } else {
+        response = await _repo.getMedecins();
+      }
+
+      if (response.statusCode == 200) {
+        final List data = response.body is List
+            ? response.body
+            : (response.body['data'] ?? []);
+        medecins.value = data.map((e) => MedecinModel.fromJson(e)).toList();
+        return null;
+      } else {
+        final msg = response.body?['message'] ?? Tr.loadingDoctorsError.tr;
+        errorMessage.value = msg;
+        return msg;
+      }
+    } catch (e) {
+      final msg = Tr.connectionError.tr;
+      errorMessage.value = msg;
+      return msg;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+
+  Future<String?> fetchMedecinById(int id) async {
+    isLoadingDetail.value = true;
+    errorMessage.value = '';
+    try {
+      final response = await _repo.getMedecinById(id);
+      if (response.statusCode == 200) {
+        final data = response.body is Map
+            ? response.body
+            : response.body['data'];
+        selectedMedecin.value = MedecinModel.fromJson(data);
+        return null;
+      } else {
+        final msg = response.body?['message'] ?? Tr.loadingDoctorError.tr;
+        errorMessage.value = msg;
+        return msg;
+      }
+    } catch (e) {
+      final msg = Tr.connectionError.tr;
+      errorMessage.value = msg;
+      return msg;
+    } finally {
+      isLoadingDetail.value = false;
+    }
+  }
+
+
+  Future<String?> fetchDisponibilites(int medecinId, {String? date}) async {
+    isLoadingDispos.value = true;
+    try {
+      final response = await _repo.getDisponibilites(medecinId, date: date);
+      if (response.statusCode == 200) {
+        final List data = response.body is List
+            ? response.body
+            : (response.body['data'] ?? []);
+        disponibilites.value =
+            data.map((e) => CreneauModel.fromJson(e)).toList();
+        return null;
+      } else {
+        final msg =
+            response.body?['message'] ?? Tr.loadingSlotsError.tr;
+        return msg;
+      }
+    } catch (e) {
+      return Tr.connectionError.tr;
+    } finally {
+      isLoadingDispos.value = false;
+    }
+  }
 }

@@ -10,4 +10,5 @@ abstract class AppRoutes {
   static const medecinDetail = '/medecins/detail';
   static const mesRdv = '/mes-rdv';
   static const rdvDetail = '/rdv/detail';
+  static const profile = '/profile';
 }

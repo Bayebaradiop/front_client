@@ -8,6 +8,7 @@ import '../../../core/widgets/custom_app_bar.dart';
 import '../../../core/widgets/custom_card.dart';
 import '../../../core/widgets/shimmer_loading.dart';
 import '../../../core/widgets/empty_state.dart';
+import '../../../core/widgets/user_avatar.dart';
 import '../../../routes/app_routes.dart';
 import '../controllers/rendezvous_controller.dart';
 import '../../../translate/translation_keys.dart';
@@ -18,7 +19,7 @@ class MesRdvView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(RendezvousController());
+    final controller = Get.find<RendezvousController>();
 
     return Scaffold(
       appBar: embedded
@@ -100,7 +101,7 @@ class MesRdvView extends StatelessWidget {
 
               return RefreshIndicator(
                 color: AppColors.primary,
-                onRefresh: () async => controller.simulateLoading(),
+                onRefresh: () async => controller.refresh(),
                 child: AnimationLimiter(
                   child: ListView.builder(
                     padding: const EdgeInsets.symmetric(vertical: 4),
@@ -209,12 +210,12 @@ class _RdvCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statut = rdv['statut'] as String;
+    final statut = (rdv['statut'] as String?) ?? 'EN_ATTENTE';
     final color = _statusColor(statut);
-    final heureDebut =
-        (rdv['heureDebut'] as String).substring(0, 5);
-    final heureFin =
-        (rdv['heureFin'] as String).substring(0, 5);
+    final rawDebut = (rdv['heureDebut'] as String?) ?? '';
+    final rawFin = (rdv['heureFin'] as String?) ?? '';
+    final heureDebut = rawDebut.length >= 5 ? rawDebut.substring(0, 5) : rawDebut;
+    final heureFin = rawFin.length >= 5 ? rawFin.substring(0, 5) : rawFin;
 
     return CustomCard(
       borderLeftColor: color,
@@ -225,17 +226,14 @@ class _RdvCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              CircleAvatar(
+              UserAvatar(
+                photoUrl: rdv['medecinPhoto'] as String?,
+                initials: '${((rdv['medecinPrenom'] as String?) ?? '').isNotEmpty ? (rdv['medecinPrenom'] as String)[0] : ''}'
+                    '${((rdv['medecinNom'] as String?) ?? '').isNotEmpty ? (rdv['medecinNom'] as String)[0] : ''}',
                 radius: 22,
                 backgroundColor: color.withValues(alpha: 0.1),
-                child: Text(
-                  '${(rdv['medecinPrenom'] as String)[0]}${(rdv['medecinNom'] as String)[0]}',
-                  style: TextStyle(
-                    color: color,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                ),
+                textColor: color,
+                fontSize: 14,
               ),
               const SizedBox(width: 12),
               Expanded(

@@ -9,6 +9,7 @@ class RendezVousModel {
   final String? medecinNom;
   final String? medecinPrenom;
   final String? medecinSpecialite;
+  final String? medecinPhoto;
   final int? cabinetId;
   final String? cabinetNom;
   final String? cabinetAdresse;
@@ -24,6 +25,7 @@ class RendezVousModel {
     this.medecinNom,
     this.medecinPrenom,
     this.medecinSpecialite,
+    this.medecinPhoto,
     this.cabinetId,
     this.cabinetNom,
     this.cabinetAdresse,
@@ -41,6 +43,7 @@ class RendezVousModel {
       medecinNom: json['medecinNom'],
       medecinPrenom: json['medecinPrenom'],
       medecinSpecialite: json['medecinSpecialite'],
+      medecinPhoto: json['medecinPhoto'],
       cabinetId: json['cabinetId'],
       cabinetNom: json['cabinetNom'],
       cabinetAdresse: json['cabinetAdresse'],

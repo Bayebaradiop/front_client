@@ -1,9 +1,22 @@
-import 'dart:ui';
 import 'package:get/get.dart';
+import '../../../core/mixins/snackbar_mixin.dart';
+import '../../../routes/app_routes.dart';
 import '../../../translate/translation_keys.dart';
+import '../viewmodel/medecin_viewmodel.dart';
+import '../../rendezvous/viewmodel/rendezvous_viewmodel.dart';
+import '../../rendezvous/controllers/rendezvous_controller.dart';
+import '../../home/controllers/home_controller.dart';
 
-class MedecinController extends GetxController {
-  final isLoading = false.obs;
+class MedecinController extends GetxController with SnackbarMixin {
+  final MedecinViewModel _viewModel;
+  final RendezvousViewModel _rdvViewModel;
+
+  MedecinController(this._viewModel, this._rdvViewModel);
+
+  // Indicateurs de chargement
+  RxBool get isLoading => _viewModel.isLoading;
+  RxBool get isLoadingCreneaux => _viewModel.isLoadingDispos;
+
   final selectedSpecialiteId = Rxn<int>();
   final selectedCabinetId = Rxn<int>();
   final selectedMedecin = Rxn<Map<String, dynamic>>();
@@ -14,64 +27,9 @@ class MedecinController extends GetxController {
   final motifController = ''.obs;
   final isBooking = false.obs;
 
-  final medecins = <Map<String, dynamic>>[
-    {
-      'id': 3,
-      'prenom': 'Jean',
-      'nom': 'Dupont',
-      'photo': null,
-      'telephone': '+221330000002',
-      'email': 'jean.dupont@medibook.com',
-      'specialiteId': 1,
-      'specialiteNom': 'Médecine Générale',
-      'cabinetId': 1,
-      'cabinetNom': 'Cabinet Médical Medibook',
-    },
-    {
-      'id': 4,
-      'prenom': 'Marie',
-      'nom': 'Diallo',
-      'photo': null,
-      'telephone': '+221330000003',
-      'email': 'marie.diallo@medibook.com',
-      'specialiteId': 2,
-      'specialiteNom': 'Cardiologie',
-      'cabinetId': 1,
-      'cabinetNom': 'Cabinet Médical Medibook',
-    },
-    {
-      'id': 5,
-      'prenom': 'Amadou',
-      'nom': 'Sow',
-      'photo': null,
-      'telephone': '+221330000004',
-      'email': 'amadou.sow@plateau.com',
-      'specialiteId': 3,
-      'specialiteNom': 'Dermatologie',
-      'cabinetId': 2,
-      'cabinetNom': 'Clinique du Plateau',
-    },
-    {
-      'id': 6,
-      'prenom': 'Aissatou',
-      'nom': 'Ba',
-      'photo': null,
-      'telephone': '+221330000005',
-      'email': 'aissatou.ba@almadies.com',
-      'specialiteId': 4,
-      'specialiteNom': 'Pédiatrie',
-      'cabinetId': 3,
-      'cabinetNom': 'Centre Médical Almadies',
-    },
-  ].obs;
-
-  final specialitesFilter = <Map<String, dynamic>>[
-    {'id': null, 'nom': 'Toutes'},
-    {'id': 1, 'nom': 'Médecine Générale'},
-    {'id': 2, 'nom': 'Cardiologie'},
-    {'id': 3, 'nom': 'Dermatologie'},
-    {'id': 4, 'nom': 'Pédiatrie'},
-  ].obs;
+  // Médecins convertis en Map pour les vues
+  final medecins = <Map<String, dynamic>>[].obs;
+  final specialitesFilter = <Map<String, dynamic>>[].obs;
 
   final creneaux = <Map<String, dynamic>>[].obs;
 
@@ -105,14 +63,47 @@ class MedecinController extends GetxController {
         loadCreneaux();
       }
     }
-    simulateLoading();
+    _loadMedecins();
   }
 
-  void simulateLoading() {
-    isLoading.value = true;
-    Future.delayed(const Duration(milliseconds: 800), () {
-      isLoading.value = false;
-    });
+  Future<void> _loadMedecins() async {
+    final error = await _viewModel.fetchMedecins(
+      specialiteId: selectedSpecialiteId.value,
+      cabinetId: selectedCabinetId.value,
+    );
+    if (error != null) {
+      showError(error);
+    } else {
+      // Convertir les modèles en Map pour les vues
+      medecins.value = _viewModel.medecins
+          .map((m) => {
+                'id': m.id,
+                'prenom': m.prenom ?? '',
+                'nom': m.nom ?? '',
+                'photo': m.photo,
+                'telephone': m.telephone ?? '',
+                'email': m.email ?? '',
+                'specialiteId': m.specialiteId,
+                'specialiteNom': m.specialiteNom ?? '',
+                'cabinetId': m.cabinetId,
+                'cabinetNom': m.cabinetNom ?? '',
+              })
+          .toList();
+      // Reconstruire les filtres de spécialités depuis les données réelles
+      final specs = <Map<String, dynamic>>[{'id': null, 'nom': Tr.allFilter.tr}];
+      final seen = <int?>{};
+      for (final m in _viewModel.medecins) {
+        if (!seen.contains(m.specialiteId)) {
+          seen.add(m.specialiteId);
+          specs.add({'id': m.specialiteId, 'nom': m.specialiteNom ?? ''});
+        }
+      }
+      specialitesFilter.value = specs;
+    }
+  }
+
+  Future<void> refresh() async {
+    await _loadMedecins();
   }
 
   void filterBySpecialite(int? specialiteId) {
@@ -129,93 +120,32 @@ class MedecinController extends GetxController {
     loadCreneaux();
   }
 
-  void loadCreneaux() {
+  Future<void> loadCreneaux() async {
+    final medecinId = selectedMedecin.value?['id'] as int?;
+    if (medecinId == null) return;
+
     final date = selectedDate.value;
     final dateStr =
         '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
 
-    creneaux.value = [
-      {
-        'id': 1,
-        'date': dateStr,
-        'heureDebut': '08:00:00',
-        'heureFin': '08:30:00',
-        'disponible': true,
-        'medecinId': selectedMedecin.value?['id'],
-        'medecinNom': selectedMedecin.value?['nom'],
-        'medecinPrenom': selectedMedecin.value?['prenom'],
-      },
-      {
-        'id': 2,
-        'date': dateStr,
-        'heureDebut': '08:30:00',
-        'heureFin': '09:00:00',
-        'disponible': true,
-        'medecinId': selectedMedecin.value?['id'],
-        'medecinNom': selectedMedecin.value?['nom'],
-        'medecinPrenom': selectedMedecin.value?['prenom'],
-      },
-      {
-        'id': 3,
-        'date': dateStr,
-        'heureDebut': '09:00:00',
-        'heureFin': '09:30:00',
-        'disponible': false,
-        'medecinId': selectedMedecin.value?['id'],
-        'medecinNom': selectedMedecin.value?['nom'],
-        'medecinPrenom': selectedMedecin.value?['prenom'],
-      },
-      {
-        'id': 4,
-        'date': dateStr,
-        'heureDebut': '09:30:00',
-        'heureFin': '10:00:00',
-        'disponible': true,
-        'medecinId': selectedMedecin.value?['id'],
-        'medecinNom': selectedMedecin.value?['nom'],
-        'medecinPrenom': selectedMedecin.value?['prenom'],
-      },
-      {
-        'id': 5,
-        'date': dateStr,
-        'heureDebut': '10:00:00',
-        'heureFin': '10:30:00',
-        'disponible': true,
-        'medecinId': selectedMedecin.value?['id'],
-        'medecinNom': selectedMedecin.value?['nom'],
-        'medecinPrenom': selectedMedecin.value?['prenom'],
-      },
-      {
-        'id': 6,
-        'date': dateStr,
-        'heureDebut': '10:30:00',
-        'heureFin': '11:00:00',
-        'disponible': true,
-        'medecinId': selectedMedecin.value?['id'],
-        'medecinNom': selectedMedecin.value?['nom'],
-        'medecinPrenom': selectedMedecin.value?['prenom'],
-      },
-      {
-        'id': 7,
-        'date': dateStr,
-        'heureDebut': '14:00:00',
-        'heureFin': '14:30:00',
-        'disponible': true,
-        'medecinId': selectedMedecin.value?['id'],
-        'medecinNom': selectedMedecin.value?['nom'],
-        'medecinPrenom': selectedMedecin.value?['prenom'],
-      },
-      {
-        'id': 8,
-        'date': dateStr,
-        'heureDebut': '14:30:00',
-        'heureFin': '15:00:00',
-        'disponible': true,
-        'medecinId': selectedMedecin.value?['id'],
-        'medecinNom': selectedMedecin.value?['nom'],
-        'medecinPrenom': selectedMedecin.value?['prenom'],
-      },
-    ];
+    final error = await _viewModel.fetchDisponibilites(medecinId, date: dateStr);
+    if (error != null) {
+      showError(error);
+      return;
+    }
+
+    creneaux.value = _viewModel.disponibilites
+        .map((c) => {
+              'id': c.id,
+              'date': c.date,
+              'heureDebut': c.heureDebut,
+              'heureFin': c.heureFin,
+              'disponible': c.disponible,
+              'medecinId': c.medecinId,
+              'medecinNom': c.medecinNom,
+              'medecinPrenom': c.medecinPrenom,
+            })
+        .toList();
   }
 
   void selectCreneau(Map<String, dynamic> creneau) {
@@ -224,39 +154,35 @@ class MedecinController extends GetxController {
     }
   }
 
-  void confirmBooking() {
+  Future<void> confirmBooking() async {
     if (selectedCreneau.value == null) {
-      Get.snackbar(
-        Tr.error.tr,
-        Tr.selectSlotError.tr,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xFFE53935),
-        colorText: const Color(0xFFFFFFFF),
-      );
+      showError(Tr.selectSlotError.tr);
       return;
     }
     if (motifController.value.isEmpty) {
-      Get.snackbar(
-        Tr.error.tr,
-        Tr.enterReasonError.tr,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xFFE53935),
-        colorText: const Color(0xFFFFFFFF),
-      );
+      showError(Tr.enterReasonError.tr);
       return;
     }
 
     isBooking.value = true;
-    Future.delayed(const Duration(seconds: 1), () {
-      isBooking.value = false;
-      Get.back();
-      Get.snackbar(
-        Tr.appointmentConfirmed.tr,
-        Tr.appointmentConfirmedMsg.tr,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xFF43A047),
-        colorText: const Color(0xFFFFFFFF),
-      );
+    final error = await _rdvViewModel.createRdv({
+      'creneauId': selectedCreneau.value!['id'],
+      'motif': motifController.value,
     });
+    isBooking.value = false;
+
+    if (error != null) {
+      showError(error);
+      return;
+    }
+
+    // Retourner à home et afficher l'onglet RDV
+    Get.until((route) => route.settings.name == AppRoutes.home);
+    Get.find<HomeController>().changeTab(1);
+    // Rafraîchir la liste des RDV
+    try {
+      Get.find<RendezvousController>().refresh();
+    } catch (_) {}
+    showSuccess(Tr.appointmentConfirmed.tr, Tr.appointmentConfirmedMsg.tr);
   }
 }
