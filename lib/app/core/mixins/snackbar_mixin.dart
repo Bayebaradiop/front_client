@@ -5,7 +5,7 @@ import '../../translate/translation_keys.dart';
 mixin SnackbarMixin {
   void showError(String message) {
     Get.snackbar(Tr.error.tr, message,
-      snackPosition: SnackPosition.BOTTOM,
+      snackPosition: SnackPosition.TOP,
       backgroundColor: const Color(0xFFE53935),
       colorText: const Color(0xFFFFFFFF),
     );

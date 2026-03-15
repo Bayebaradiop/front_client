@@ -31,4 +31,5 @@ class CabinetModel {
       couleurSecondaire: json['couleurSecondaire'],
     );
   }
+
 }

@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 import 'app_routes.dart';
 import '../features/auth/views/splash_view.dart';
+import '../features/auth/views/doctor_intro_view.dart';
+import '../features/auth/views/welcome_view.dart';
 import '../features/auth/views/login_view.dart';
 import '../features/auth/views/register_view.dart';
 import '../features/auth/bindings/auth_binding.dart';
@@ -26,6 +28,19 @@ class AppPages {
     GetPage(
       name: AppRoutes.splash,
       page: () => const SplashView(),
+    ),
+
+    GetPage(
+      name: AppRoutes.doctorIntro,
+      page: () => const DoctorIntroView(),
+      transition: Transition.fadeIn,
+      transitionDuration: const Duration(milliseconds: 800),
+    ),
+
+    GetPage(
+      name: AppRoutes.welcome,
+      page: () => const WelcomeView(),
+      transition: Transition.fadeIn,
     ),
 
     GetPage(

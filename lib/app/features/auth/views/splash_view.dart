@@ -33,7 +33,7 @@ class _SplashViewState extends State<SplashView>
     _controller.forward();
 
     Future.delayed(const Duration(seconds: 3), () {
-      Get.offAllNamed(AppRoutes.login);
+      Get.offAllNamed(AppRoutes.doctorIntro);
     });
   }
 
@@ -65,7 +65,7 @@ class _SplashViewState extends State<SplashView>
                   ),
                   child: const Icon(
                     Icons.local_hospital_rounded,
-                    size: 80,
+                    size: 64,
                     color: Colors.white,
                   ),
                 ),

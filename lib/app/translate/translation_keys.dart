@@ -14,11 +14,15 @@ abstract class Tr {
 
   // Auth
   static const login = 'login';
+  static const welcome = 'welcome';
+  static const welcomeMessage = 'welcome_message';
+  static const welcomeSubtitle = 'welcome_subtitle';
+  static const featuredDoctors = 'featured_doctors';
+  static const getStarted = 'get_started';
+  static const skip = 'skip';
   static const email = 'email';
   static const password = 'password';
   static const connect = 'connect';
-  static const welcome = 'welcome';
-  static const welcomeSubtitle = 'welcome_subtitle';
   static const testAccount = 'test_account';
   static const fillAllFields = 'fill_all_fields';
   static const loginSuccess = 'login_success';
