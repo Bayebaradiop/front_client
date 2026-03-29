@@ -31,6 +31,17 @@ class AppColors {
   static const Color shimmerBase = Color(0xFFE0E0E0);
   static const Color shimmerHighlight = Color(0xFFF5F5F5);
 
+  // ── Dark mode ────────────────────────────────────────────────
+  static const Color darkBackground = Color(0xFF121212);
+  static const Color darkCardBackground = Color(0xFF1E1E1E);
+  static const Color darkSurface = Color(0xFF1E1E1E);
+  static const Color darkTextPrimary = Color(0xFFE0E0E0);
+  static const Color darkTextSecondary = Color(0xFFB0B0B0);
+  static const Color darkTextLight = Color(0xFF757575);
+  static const Color darkDivider = Color(0xFF333333);
+  static const Color darkShimmerBase = Color(0xFF2A2A2A);
+  static const Color darkShimmerHighlight = Color(0xFF3A3A3A);
+
   // Gradient splash
   static const LinearGradient splashGradient = LinearGradient(
     begin: Alignment.topCenter,

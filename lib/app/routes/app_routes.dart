@@ -13,4 +13,5 @@ abstract class AppRoutes {
   static const mesRdv = '/mes-rdv';
   static const rdvDetail = '/rdv/detail';
   static const profile = '/profile';
+  static const forgotPassword = '/forgot-password';
 }

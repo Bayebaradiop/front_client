@@ -17,6 +17,11 @@ class HomeRepository {
     return _api.get(ApiEndpoints.specialites);
   }
 
+  // GET /api/patient/medecins
+  Future<Response> getMedecins() {
+    return _api.get(ApiEndpoints.medecins);
+  }
+
   // GET /api/patient/rdv/confirmes
   Future<Response> getRdvConfirmes() {
     return _api.get(ApiEndpoints.rdvConfirmes);

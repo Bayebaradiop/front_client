@@ -41,6 +41,8 @@ abstract class Tr {
   static const registerError = 'register_error';
   static const disconnectConfirm = 'disconnect_confirm';
   static const disconnect = 'disconnect';
+  static const forgotPassword = 'forgot_password';
+  static const forgotPasswordHint = 'forgot_password_hint';
 
   // Navigation
   static const home = 'home';
@@ -140,6 +142,29 @@ abstract class Tr {
   static const profileUpdated = 'profile_updated';
   static const profileUpdateError = 'profile_update_error';
 
+  // Validation erreurs précises
+  static const emailRequired = 'email_required';
+  static const emailInvalid = 'email_invalid';
+  static const passwordRequired = 'password_required';
+  static const passwordTooShort = 'password_too_short';
+  static const firstNameRequired = 'first_name_required';
+  static const lastNameRequired = 'last_name_required';
+  static const phoneRequired = 'phone_required';
+  static const phoneInvalid = 'phone_invalid';
+  static const motifTooShort = 'motif_too_short';
+
+  // Erreurs réseau précises
+  static const networkError = 'network_error';
+  static const serverError = 'server_error';
+  static const timeoutError = 'timeout_error';
+  static const sessionExpired = 'session_expired';
+  static const emailAlreadyUsed = 'email_already_used';
+  static const phoneAlreadyUsed = 'phone_already_used';
+  static const accountNotFound = 'account_not_found';
+  static const wrongPassword = 'wrong_password';
+  static const slotAlreadyTaken = 'slot_already_taken';
+  static const cannotCancelPast = 'cannot_cancel_past';
+
   // Error messages (viewmodels)
   static const loadingError = 'loading_error';
   static const loadingCabinetsError = 'loading_cabinets_error';
@@ -152,4 +177,29 @@ abstract class Tr {
   static const cancelAppointmentError = 'cancel_appointment_error';
   static const noResults = 'no_results';
   static const allFilter = 'all_filter';
+
+  // Forgot / Reset password
+  static const forgotPasswordTitle = 'forgot_password_title';
+  static const forgotPasswordDesc = 'forgot_password_desc';
+  static const sendCode = 'send_code';
+  static const resetCodeSent = 'reset_code_sent';
+  static const resetCode = 'reset_code';
+  static const resetCodeHint = 'reset_code_hint';
+  static const resetCodeInvalid = 'reset_code_invalid';
+  static const newPassword = 'new_password';
+  static const confirmNewPassword = 'confirm_new_password';
+  static const resetPassword = 'reset_password';
+  static const passwordResetSuccess = 'password_reset_success';
+  static const forgotPasswordError = 'forgot_password_error';
+  static const resetPasswordError = 'reset_password_error';
+  static const backToLogin = 'back_to_login';
+  static const darkMode = 'dark_mode';
+
+  // Photo upload
+  static const changePhoto = 'change_photo';
+  static const photoUploadSuccess = 'photo_upload_success';
+  static const photoUploadError = 'photo_upload_error';
+  static const choosePhotoSource = 'choose_photo_source';
+  static const camera = 'camera';
+  static const gallery = 'gallery';
 }

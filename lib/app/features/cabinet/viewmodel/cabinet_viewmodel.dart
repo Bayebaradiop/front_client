@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '../../../core/utils/error_utils.dart';
 import '../../../models/cabinet_model.dart';
 import '../../../models/specialite_model.dart';
 import '../../../translate/translation_keys.dart';
@@ -34,12 +35,12 @@ class CabinetViewModel extends GetxController {
             data.map((e) => CabinetModel.fromJson(e)).toList();
         return null;
       } else {
-        final msg = response.body?['message'] ?? Tr.loadingCabinetsError.tr;
+        final msg = ErrorUtils.extractApiError(response, Tr.loadingCabinetsError.tr);
         errorMessage.value = msg;
         return msg;
       }
     } catch (e) {
-      final msg = Tr.connectionError.tr;
+      final msg = ErrorUtils.handleException(e);
       errorMessage.value = msg;
       return msg;
     } finally {
@@ -60,11 +61,11 @@ class CabinetViewModel extends GetxController {
             data.map((e) => SpecialiteModel.fromJson(e)).toList();
         return null;
       } else {
-        final msg = response.body?['message'] ?? Tr.loadingSpecialtiesError.tr;
+        final msg = ErrorUtils.extractApiError(response, Tr.loadingSpecialtiesError.tr);
         return msg;
       }
     } catch (e) {
-      return Tr.connectionError.tr;
+      return ErrorUtils.handleException(e);
     } finally {
       isLoadingSpecialites.value = false;
     }

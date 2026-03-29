@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'app/theme/app_theme.dart';
+import 'app/theme/theme_controller.dart';
 import 'app/routes/app_pages.dart';
 import 'app/routes/app_routes.dart';
 import 'app/translate/app_translations.dart';
@@ -13,10 +14,13 @@ void main() async {
   await GetStorage.init();
   await initializeDateFormatting('fr_FR', null);
 
+  final themeCtrl = Get.put(ThemeController());
+
   SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
+    SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light,
+      statusBarIconBrightness:
+          themeCtrl.isDarkMode ? Brightness.light : Brightness.light,
     ),
   );
 
@@ -28,10 +32,13 @@ class MediBookApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeCtrl = Get.find<ThemeController>();
     return GetMaterialApp(
       title: 'MediBook',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeCtrl.themeMode,
       translations: AppTranslations(),
       locale: const Locale('fr', 'FR'),
       fallbackLocale: const Locale('fr', 'FR'),

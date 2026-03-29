@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '../../../core/utils/error_utils.dart';
 import '../../../models/medecin_model.dart';
 import '../../../models/creneau_model.dart';
 import '../../../translate/translation_keys.dart';
@@ -44,12 +45,12 @@ class MedecinViewModel extends GetxController {
         medecins.value = data.map((e) => MedecinModel.fromJson(e)).toList();
         return null;
       } else {
-        final msg = response.body?['message'] ?? Tr.loadingDoctorsError.tr;
+        final msg = ErrorUtils.extractApiError(response, Tr.loadingDoctorsError.tr);
         errorMessage.value = msg;
         return msg;
       }
     } catch (e) {
-      final msg = Tr.connectionError.tr;
+      final msg = ErrorUtils.handleException(e);
       errorMessage.value = msg;
       return msg;
     } finally {
@@ -70,12 +71,12 @@ class MedecinViewModel extends GetxController {
         selectedMedecin.value = MedecinModel.fromJson(data);
         return null;
       } else {
-        final msg = response.body?['message'] ?? Tr.loadingDoctorError.tr;
+        final msg = ErrorUtils.extractApiError(response, Tr.loadingDoctorError.tr);
         errorMessage.value = msg;
         return msg;
       }
     } catch (e) {
-      final msg = Tr.connectionError.tr;
+      final msg = ErrorUtils.handleException(e);
       errorMessage.value = msg;
       return msg;
     } finally {
@@ -97,11 +98,11 @@ class MedecinViewModel extends GetxController {
         return null;
       } else {
         final msg =
-            response.body?['message'] ?? Tr.loadingSlotsError.tr;
+            ErrorUtils.extractApiError(response, Tr.loadingSlotsError.tr);
         return msg;
       }
     } catch (e) {
-      return Tr.connectionError.tr;
+      return ErrorUtils.handleException(e);
     } finally {
       isLoadingDispos.value = false;
     }

@@ -70,7 +70,6 @@ class RdvDetailView extends StatelessWidget {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       body: Obx(() {
         final rdv = controller.selectedRdv.value;
         if (rdv == null) {

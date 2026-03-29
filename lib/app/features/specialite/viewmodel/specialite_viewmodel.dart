@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '../../../core/utils/error_utils.dart';
 import '../../../models/specialite_model.dart';
 import '../../../translate/translation_keys.dart';
 import '../repository/specialite_repository.dart';
@@ -23,10 +24,10 @@ class SpecialiteViewModel extends GetxController {
             data.map((e) => SpecialiteModel.fromJson(e)).toList();
         return null;
       } else {
-        return response.body?['message'] ?? Tr.loadingError.tr;
+        return ErrorUtils.extractApiError(response, Tr.loadingSpecialtiesError.tr);
       }
     } catch (e) {
-      return Tr.connectionError.tr;
+      return ErrorUtils.handleException(e);
     } finally {
       isLoading.value = false;
     }

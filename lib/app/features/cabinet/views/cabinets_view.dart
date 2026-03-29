@@ -8,6 +8,7 @@ import '../../../core/widgets/custom_app_bar.dart';
 import '../../../core/widgets/custom_card.dart';
 import '../../../core/widgets/shimmer_loading.dart';
 import '../../../core/widgets/empty_state.dart';
+import '../../../core/widgets/cabinet_logo.dart';
 import '../../../routes/app_routes.dart';
 import '../controllers/cabinet_controller.dart';
 import '../../../translate/translation_keys.dart';
@@ -58,14 +59,11 @@ class CabinetsView extends StatelessWidget {
                         },
                         child: Row(
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: color.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              child: Icon(Iconsax.hospital,
-                                  color: color, size: 28),
+                            CabinetLogo(
+                              logoUrl: cabinet.logo,
+                              size: 52,
+                              borderRadius: 14,
+                              accentColor: color,
                             ),
                             const SizedBox(width: 14),
                             Expanded(

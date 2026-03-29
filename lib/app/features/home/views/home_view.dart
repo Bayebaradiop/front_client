@@ -2,17 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import '../../../models/cabinet_model.dart';
+import '../../../models/medecin_model.dart';
 import '../../../models/specialite_model.dart';
 import '../../../models/rendezvous_model.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../core/widgets/custom_card.dart';
+import '../../../core/widgets/cabinet_logo.dart';
 import '../../../core/widgets/shimmer_loading.dart';
 import '../../../core/widgets/user_avatar.dart';
 import '../../../routes/app_routes.dart';
 import '../controllers/home_controller.dart';
+import '../../auth/controllers/auth_controller.dart';
 import '../../rendezvous/views/mes_rdv_view.dart';
 import '../../../translate/translation_keys.dart';
+import '../../../theme/theme_controller.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -22,7 +26,6 @@ class HomeView extends StatelessWidget {
     final controller = Get.find<HomeController>();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       body: Obx(() => IndexedStack(
             index: controller.currentIndex.value,
             children: [
@@ -240,6 +243,47 @@ class _HomeContent extends StatelessWidget {
                     )
                   : _SpecialitesGrid(
                       specialites: controller.specialites)),
+              const SizedBox(height: 24),
+
+              // Top Médecins
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(Tr.doctors.tr, style: AppTextStyles.heading3),
+                    TextButton(
+                      onPressed: () => Get.toNamed(AppRoutes.medecins),
+                      child: Text(Tr.seeAll.tr),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+              Obx(() => controller.isLoading.value
+                  ? SizedBox(
+                      height: 180,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.only(left: 20),
+                        itemCount: 3,
+                        itemBuilder: (_, __) =>
+                            const ShimmerCard(width: 150, height: 170),
+                      ),
+                    )
+                  : SizedBox(
+                      height: 180,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.only(left: 20),
+                        itemCount: controller.medecins.length > 6
+                            ? 6
+                            : controller.medecins.length,
+                        itemBuilder: (_, i) => _MedecinHorizontalCard(
+                          medecin: controller.medecins[i],
+                        ),
+                      ),
+                    )),
               const SizedBox(height: 30),
             ],
           ),
@@ -387,13 +431,11 @@ class _CabinetHorizontalCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(Iconsax.hospital, color: color, size: 22),
+            CabinetLogo(
+              logoUrl: cabinet.logo,
+              size: 44,
+              borderRadius: 12,
+              accentColor: color,
             ),
             const SizedBox(height: 10),
             Text(
@@ -416,6 +458,93 @@ class _CabinetHorizontalCard extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── MEDECIN HORIZONTAL CARD ───────────────────────────────────
+class _MedecinHorizontalCard extends StatelessWidget {
+  final MedecinModel medecin;
+  const _MedecinHorizontalCard({required this.medecin});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Get.toNamed(AppRoutes.medecinDetail, arguments: {
+        'medecin': {
+          'id': medecin.id,
+          'prenom': medecin.prenom,
+          'nom': medecin.nom,
+          'photo': medecin.photo,
+          'specialiteNom': medecin.specialiteNom,
+          'specialiteId': medecin.specialiteId,
+          'cabinetNom': medecin.cabinetNom,
+          'cabinetId': medecin.cabinetId,
+        }
+      }),
+      child: Container(
+        width: 150,
+        margin: const EdgeInsets.only(right: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            UserAvatar(
+              photoUrl: medecin.photo,
+              initials: '${(medecin.prenom ?? '').isNotEmpty ? medecin.prenom![0] : ''}'
+                  '${(medecin.nom ?? '').isNotEmpty ? medecin.nom![0] : ''}',
+              radius: 36,
+              fontSize: 22,
+            ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                'Dr. ${medecin.prenom ?? ''}',
+                style: AppTextStyles.bodyBold.copyWith(fontSize: 13),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                medecin.specialiteNom ?? '',
+                style: AppTextStyles.caption.copyWith(
+                  color: AppColors.primary,
+                  fontSize: 11,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                medecin.cabinetNom ?? '',
+                style: AppTextStyles.caption.copyWith(fontSize: 10),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),
@@ -518,45 +647,321 @@ class _SearchContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(Tr.search.tr, style: AppTextStyles.heading2),
-            const SizedBox(height: 16),
-            TextField(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+            child: Text(Tr.search.tr, style: AppTextStyles.heading2),
+          ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: TextField(
+              onChanged: (v) => controller.searchQuery.value = v,
               decoration: InputDecoration(
                 hintText: Tr.searchDoctorCabinet.tr,
                 prefixIcon: const Icon(Iconsax.search_normal_1,
                     color: AppColors.primary),
-                suffixIcon: const Icon(Iconsax.setting_4,
-                    color: AppColors.textLight),
               ),
             ),
-            const SizedBox(height: 24),
-            Text(Tr.quickAccess.tr, style: AppTextStyles.heading3),
-            const SizedBox(height: 12),
-            _QuickAccessTile(
-              icon: Iconsax.hospital,
-              title: Tr.medicalCabinets.tr,
-              subtitle: Tr.findNearby.tr,
-              onTap: () => Get.toNamed(AppRoutes.cabinets),
-            ),
-            _QuickAccessTile(
-              icon: Iconsax.menu_board,
-              title: Tr.specialties.tr,
-              subtitle: Tr.browseBySpecialty.tr,
-              onTap: () => Get.toNamed(AppRoutes.specialites),
-            ),
-            _QuickAccessTile(
-              icon: Iconsax.user_search,
-              title: Tr.doctors.tr,
-              subtitle: Tr.allAvailableDoctors.tr,
-              onTap: () => Get.toNamed(AppRoutes.medecins),
-            ),
-          ],
+          ),
+          const SizedBox(height: 12),
+          // Filter chips
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Obx(() => Wrap(
+                  spacing: 8,
+                  children: [
+                    _FilterChip(
+                      label: Tr.allFilter.tr,
+                      selected: controller.searchFilter.value == 'all',
+                      onTap: () => controller.searchFilter.value = 'all',
+                    ),
+                    _FilterChip(
+                      label: Tr.doctors.tr,
+                      selected: controller.searchFilter.value == 'doctors',
+                      onTap: () => controller.searchFilter.value = 'doctors',
+                    ),
+                    _FilterChip(
+                      label: Tr.cabinets.tr,
+                      selected: controller.searchFilter.value == 'cabinets',
+                      onTap: () => controller.searchFilter.value = 'cabinets',
+                    ),
+                    _FilterChip(
+                      label: Tr.specialties.tr,
+                      selected: controller.searchFilter.value == 'specialties',
+                      onTap: () =>
+                          controller.searchFilter.value = 'specialties',
+                    ),
+                  ],
+                )),
+          ),
+          const SizedBox(height: 16),
+          // Results
+          Expanded(
+            child: Obx(() {
+              if (controller.searchQuery.value.isEmpty) {
+                return _SearchQuickAccess(controller: controller);
+              }
+              if (!controller.hasSearchResults) {
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Iconsax.search_normal_1,
+                          size: 48, color: AppColors.textLight.withValues(alpha: 0.4)),
+                      const SizedBox(height: 12),
+                      Text(Tr.noResults.tr, style: AppTextStyles.body),
+                    ],
+                  ),
+                );
+              }
+              return SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Médecins
+                    if ((controller.searchFilter.value == 'all' ||
+                            controller.searchFilter.value == 'doctors') &&
+                        controller.filteredMedecins.isNotEmpty) ...[
+                      Text(Tr.doctors.tr, style: AppTextStyles.heading3),
+                      const SizedBox(height: 8),
+                      ...controller.filteredMedecins
+                          .take(5)
+                          .map((m) => _SearchMedecinTile(medecin: m)),
+                      const SizedBox(height: 16),
+                    ],
+                    // Cabinets
+                    if ((controller.searchFilter.value == 'all' ||
+                            controller.searchFilter.value == 'cabinets') &&
+                        controller.filteredCabinets.isNotEmpty) ...[
+                      Text(Tr.cabinets.tr, style: AppTextStyles.heading3),
+                      const SizedBox(height: 8),
+                      ...controller.filteredCabinets
+                          .take(5)
+                          .map((c) => _SearchCabinetTile(cabinet: c)),
+                      const SizedBox(height: 16),
+                    ],
+                    // Spécialités
+                    if ((controller.searchFilter.value == 'all' ||
+                            controller.searchFilter.value == 'specialties') &&
+                        controller.filteredSpecialites.isNotEmpty) ...[
+                      Text(Tr.specialties.tr, style: AppTextStyles.heading3),
+                      const SizedBox(height: 8),
+                      ...controller.filteredSpecialites
+                          .take(5)
+                          .map((s) => _SearchSpecialiteTile(specialite: s)),
+                    ],
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              );
+            }),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FilterChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+  const _FilterChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: selected
+              ? AppColors.primary
+              : (isDark ? AppColors.darkCardBackground : Colors.white),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selected
+                ? AppColors.primary
+                : (isDark ? AppColors.darkDivider : AppColors.textLight.withValues(alpha: 0.3)),
+          ),
         ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: selected ? Colors.white : AppColors.textPrimary,
+            fontSize: 13,
+            fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SearchQuickAccess extends StatelessWidget {
+  final HomeController controller;
+  const _SearchQuickAccess({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(Tr.quickAccess.tr, style: AppTextStyles.heading3),
+          const SizedBox(height: 12),
+          _QuickAccessTile(
+            icon: Iconsax.hospital,
+            title: Tr.medicalCabinets.tr,
+            subtitle: Tr.findNearby.tr,
+            onTap: () => Get.toNamed(AppRoutes.cabinets),
+          ),
+          _QuickAccessTile(
+            icon: Iconsax.menu_board,
+            title: Tr.specialties.tr,
+            subtitle: Tr.browseBySpecialty.tr,
+            onTap: () => Get.toNamed(AppRoutes.specialites),
+          ),
+          _QuickAccessTile(
+            icon: Iconsax.user_search,
+            title: Tr.doctors.tr,
+            subtitle: Tr.allAvailableDoctors.tr,
+            onTap: () => Get.toNamed(AppRoutes.medecins),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SearchMedecinTile extends StatelessWidget {
+  final MedecinModel medecin;
+  const _SearchMedecinTile({required this.medecin});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomCard(
+      margin: const EdgeInsets.only(bottom: 8),
+      onTap: () => Get.toNamed(AppRoutes.medecinDetail, arguments: {
+        'medecin': {
+          'id': medecin.id,
+          'prenom': medecin.prenom,
+          'nom': medecin.nom,
+          'photo': medecin.photo,
+          'specialiteNom': medecin.specialiteNom,
+          'specialiteId': medecin.specialiteId,
+          'cabinetNom': medecin.cabinetNom,
+          'cabinetId': medecin.cabinetId,
+        }
+      }),
+      child: Row(
+        children: [
+          UserAvatar(
+            photoUrl: medecin.photo,
+            initials:
+                '${(medecin.prenom ?? '').isNotEmpty ? medecin.prenom![0] : ''}'
+                '${(medecin.nom ?? '').isNotEmpty ? medecin.nom![0] : ''}',
+            radius: 22,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Dr. ${medecin.prenom ?? ''} ${medecin.nom ?? ''}',
+                    style: AppTextStyles.bodyBold),
+                Text(medecin.specialiteNom ?? '',
+                    style: AppTextStyles.caption
+                        .copyWith(color: AppColors.primary)),
+              ],
+            ),
+          ),
+          const Icon(Icons.arrow_forward_ios_rounded,
+              size: 16, color: AppColors.textLight),
+        ],
+      ),
+    );
+  }
+}
+
+class _SearchCabinetTile extends StatelessWidget {
+  final CabinetModel cabinet;
+  const _SearchCabinetTile({required this.cabinet});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomCard(
+      margin: const EdgeInsets.only(bottom: 8),
+      onTap: () => Get.toNamed(AppRoutes.cabinetDetail, arguments: cabinet),
+      child: Row(
+        children: [
+          CabinetLogo(
+            logoUrl: cabinet.logo,
+            size: 44,
+            borderRadius: 12,
+            accentColor:
+                AppColors.fromHex(cabinet.couleurPrimaire ?? '#007bff'),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(cabinet.nom ?? '', style: AppTextStyles.bodyBold),
+                Text(cabinet.adresse ?? '', style: AppTextStyles.caption),
+              ],
+            ),
+          ),
+          const Icon(Icons.arrow_forward_ios_rounded,
+              size: 16, color: AppColors.textLight),
+        ],
+      ),
+    );
+  }
+}
+
+class _SearchSpecialiteTile extends StatelessWidget {
+  final SpecialiteModel specialite;
+  const _SearchSpecialiteTile({required this.specialite});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomCard(
+      margin: const EdgeInsets.only(bottom: 8),
+      onTap: () => Get.toNamed(AppRoutes.medecins,
+          arguments: {'specialiteId': specialite.id}),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Iconsax.health,
+                color: AppColors.primary, size: 22),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(specialite.nom ?? '', style: AppTextStyles.bodyBold),
+          ),
+          Text(Tr.seeDoctors.tr,
+              style: AppTextStyles.caption
+                  .copyWith(color: AppColors.primary)),
+          const SizedBox(width: 4),
+          const Icon(Icons.arrow_forward_ios_rounded,
+              size: 14, color: AppColors.primary),
+        ],
       ),
     );
   }
@@ -620,14 +1025,34 @@ class _ProfileContent extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(height: 20),
-            Obx(() => UserAvatar(
-                  photoUrl: controller.currentUser.value?.photo,
-                  initials: '${(controller.currentUser.value?.prenom ?? '').isNotEmpty ? controller.currentUser.value!.prenom![0] : ''}'
-                      '${(controller.currentUser.value?.nom ?? '').isNotEmpty ? controller.currentUser.value!.nom![0] : ''}',
-                  radius: 50,
-                  backgroundColor: AppColors.primary,
-                  textColor: Colors.white,
-                  fontSize: 32,
+            Obx(() => GestureDetector(
+                  onTap: () => Get.find<AuthController>().pickAndUploadPhoto(),
+                  child: Stack(
+                    children: [
+                      UserAvatar(
+                        photoUrl: controller.currentUser.value?.photo,
+                        initials: '${(controller.currentUser.value?.prenom ?? '').isNotEmpty ? controller.currentUser.value!.prenom![0] : ''}'
+                            '${(controller.currentUser.value?.nom ?? '').isNotEmpty ? controller.currentUser.value!.nom![0] : ''}',
+                        radius: 50,
+                        backgroundColor: AppColors.primary,
+                        textColor: Colors.white,
+                        fontSize: 32,
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Theme.of(context).scaffoldBackgroundColor, width: 2),
+                          ),
+                          child: const Icon(Iconsax.camera, size: 16, color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
                 )),
             const SizedBox(height: 16),
             Obx(() => Text(
@@ -651,11 +1076,35 @@ class _ProfileContent extends StatelessWidget {
               title: Tr.notifications.tr,
               onTap: () {},
             ),
-            _ProfileMenuItem(
-              icon: Iconsax.setting_2,
-              title: Tr.settings.tr,
-              onTap: () {},
-            ),
+            // Dark mode toggle
+            Builder(builder: (context) {
+              final themeCtrl = Get.find<ThemeController>();
+              return CustomCard(
+                margin: const EdgeInsets.only(bottom: 8),
+                onTap: themeCtrl.toggleTheme,
+                child: Row(
+                  children: [
+                    Icon(
+                      Get.isDarkMode ? Iconsax.sun_1 : Iconsax.moon,
+                      color: AppColors.primary,
+                      size: 22,
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Text(
+                        Tr.darkMode.tr,
+                        style: AppTextStyles.bodyBold,
+                      ),
+                    ),
+                    Switch.adaptive(
+                      value: Get.isDarkMode,
+                      activeTrackColor: AppColors.primary,
+                      onChanged: (_) => themeCtrl.toggleTheme(),
+                    ),
+                  ],
+                ),
+              );
+            }),
             const SizedBox(height: 16),
             _ProfileMenuItem(
               icon: Iconsax.logout,
@@ -678,7 +1127,8 @@ class _ProfileContent extends StatelessWidget {
                       ElevatedButton(
                         onPressed: () {
                           Get.back();
-                          Get.offAllNamed('/login');
+                          final authCtrl = Get.find<AuthController>();
+                          authCtrl.logout();
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.error,

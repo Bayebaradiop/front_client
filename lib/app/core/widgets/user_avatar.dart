@@ -23,23 +23,58 @@ class UserAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasPhoto = photoUrl != null && photoUrl!.isNotEmpty;
 
-    return CircleAvatar(
-      radius: radius,
-      backgroundColor: backgroundColor,
-      backgroundImage: hasPhoto ? NetworkImage(photoUrl!) : null,
-      onBackgroundImageError: hasPhoto
-          ? (_, __) {} // silently fallback to initials
-          : null,
-      child: hasPhoto
-          ? null
-          : Text(
-              initials,
+    if (!hasPhoto) {
+      return CircleAvatar(
+        radius: radius,
+        backgroundColor: backgroundColor,
+        child: Text(
+          initials.toUpperCase(),
+          style: TextStyle(
+            color: textColor,
+            fontWeight: FontWeight.bold,
+            fontSize: fontSize,
+          ),
+        ),
+      );
+    }
+
+    return ClipOval(
+      child: SizedBox(
+        width: radius * 2,
+        height: radius * 2,
+        child: Image.network(
+          photoUrl!,
+          fit: BoxFit.cover,
+          loadingBuilder: (_, child, progress) {
+            if (progress == null) return child;
+            return Container(
+              color: backgroundColor,
+              child: Center(
+                child: SizedBox(
+                  width: radius * 0.6,
+                  height: radius * 0.6,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: textColor.withValues(alpha: 0.5),
+                  ),
+                ),
+              ),
+            );
+          },
+          errorBuilder: (_, __, ___) => CircleAvatar(
+            radius: radius,
+            backgroundColor: backgroundColor,
+            child: Text(
+              initials.toUpperCase(),
               style: TextStyle(
                 color: textColor,
                 fontWeight: FontWeight.bold,
                 fontSize: fontSize,
               ),
             ),
+          ),
+        ),
+      ),
     );
   }
 }

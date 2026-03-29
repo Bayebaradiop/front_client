@@ -17,10 +17,9 @@ class ProfileView extends StatelessWidget {
     controller.loadProfile();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(Tr.editProfile.tr, style: AppTextStyles.heading3),
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Iconsax.arrow_left, color: AppColors.textPrimary),
@@ -36,16 +35,42 @@ class ProfileView extends StatelessWidget {
             Center(
               child: Obx(() {
                 final user = controller.currentUser.value;
-                return UserAvatar(
-                  photoUrl: user?.photo,
-                  initials: '${(user?.prenom ?? '').isNotEmpty ? user!.prenom![0].toUpperCase() : ''}'
-                      '${(user?.nom ?? '').isNotEmpty ? user!.nom![0].toUpperCase() : ''}',
-                  radius: 50,
-                  fontSize: 32,
+                return GestureDetector(
+                  onTap: controller.pickAndUploadPhoto,
+                  child: Stack(
+                    children: [
+                      UserAvatar(
+                        photoUrl: user?.photo,
+                        initials: '${(user?.prenom ?? '').isNotEmpty ? user!.prenom![0].toUpperCase() : ''}'
+                            '${(user?.nom ?? '').isNotEmpty ? user!.nom![0].toUpperCase() : ''}',
+                        radius: 50,
+                        fontSize: 32,
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Theme.of(context).scaffoldBackgroundColor, width: 2),
+                          ),
+                          child: const Icon(Iconsax.camera, size: 16, color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
                 );
               }),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
+            Center(
+              child: TextButton(
+                onPressed: controller.pickAndUploadPhoto,
+                child: Text(Tr.changePhoto.tr, style: AppTextStyles.body.copyWith(color: AppColors.primary)),
+              ),
+            ),
             Center(
               child: Obx(() {
                 final user = controller.currentUser.value;

@@ -1,10 +1,11 @@
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import '../../../core/utils/error_utils.dart';
 import '../../../models/cabinet_model.dart';
 import '../../../models/specialite_model.dart';
+import '../../../models/medecin_model.dart';
 import '../../../models/rendezvous_model.dart';
 import '../../../models/auth_model.dart';
-import '../../../translate/translation_keys.dart';
 import '../repository/home_repository.dart';
 
 class HomeViewModel extends GetxController {
@@ -15,6 +16,7 @@ class HomeViewModel extends GetxController {
   final isLoading = false.obs;
   final cabinets = <CabinetModel>[].obs;
   final specialites = <SpecialiteModel>[].obs;
+  final medecins = <MedecinModel>[].obs;
   final prochainRdv = Rxn<RendezVousModel>();
   final currentUser = Rxn<AuthModel>();
 
@@ -50,6 +52,7 @@ class HomeViewModel extends GetxController {
         _repo.getCabinets(),
         _repo.getSpecialites(),
         _repo.getRdvConfirmes(),
+        _repo.getMedecins(),
       ]);
 
       // Cabinets
@@ -82,9 +85,19 @@ class HomeViewModel extends GetxController {
         prochainRdv.value = rdvList.isNotEmpty ? rdvList.first : null;
       }
 
+      // Médecins
+      final rMedecins = results[3];
+      if (rMedecins.statusCode == 200) {
+        final List data = rMedecins.body is List
+            ? rMedecins.body
+            : (rMedecins.body['data'] ?? []);
+        medecins.value =
+            data.map((e) => MedecinModel.fromJson(e)).toList();
+      }
+
       return null;
     } catch (e) {
-      return Tr.connectionError.tr;
+      return ErrorUtils.handleException(e);
     } finally {
       isLoading.value = false;
     }

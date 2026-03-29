@@ -5,6 +5,7 @@ import '../../../models/cabinet_model.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../core/widgets/custom_card.dart';
+import '../../../core/widgets/cabinet_logo.dart';
 import '../../../routes/app_routes.dart';
 import '../controllers/cabinet_controller.dart';
 import '../../../translate/translation_keys.dart';
@@ -19,8 +20,10 @@ class CabinetDetailView extends StatelessWidget {
         (Get.arguments is CabinetModel ? Get.arguments as CabinetModel : null);
     final color =
         AppColors.fromHex(cabinet?.couleurPrimaire ?? '#007bff');
-    final secondaryColor =
-        AppColors.fromHex(cabinet?.couleurSecondaire ?? '#ffffff');
+    final accentColor =
+        AppColors.fromHex(cabinet?.couleurSecondaire ?? '#43A047');
+    // Texte sur fond primaire = toujours blanc (lisibilité garantie)
+    const textOnPrimary = Colors.white;
 
     return Scaffold(
       body: CustomScrollView(
@@ -30,21 +33,13 @@ class CabinetDetailView extends StatelessWidget {
             expandedHeight: 200,
             pinned: true,
             backgroundColor: color,
-            foregroundColor: secondaryColor,
+            foregroundColor: textOnPrimary,
             leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios_rounded,
-                  color: secondaryColor),
+              icon: const Icon(Icons.arrow_back_ios_rounded,
+                  color: textOnPrimary),
               onPressed: () => Get.back(),
             ),
             flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                cabinet?.nom ?? '',
-                style: TextStyle(
-                  color: secondaryColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
               background: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -56,21 +51,34 @@ class CabinetDetailView extends StatelessWidget {
                     ],
                   ),
                 ),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 20),
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(Iconsax.hospital,
-                            size: 48, color: secondaryColor),
+                child: SafeArea(
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CabinetLogo(
+                            logoUrl: cabinet?.logo,
+                            size: 72,
+                            borderRadius: 20,
+                            accentColor: Colors.white,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            cabinet?.nom ?? '',
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: textOnPrimary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -128,12 +136,12 @@ class CabinetDetailView extends StatelessWidget {
                                 Container(
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                    color: color.withValues(alpha: 0.1),
+                                    color: accentColor.withValues(alpha: 0.1),
                                     borderRadius:
                                         BorderRadius.circular(12),
                                   ),
                                   child: Icon(Iconsax.health,
-                                      color: color, size: 22),
+                                      color: accentColor, size: 22),
                                 ),
                                 const SizedBox(width: 14),
                                 Expanded(
@@ -174,7 +182,7 @@ class CabinetDetailView extends StatelessWidget {
                       label: Text(Tr.seeDoctors.tr),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: color,
-                        foregroundColor: secondaryColor,
+                        foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),

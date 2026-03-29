@@ -20,7 +20,6 @@ class MedecinDetailView extends StatelessWidget {
     final motifCtrl = TextEditingController();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       body: Obx(() {
         final medecin = controller.selectedMedecin.value;
         if (medecin == null) {

@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:flutter/foundation.dart' show debugPrint, kIsWeb;
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import '../../../core/utils/error_utils.dart';
 import '../../../models/auth_model.dart';
 import '../../../translate/translation_keys.dart';
 import '../repository/auth_repository.dart';
@@ -49,10 +51,10 @@ class AuthViewModel extends GetxController {
         return null;
 
       } else {
-        return response.body?['error'] ?? response.body?['message'] ?? Tr.loginFailed.tr;
+        return ErrorUtils.extractApiError(response, Tr.loginFailed.tr);
       }
     } catch (e) {
-      return Tr.connectionError.tr;
+      return ErrorUtils.handleException(e);
     } finally {
       isLoading.value = false;
     }
@@ -78,10 +80,10 @@ class AuthViewModel extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return null;
       } else {
-        return response.body?['error'] ?? response.body?['message'] ?? Tr.registerError.tr;
+        return ErrorUtils.extractApiError(response, Tr.registerError.tr);
       }
     } catch (e) {
-      return Tr.connectionError.tr;
+      return ErrorUtils.handleException(e);
     } finally {
       isLoading.value = false;
     }
@@ -108,10 +110,10 @@ class AuthViewModel extends GetxController {
         _storage.write('user', user.toJson());
         return null;
       } else {
-        return response.body?['error'] ?? response.body?['message'] ?? Tr.loadingError.tr;
+        return ErrorUtils.extractApiError(response, Tr.loadingError.tr);
       }
     } catch (e) {
-      return Tr.connectionError.tr;
+      return ErrorUtils.handleException(e);
     } finally {
       isLoading.value = false;
     }
@@ -136,11 +138,66 @@ class AuthViewModel extends GetxController {
         _storage.write('user', user.toJson());
         return null;
       } else {
-        return response.body?['error'] ?? response.body?['message'] ?? Tr.profileUpdateError.tr;
+        return ErrorUtils.extractApiError(response, Tr.profileUpdateError.tr);
       }
     } catch (e) {
       debugPrint('[updateProfile] error=$e');
-      return Tr.connectionError.tr;
+      return ErrorUtils.handleException(e);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<String?> forgotPassword(String email) async {
+    isLoading.value = true;
+    try {
+      final response = await _repo.forgotPassword(email);
+      if (response.statusCode == 200) {
+        return null;
+      } else {
+        return ErrorUtils.extractApiError(response, Tr.forgotPasswordError.tr);
+      }
+    } catch (e) {
+      return ErrorUtils.handleException(e);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<String?> resetPassword(String email, String code, String newPassword) async {
+    isLoading.value = true;
+    try {
+      final response = await _repo.resetPassword(email, code, newPassword);
+      if (response.statusCode == 200) {
+        return null;
+      } else {
+        return ErrorUtils.extractApiError(response, Tr.resetPasswordError.tr);
+      }
+    } catch (e) {
+      return ErrorUtils.handleException(e);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<String?> uploadProfilePhoto(File imageFile) async {
+    isLoading.value = true;
+    try {
+      final result = await _repo.uploadProfilePhoto(imageFile);
+      final statusCode = result['statusCode'] as int;
+      debugPrint('[uploadProfilePhoto] statusCode=$statusCode body=${result['body']}');
+      if (statusCode == 200) {
+        final body = result['body'] as Map<String, dynamic>;
+        final user = AuthModel.fromJson(body);
+        currentUser.value = user;
+        _storage.write('user', user.toJson());
+        return null;
+      } else {
+        return '${Tr.photoUploadError.tr} ($statusCode)';
+      }
+    } catch (e) {
+      debugPrint('[uploadProfilePhoto] error=$e');
+      return ErrorUtils.handleException(e);
     } finally {
       isLoading.value = false;
     }

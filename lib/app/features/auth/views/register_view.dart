@@ -24,7 +24,6 @@ class RegisterView extends StatelessWidget {
     final obscureConfirm = true.obs;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),

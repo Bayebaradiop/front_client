@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import '../../../core/utils/error_utils.dart';
 import '../../../models/rendezvous_model.dart';
 import '../../../translate/translation_keys.dart';
 import '../repository/rendezvous_repository.dart';
@@ -44,12 +45,12 @@ class RendezvousViewModel extends GetxController {
             .toList();
         return null;
       } else {
-        final msg = response.body?['message'] ?? Tr.loadingAppointmentsError.tr;
+        final msg = ErrorUtils.extractApiError(response, Tr.loadingAppointmentsError.tr);
         errorMessage.value = msg;
         return msg;
       }
     } catch (e) {
-      final msg = Tr.connectionError.tr;
+      final msg = ErrorUtils.handleException(e);
       errorMessage.value = msg;
       return msg;
     } finally {
@@ -67,10 +68,10 @@ class RendezvousViewModel extends GetxController {
         selectedRdv.value = RendezVousModel.fromJson(data);
         return null;
       } else {
-        return response.body?['message'] ?? Tr.loadingAppointmentsError.tr;
+        return ErrorUtils.extractApiError(response, Tr.loadingAppointmentsError.tr);
       }
     } catch (e) {
-      return Tr.connectionError.tr;
+      return ErrorUtils.handleException(e);
     }
   }
 
@@ -82,10 +83,10 @@ class RendezvousViewModel extends GetxController {
         await fetchTousLesRdv(); // Rafraîchir la liste
         return null;
       } else {
-        return response.body?['message'] ?? Tr.createAppointmentError.tr;
+        return ErrorUtils.extractApiError(response, Tr.createAppointmentError.tr);
       }
     } catch (e) {
-      return Tr.connectionError.tr;
+      return ErrorUtils.handleException(e);
     }
   }
 
@@ -100,12 +101,12 @@ class RendezvousViewModel extends GetxController {
       } else {
         final body = response.body;
         final msg = (body is Map)
-            ? (body['message'] ?? body['error'] ?? Tr.cancelAppointmentError.tr)
+            ? ErrorUtils.extractApiError(response, Tr.cancelAppointmentError.tr)
             : Tr.cancelAppointmentError.tr;
         return msg.toString();
       }
     } catch (e) {
-      return Tr.connectionError.tr;
+      return ErrorUtils.handleException(e);
     }
   }
 

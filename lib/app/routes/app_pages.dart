@@ -21,6 +21,7 @@ import '../features/rendezvous/views/rdv_detail_view.dart';
 import '../features/rendezvous/bindings/rendezvous_binding.dart';
 
 import '../features/auth/views/profile_view.dart';
+import '../features/auth/views/forgot_password_view.dart';
 
 class AppPages {
 
@@ -116,6 +117,13 @@ class AppPages {
     GetPage(
       name: AppRoutes.profile,
       page: () => const ProfileView(),
+      binding: AuthBinding(),
+      transition: Transition.rightToLeft,
+    ),
+
+    GetPage(
+      name: AppRoutes.forgotPassword,
+      page: () => const ForgotPasswordView(),
       binding: AuthBinding(),
       transition: Transition.rightToLeft,
     ),

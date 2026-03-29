@@ -159,8 +159,12 @@ class MedecinController extends GetxController with SnackbarMixin {
       showError(Tr.selectSlotError.tr);
       return;
     }
-    if (motifController.value.isEmpty) {
+    if (motifController.value.trim().isEmpty) {
       showError(Tr.enterReasonError.tr);
+      return;
+    }
+    if (motifController.value.trim().length < 3) {
+      showError(Tr.motifTooShort.tr);
       return;
     }
 

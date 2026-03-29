@@ -1,8 +1,14 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
-
 abstract class ApiEndpoints {
-  static String get baseURL =>
-      kIsWeb ? 'http://localhost:8085/api/' : 'http://172.20.10.13:8085/api/';
+  // IP LAN actuelle du PC qui héberge le backend.
+  // Peut etre surchargée au lancement avec:
+  // flutter run --dart-define=API_BASE_URL=http://192.168.1.xx:8085/api/
+  static const String _defaultBaseUrl = 'http://192.168.1.12:8085/api/';
+  static const String _configuredBaseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: _defaultBaseUrl,
+  );
+
+  static String get baseURL => _configuredBaseUrl;
 
   // ── Auth ─────────────────────────────────────────────────────────────────
   static const String login = 'auth/login';
@@ -11,6 +17,7 @@ abstract class ApiEndpoints {
   static const String profile = 'auth/profile';           
   static const String forgotPassword = 'auth/forgot-password';
   static const String resetPassword = 'auth/reset-password';   
+  static const String profilePhoto = 'auth/profile/photo';
 
 
   // ── Cabinets ──────────────────────────────────────────────────────────────
