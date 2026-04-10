@@ -30,9 +30,12 @@ class RendezvousViewModel extends GetxController {
     try {
       final response = await _repo.getRdv();
       if (response.statusCode == 200) {
-        final List data = response.body is List
+        final raw = response.body is List
             ? response.body
             : (response.body['data'] ?? []);
+        final List data = raw is List
+            ? raw
+            : (raw is Map && raw.containsKey('content') ? List.from(raw['content']) : []);
         tousLesRdv.value =
             data.map((e) => RendezVousModel.fromJson(e)).toList();
         // Dériver les sous-listes depuis la liste complète

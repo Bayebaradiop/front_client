@@ -28,9 +28,12 @@ class CabinetViewModel extends GetxController {
     try {
       final response = await _repo.getCabinets();
       if (response.statusCode == 200) {
-        final List data = response.body is List
+        final raw = response.body is List
             ? response.body
             : (response.body['data'] ?? []);
+        final List data = raw is List
+            ? raw
+            : (raw is Map && raw.containsKey('content') ? List.from(raw['content']) : []);
         cabinets.value =
             data.map((e) => CabinetModel.fromJson(e)).toList();
         return null;

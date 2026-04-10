@@ -58,10 +58,13 @@ class HomeViewModel extends GetxController {
       // Cabinets
       final rCabinets = results[0];
       if (rCabinets.statusCode == 200) {
-        final List data = rCabinets.body is List
+        final rawCab = rCabinets.body is List
             ? rCabinets.body
             : (rCabinets.body['data'] ?? []);
-        cabinets.value = data.map((e) => CabinetModel.fromJson(e)).toList();
+        final List dataCab = rawCab is List
+            ? rawCab
+            : (rawCab is Map && rawCab.containsKey('content') ? List.from(rawCab['content']) : []);
+        cabinets.value = dataCab.map((e) => CabinetModel.fromJson(e)).toList();
       }
 
       // Spécialités
@@ -77,22 +80,28 @@ class HomeViewModel extends GetxController {
       // Prochain RDV confirmé
       final rRdv = results[2];
       if (rRdv.statusCode == 200) {
-        final List data = rRdv.body is List
+        final rawRdv = rRdv.body is List
             ? rRdv.body
             : (rRdv.body['data'] ?? []);
+        final List dataRdv = rawRdv is List
+            ? rawRdv
+            : (rawRdv is Map && rawRdv.containsKey('content') ? List.from(rawRdv['content']) : []);
         final rdvList =
-            data.map((e) => RendezVousModel.fromJson(e)).toList();
+            dataRdv.map((e) => RendezVousModel.fromJson(e)).toList();
         prochainRdv.value = rdvList.isNotEmpty ? rdvList.first : null;
       }
 
       // Médecins
       final rMedecins = results[3];
       if (rMedecins.statusCode == 200) {
-        final List data = rMedecins.body is List
+        final rawMed = rMedecins.body is List
             ? rMedecins.body
             : (rMedecins.body['data'] ?? []);
+        final List dataMed = rawMed is List
+            ? rawMed
+            : (rawMed is Map && rawMed.containsKey('content') ? List.from(rawMed['content']) : []);
         medecins.value =
-            data.map((e) => MedecinModel.fromJson(e)).toList();
+            dataMed.map((e) => MedecinModel.fromJson(e)).toList();
       }
 
       return null;

@@ -39,9 +39,12 @@ class MedecinViewModel extends GetxController {
       }
 
       if (response.statusCode == 200) {
-        final List data = response.body is List
+        final raw = response.body is List
             ? response.body
             : (response.body['data'] ?? []);
+        final List data = raw is List
+            ? raw
+            : (raw is Map && raw.containsKey('content') ? List.from(raw['content']) : []);
         medecins.value = data.map((e) => MedecinModel.fromJson(e)).toList();
         return null;
       } else {
