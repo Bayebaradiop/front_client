@@ -45,13 +45,13 @@ class NotificationController extends GetxController {
     );
 
     await _requestPermissions();
-    
+
     // Get and display FCM token for testing
     final token = await getToken();
     debugPrint('═' * 80);
     debugPrint('📱 FCM Token: $token');
     debugPrint('═' * 80);
-    
+
     isInitialized.value = true;
   }
 
