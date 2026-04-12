@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../../../theme/app_colors.dart';
 import '../../../routes/app_routes.dart';
 import '../../../translate/translation_keys.dart';
@@ -33,7 +34,14 @@ class _SplashViewState extends State<SplashView>
     _controller.forward();
 
     Future.delayed(const Duration(seconds: 3), () {
-      Get.offAllNamed(AppRoutes.doctorIntro);
+      final storage = GetStorage();
+      final hasUser = storage.read('user') != null;
+
+      if (hasUser) {
+        Get.offAllNamed(AppRoutes.home);
+      } else {
+        Get.offAllNamed(AppRoutes.doctorIntro);
+      }
     });
   }
 

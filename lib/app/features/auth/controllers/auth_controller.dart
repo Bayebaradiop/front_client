@@ -8,6 +8,7 @@ import '../../../core/utils/error_utils.dart';
 import '../../../models/auth_model.dart';
 import '../../../theme/app_colors.dart';
 import '../../../translate/translation_keys.dart';
+import '../../../core/notifications/notification_controller.dart';
 import '../viewmodel/auth_viewmodel.dart';
 
 class AuthController extends GetxController with SnackbarMixin {
@@ -32,7 +33,6 @@ class AuthController extends GetxController with SnackbarMixin {
   RxBool get isLoggedIn => _viewModel.isLoggedIn;
   Rxn<AuthModel> get currentUser => _viewModel.currentUser;
 
-
   void login() async {
     // Validation champ par champ
     final emailError = ErrorUtils.validateEmail(emailController.value);
@@ -56,11 +56,14 @@ class AuthController extends GetxController with SnackbarMixin {
       Get.offAllNamed('/home');
       final user = _viewModel.currentUser.value;
       showSuccess(Tr.welcome.tr, '${user?.prenom} ${user?.nom}');
+
+      if (Get.isRegistered<NotificationController>()) {
+        NotificationController.to.saveFcmToken();
+      }
     } else {
       showError(error);
     }
   }
-  
 
   void registerUser() async {
     // Validation champ par champ avec messages précis
@@ -222,7 +225,11 @@ class AuthController extends GetxController with SnackbarMixin {
 
   Future<void> _uploadFromSource(ImageSource source) async {
     final picker = ImagePicker();
-    final picked = await picker.pickImage(source: source, maxWidth: 800, imageQuality: 85);
+    final picked = await picker.pickImage(
+      source: source,
+      maxWidth: 800,
+      imageQuality: 85,
+    );
     if (picked == null) return;
 
     final file = File(picked.path);
@@ -293,5 +300,4 @@ class AuthController extends GetxController with SnackbarMixin {
       showError(error);
     }
   }
-
 }

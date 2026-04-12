@@ -14,10 +14,10 @@ class AuthRepository {
 
   // POST /api/auth/login
   Future<Response> login(String email, String motDePasse) {
-    return _api.post(
-      ApiEndpoints.login,
-      {'email': email, 'motDePasse': motDePasse},
-    );
+    return _api.post(ApiEndpoints.login, {
+      'email': email,
+      'motDePasse': motDePasse,
+    });
   }
 
   // POST /api/auth/register
@@ -28,16 +28,13 @@ class AuthRepository {
     required String telephone,
     required String motDePasse,
   }) {
-    return _api.post(
-      ApiEndpoints.register,
-      {
-        'prenom': prenom,
-        'nom': nom,
-        'email': email,
-        'telephone': telephone,
-        'motDePasse': motDePasse,
-      },
-    );
+    return _api.post(ApiEndpoints.register, {
+      'prenom': prenom,
+      'nom': nom,
+      'email': email,
+      'telephone': telephone,
+      'motDePasse': motDePasse,
+    });
   }
 
   // POST /api/auth/logout
@@ -61,7 +58,11 @@ class AuthRepository {
   }
 
   // POST /api/auth/reset-password
-  Future<Response> resetPassword(String email, String code, String newPassword) {
+  Future<Response> resetPassword(
+    String email,
+    String code,
+    String newPassword,
+  ) {
     return _api.post(ApiEndpoints.resetPassword, {
       'email': email,
       'code': code,
@@ -69,9 +70,16 @@ class AuthRepository {
     });
   }
 
+  // PUT /api/users/fcm-token
+  Future<Response> updateFcmToken(String fcmToken) {
+    return _api.put(ApiEndpoints.fcmToken, {'fcmToken': fcmToken});
+  }
+
   // PUT /api/auth/profile/photo (multipart)
   Future<Map<String, dynamic>> uploadProfilePhoto(File imageFile) async {
-    final uri = Uri.parse('${ApiEndpoints.baseURL}${ApiEndpoints.profilePhoto}');
+    final uri = Uri.parse(
+      '${ApiEndpoints.baseURL}${ApiEndpoints.profilePhoto}',
+    );
     final request = http.MultipartRequest('PUT', uri);
 
     // Auth header
@@ -92,11 +100,15 @@ class AuthRepository {
       await http.MultipartFile.fromPath('photo', imageFile.path),
     );
 
-    debugPrint('[uploadProfilePhoto] URI=$uri token=${token != null ? "present" : "MISSING"}');
+    debugPrint(
+      '[uploadProfilePhoto] URI=$uri token=${token != null ? "present" : "MISSING"}',
+    );
 
     final streamed = await request.send();
     final responseBody = await streamed.stream.bytesToString();
-    debugPrint('[uploadProfilePhoto] statusCode=${streamed.statusCode} body=$responseBody');
+    debugPrint(
+      '[uploadProfilePhoto] statusCode=${streamed.statusCode} body=$responseBody',
+    );
 
     // Store new cookie if returned
     final setCookie = streamed.headers['set-cookie'];
@@ -107,7 +119,9 @@ class AuthRepository {
 
     return {
       'statusCode': streamed.statusCode,
-      'body': responseBody.isNotEmpty ? jsonDecode(responseBody) : <String, dynamic>{},
+      'body': responseBody.isNotEmpty
+          ? jsonDecode(responseBody)
+          : <String, dynamic>{},
     };
   }
 }
