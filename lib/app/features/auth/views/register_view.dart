@@ -61,8 +61,10 @@ class RegisterView extends StatelessWidget {
                 onChanged: (v) => controller.prenomRegister.value = v,
                 decoration: InputDecoration(
                   hintText: Tr.firstName.tr,
-                  prefixIcon:
-                      const Icon(Iconsax.user, color: AppColors.primary),
+                  prefixIcon: const Icon(
+                    Iconsax.user,
+                    color: AppColors.primary,
+                  ),
                 ),
               ),
               const SizedBox(height: 14),
@@ -74,8 +76,10 @@ class RegisterView extends StatelessWidget {
                 onChanged: (v) => controller.nomRegister.value = v,
                 decoration: InputDecoration(
                   hintText: Tr.lastName.tr,
-                  prefixIcon: const Icon(Iconsax.user_tag,
-                      color: AppColors.primary),
+                  prefixIcon: const Icon(
+                    Iconsax.user_tag,
+                    color: AppColors.primary,
+                  ),
                 ),
               ),
               const SizedBox(height: 14),
@@ -87,8 +91,7 @@ class RegisterView extends StatelessWidget {
                 onChanged: (v) => controller.emailRegister.value = v,
                 decoration: InputDecoration(
                   hintText: Tr.email.tr,
-                  prefixIcon:
-                      const Icon(Iconsax.sms, color: AppColors.primary),
+                  prefixIcon: const Icon(Iconsax.sms, color: AppColors.primary),
                 ),
               ),
               const SizedBox(height: 14),
@@ -100,83 +103,93 @@ class RegisterView extends StatelessWidget {
                 onChanged: (v) => controller.telephoneRegister.value = v,
                 decoration: InputDecoration(
                   hintText: Tr.phoneNumber.tr,
-                  prefixIcon:
-                      const Icon(Iconsax.call, color: AppColors.primary),
+                  prefixIcon: const Icon(
+                    Iconsax.call,
+                    color: AppColors.primary,
+                  ),
                 ),
               ),
               const SizedBox(height: 14),
 
               // Mot de passe
-              Obx(() => TextField(
-                    controller: passwordCtrl,
-                    obscureText: obscurePassword.value,
-                    onChanged: (v) =>
-                        controller.passwordRegister.value = v,
-                    decoration: InputDecoration(
-                      hintText: Tr.password.tr,
-                      prefixIcon: const Icon(Iconsax.lock,
-                          color: AppColors.primary),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          obscurePassword.value
-                              ? Iconsax.eye_slash
-                              : Iconsax.eye,
-                          color: AppColors.textLight,
-                        ),
-                        onPressed: () =>
-                            obscurePassword.value = !obscurePassword.value,
-                      ),
+              Obx(
+                () => TextField(
+                  controller: passwordCtrl,
+                  obscureText: obscurePassword.value,
+                  onChanged: (v) => controller.passwordRegister.value = v,
+                  decoration: InputDecoration(
+                    hintText: Tr.password.tr,
+                    prefixIcon: const Icon(
+                      Iconsax.lock,
+                      color: AppColors.primary,
                     ),
-                  )),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        obscurePassword.value ? Iconsax.eye_slash : Iconsax.eye,
+                        color: AppColors.textLight,
+                      ),
+                      onPressed: () =>
+                          obscurePassword.value = !obscurePassword.value,
+                    ),
+                  ),
+                ),
+              ),
               const SizedBox(height: 14),
 
               // Confirmer mot de passe
-              Obx(() => TextField(
-                    controller: confirmPasswordCtrl,
-                    obscureText: obscureConfirm.value,
-                    onChanged: (v) =>
-                        controller.confirmPasswordRegister.value = v,
-                    decoration: InputDecoration(
-                      hintText: Tr.confirmPassword.tr,
-                      prefixIcon: const Icon(Iconsax.lock_1,
-                          color: AppColors.primary),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          obscureConfirm.value
-                              ? Iconsax.eye_slash
-                              : Iconsax.eye,
-                          color: AppColors.textLight,
-                        ),
-                        onPressed: () =>
-                            obscureConfirm.value = !obscureConfirm.value,
-                      ),
+              Obx(
+                () => TextField(
+                  controller: confirmPasswordCtrl,
+                  obscureText: obscureConfirm.value,
+                  onChanged: (v) =>
+                      controller.confirmPasswordRegister.value = v,
+                  decoration: InputDecoration(
+                    hintText: Tr.confirmPassword.tr,
+                    prefixIcon: const Icon(
+                      Iconsax.lock_1,
+                      color: AppColors.primary,
                     ),
-                  )),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        obscureConfirm.value ? Iconsax.eye_slash : Iconsax.eye,
+                        color: AppColors.textLight,
+                      ),
+                      onPressed: () =>
+                          obscureConfirm.value = !obscureConfirm.value,
+                    ),
+                  ),
+                ),
+              ),
               const SizedBox(height: 28),
 
               // Bouton inscription
-              Obx(() => CustomButton(
-                    text: Tr.createAccount.tr,
-                    isLoading: controller.isLoading.value,
-                    onPressed: controller.registerUser,
-                    icon: Iconsax.user_add,
-                  )),
+              Obx(
+                () => CustomButton(
+                  text: Tr.createAccount.tr,
+                  isLoading: controller.isLoading.value,
+                  onPressed: controller.registerUser,
+                  icon: Iconsax.user_add,
+                ),
+              ),
               const SizedBox(height: 20),
 
               // Lien vers connexion
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              Wrap(
+                alignment: WrapAlignment.center,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 4,
                 children: [
-                  Text(
-                    Tr.alreadyHaveAccount.tr,
-                    style: AppTextStyles.body,
-                  ),
+                  Text(Tr.alreadyHaveAccount.tr, style: AppTextStyles.body),
                   TextButton(
                     onPressed: () => Get.offNamed(AppRoutes.login),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                    ),
                     child: Text(
                       Tr.connect.tr,
-                      style: AppTextStyles.bodyBold
-                          .copyWith(color: AppColors.primary),
+                      style: AppTextStyles.bodyBold.copyWith(
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
                 ],

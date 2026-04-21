@@ -5,9 +5,8 @@ import '../../../models/cabinet_model.dart';
 import '../../../models/medecin_model.dart';
 import '../../../models/specialite_model.dart';
 import '../../../models/rendezvous_model.dart';
-import '../../../theme/design_system/index.dart';
-import '../../../theme/app_colors.dart'; // Temporary - for migration
-import '../../../theme/app_text_styles.dart'; // Temporary - for migration
+import '../../../theme/app_colors.dart';
+import '../../../theme/app_text_styles.dart';
 import '../../../core/widgets/custom_card.dart';
 import '../../../core/widgets/cabinet_logo.dart';
 import '../../../core/widgets/shimmer_loading.dart';
@@ -79,7 +78,7 @@ class _HomeContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: RefreshIndicator(
-        color: DSColors.primary,
+        color: AppColors.primary,
         onRefresh: () => controller.refresh(),
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -88,17 +87,12 @@ class _HomeContent extends StatelessWidget {
             children: [
               // Header
               Container(
-                padding: EdgeInsets.fromLTRB(
-                  DSSpacing.screenMargin,
-                  DSSpacing.topSafe,
-                  DSSpacing.screenMargin,
-                  DSSpacing.xxl,
-                ),
-                decoration: BoxDecoration(
-                  color: DSColors.primary,
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+                decoration: const BoxDecoration(
+                  color: AppColors.primary,
                   borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(DSBorderRadius.large),
-                    bottomRight: Radius.circular(DSBorderRadius.large),
+                    bottomLeft: Radius.circular(28),
+                    bottomRight: Radius.circular(28),
                   ),
                 ),
                 child: Column(
@@ -116,20 +110,23 @@ class _HomeContent extends StatelessWidget {
                           textColor: Colors.white,
                           fontSize: 16,
                         ),
-                        SizedBox(width: DSSpacing.md),
+                        const SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 '${Tr.hello.tr}, ${controller.currentUser.value?.prenom ?? ''} 👋',
-                                style: DSTypography.headingSmall.copyWith(
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
                                   color: Colors.white,
                                 ),
                               ),
                               Text(
                                 Tr.howAreYou.tr,
-                                style: DSTypography.bodySmall.copyWith(
+                                style: const TextStyle(
+                                  fontSize: 13,
                                   color: Colors.white70,
                                 ),
                               ),
@@ -145,31 +142,35 @@ class _HomeContent extends StatelessWidget {
                         ),
                       ],
                     ),
-                    SizedBox(height: DSSpacing.xl),
-                    // Search bar (navigates to search tab)
+                    const SizedBox(height: 20),
+                    // Barre de recherche
                     GestureDetector(
                       onTap: () => controller.changeTab(2),
                       child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: DSSpacing.inputPadding,
-                          vertical: DSSpacing.md,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
                         ),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: DSBorderRadius.mediumRadius,
+                          borderRadius: BorderRadius.circular(16),
                         ),
                         child: Row(
                           children: [
-                            Icon(
+                            const Icon(
                               Iconsax.search_normal_1,
-                              color: DSColors.textSecondary,
+                              color: AppColors.textLight,
                               size: 20,
                             ),
-                            SizedBox(width: DSSpacing.md),
-                            Text(
-                              Tr.searchDoctorSpecialty.tr,
-                              style: DSTypography.bodyMedium.copyWith(
-                                color: DSColors.textSecondary,
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                Tr.searchDoctorSpecialty.tr,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTextStyles.body.copyWith(
+                                  color: AppColors.textLight,
+                                ),
                               ),
                             ),
                           ],
@@ -179,77 +180,61 @@ class _HomeContent extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: DSSpacing.xxl),
+              const SizedBox(height: 24),
 
               // Prochain RDV
               Obx(() {
                 final rdv = controller.prochainRdv.value;
                 if (rdv == null) return const SizedBox.shrink();
                 return Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: DSSpacing.screenMargin,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         Tr.nextAppointment.tr,
-                        style: DSTypography.headingSmall,
+                        style: AppTextStyles.heading3,
                       ),
-                      SizedBox(height: DSSpacing.md),
+                      const SizedBox(height: 10),
                       _ProchainRdvCard(rdv: rdv),
                     ],
                   ),
                 );
               }),
-              SizedBox(height: DSSpacing.xxl),
+              const SizedBox(height: 24),
 
-              // Cabinets - Style Expert UI
+              // Cabinets
               Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: DSSpacing.screenMargin,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      Tr.medicalCabinets.tr,
-                      style: DSTypography.headingSmall,
-                    ),
+                    Text(Tr.medicalCabinets.tr, style: AppTextStyles.heading3),
                     TextButton(
                       onPressed: () => Get.toNamed(AppRoutes.cabinets),
-                      child: Text(
-                        Tr.seeAll.tr,
-                        style: DSTypography.labelMedium.copyWith(
-                          color: DSColors.primary,
-                        ),
-                      ),
+                      child: Text(Tr.seeAll.tr),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: DSSpacing.md),
+              const SizedBox(height: 8),
               Obx(
                 () => controller.isLoading.value
                     ? SizedBox(
-                        height: 120,
+                        height: 140,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
-                          padding: EdgeInsets.only(
-                            left: DSSpacing.screenMargin,
-                          ),
+                          padding: const EdgeInsets.only(left: 20),
                           itemCount: 3,
                           itemBuilder: (_, __) =>
-                              const ShimmerCard(width: 200, height: 110),
+                              const ShimmerCard(width: 240, height: 130),
                         ),
                       )
                     : SizedBox(
-                        height: 120,
+                        height: 140,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
-                          padding: EdgeInsets.only(
-                            left: DSSpacing.screenMargin,
-                          ),
+                          padding: const EdgeInsets.only(left: 20),
                           itemCount: controller.cabinets.length,
                           itemBuilder: (_, i) => _CabinetHorizontalCard(
                             cabinet: controller.cabinets[i],
@@ -257,85 +242,65 @@ class _HomeContent extends StatelessWidget {
                         ),
                       ),
               ),
-              SizedBox(height: DSSpacing.xxl),
+              const SizedBox(height: 24),
 
-              // Spécialités - Grid optimisé
+              // Spécialités
               Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: DSSpacing.screenMargin,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(Tr.specialties.tr, style: DSTypography.headingSmall),
+                    Text(Tr.specialties.tr, style: AppTextStyles.heading3),
                     TextButton(
                       onPressed: () => Get.toNamed(AppRoutes.specialites),
-                      child: Text(
-                        Tr.seeAll.tr,
-                        style: DSTypography.labelMedium.copyWith(
-                          color: DSColors.primary,
-                        ),
-                      ),
+                      child: Text(Tr.seeAll.tr),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: DSSpacing.md),
+              const SizedBox(height: 8),
               Obx(
                 () => controller.isLoading.value
-                    ? Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: DSSpacing.screenMargin,
-                        ),
-                        child: const ShimmerLoading(itemCount: 6, height: 90),
+                    ? const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: ShimmerLoading(itemCount: 2, height: 70),
                       )
                     : _SpecialitesGrid(specialites: controller.specialites),
               ),
-              SizedBox(height: DSSpacing.xxl),
+              const SizedBox(height: 24),
 
-              // Top Médecins - Cards with avatar
+              // Top Médecins
               Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: DSSpacing.screenMargin,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(Tr.doctors.tr, style: DSTypography.headingSmall),
+                    Text(Tr.doctors.tr, style: AppTextStyles.heading3),
                     TextButton(
                       onPressed: () => Get.toNamed(AppRoutes.medecins),
-                      child: Text(
-                        Tr.seeAll.tr,
-                        style: DSTypography.labelMedium.copyWith(
-                          color: DSColors.primary,
-                        ),
-                      ),
+                      child: Text(Tr.seeAll.tr),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: DSSpacing.md),
+              const SizedBox(height: 8),
               Obx(
                 () => controller.isLoading.value
                     ? SizedBox(
-                        height: 160,
+                        height: 180,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
-                          padding: EdgeInsets.only(
-                            left: DSSpacing.screenMargin,
-                          ),
+                          padding: const EdgeInsets.only(left: 20),
                           itemCount: 3,
                           itemBuilder: (_, __) =>
-                              const ShimmerCard(width: 140, height: 150),
+                              const ShimmerCard(width: 150, height: 170),
                         ),
                       )
                     : SizedBox(
-                        height: 160,
+                        height: 180,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
-                          padding: EdgeInsets.only(
-                            left: DSSpacing.screenMargin,
-                          ),
+                          padding: const EdgeInsets.only(left: 20),
                           itemCount: controller.medecins.length > 6
                               ? 6
                               : controller.medecins.length,
@@ -345,7 +310,7 @@ class _HomeContent extends StatelessWidget {
                         ),
                       ),
               ),
-              SizedBox(height: DSSpacing.bottomSafe),
+              const SizedBox(height: 30),
             ],
           ),
         ),
@@ -355,7 +320,6 @@ class _HomeContent extends StatelessWidget {
 }
 
 // ─── PROCHAIN RDV CARD ─────────────────────────────────────────
-// Design Expert: Gradient card with avatar, date/time
 class _ProchainRdvCard extends StatelessWidget {
   final RendezVousModel rdv;
   const _ProchainRdvCard({required this.rdv});
@@ -363,17 +327,17 @@ class _ProchainRdvCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(DSSpacing.md),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [DSColors.primary, DSColors.primaryLight],
+        gradient: const LinearGradient(
+          colors: [AppColors.primary, AppColors.primaryLight],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: DSBorderRadius.largeRadius,
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: DSColors.primary.withAlpha(77),
+            color: AppColors.primary.withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -390,72 +354,74 @@ class _ProchainRdvCard extends StatelessWidget {
                     '${(rdv.medecinPrenom ?? '').isNotEmpty ? rdv.medecinPrenom![0] : ''}'
                     '${(rdv.medecinNom ?? '').isNotEmpty ? rdv.medecinNom![0] : ''}',
                 radius: 22,
-                backgroundColor: DSColors.white.withAlpha(51),
-                textColor: DSColors.white,
+                backgroundColor: Colors.white24,
+                textColor: Colors.white,
                 fontSize: 14,
               ),
-              SizedBox(width: DSSpacing.md),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Dr. ${rdv.medecinPrenom ?? ''} ${rdv.medecinNom ?? ''}',
-                      style: DSTypography.labelLarge.copyWith(
-                        color: DSColors.white,
+                      'Dr. ${rdv.medecinPrenom} ${rdv.medecinNom}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
                       ),
                     ),
                     Text(
                       rdv.medecinSpecialite ?? '',
-                      style: DSTypography.caption.copyWith(
-                        color: DSColors.white.withAlpha(179),
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 13,
                       ),
                     ),
                   ],
                 ),
               ),
               Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: DSSpacing.sm,
-                  vertical: DSSpacing.xs,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: DSColors.white.withAlpha(51),
-                  borderRadius: DSBorderRadius.smallRadius,
+                  color: Colors.white24,
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   rdv.statut ?? '',
-                  style: DSTypography.labelSmall.copyWith(
-                    color: DSColors.white,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
             ],
           ),
-          SizedBox(height: DSSpacing.md),
+          const SizedBox(height: 14),
           Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: DSSpacing.md,
-              vertical: DSSpacing.sm,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: DSColors.white.withAlpha(38),
-              borderRadius: DSBorderRadius.smallRadius,
+              color: Colors.white.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
               children: [
-                Icon(Iconsax.calendar_1, color: DSColors.white, size: 16),
-                SizedBox(width: DSSpacing.sm),
+                const Icon(Iconsax.calendar_1, color: Colors.white, size: 16),
+                const SizedBox(width: 8),
                 Text(
                   rdv.date ?? '',
-                  style: DSTypography.bodySmall.copyWith(color: DSColors.white),
+                  style: const TextStyle(color: Colors.white, fontSize: 13),
                 ),
-                SizedBox(width: DSSpacing.md),
-                Icon(Iconsax.clock, color: DSColors.white, size: 16),
-                SizedBox(width: DSSpacing.sm),
+                const SizedBox(width: 16),
+                const Icon(Iconsax.clock, color: Colors.white, size: 16),
+                const SizedBox(width: 8),
                 Text(
                   '${(rdv.heureDebut ?? '').length >= 5 ? rdv.heureDebut!.substring(0, 5) : ''} - ${(rdv.heureFin ?? '').length >= 5 ? rdv.heureFin!.substring(0, 5) : ''}',
-                  style: DSTypography.bodySmall.copyWith(color: DSColors.white),
+                  style: const TextStyle(color: Colors.white, fontSize: 13),
                 ),
               ],
             ),
@@ -467,82 +433,62 @@ class _ProchainRdvCard extends StatelessWidget {
 }
 
 // ─── CABINET HORIZONTAL CARD ───────────────────────────────────
-// Design Expert: Card avec logo, elevation subtile, border radius cohérent
 class _CabinetHorizontalCard extends StatelessWidget {
   final CabinetModel cabinet;
   const _CabinetHorizontalCard({required this.cabinet});
 
   @override
   Widget build(BuildContext context) {
-    final cabinetColor = DSColors.fromHex(cabinet.couleurPrimaire ?? '#2563EB');
+    final color = AppColors.fromHex(cabinet.couleurPrimaire ?? '#007bff');
     return GestureDetector(
       onTap: () => Get.toNamed(AppRoutes.cabinetDetail, arguments: cabinet),
       child: Container(
-        width: 200,
-        margin: EdgeInsets.only(right: DSSpacing.md),
-        padding: EdgeInsets.symmetric(
-          horizontal: DSSpacing.md,
-          vertical: DSSpacing.sm,
-        ),
+        width: 240,
+        margin: const EdgeInsets.only(right: 12),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: DSColors.surfaceLight,
-          borderRadius: DSBorderRadius.mediumRadius,
-          border: Border.all(color: DSColors.borderLight, width: 1),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border(left: BorderSide(color: color, width: 4)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withAlpha(13),
-              blurRadius: 8,
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 10,
               offset: const Offset(0, 2),
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Logo avec border colored
-            Container(
-              padding: EdgeInsets.all(DSSpacing.sm),
-              decoration: BoxDecoration(
-                color: cabinetColor.withAlpha(26),
-                borderRadius: DSBorderRadius.smallRadius,
-              ),
-              child: CabinetLogo(
-                logoUrl: cabinet.logo,
-                size: 36,
-                borderRadius: 8,
-                accentColor: cabinetColor,
-              ),
+            CabinetLogo(
+              logoUrl: cabinet.logo,
+              size: 44,
+              borderRadius: 12,
+              accentColor: color,
             ),
-            SizedBox(height: DSSpacing.sm),
+            const SizedBox(height: 10),
             Text(
               cabinet.nom ?? '',
-              style: DSTypography.labelLarge.copyWith(
-                color: DSColors.textPrimary,
-              ),
+              style: AppTextStyles.bodyBold,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            SizedBox(height: DSSpacing.xs),
-            Expanded(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(Iconsax.location, size: 12, color: DSColors.textSecondary),
-                  SizedBox(width: DSSpacing.xs),
-                  Expanded(
-                    child: Text(
-                      cabinet.adresse ?? '',
-                      style: DSTypography.caption.copyWith(
-                        color: DSColors.textSecondary,
-                        height: 1,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                Icon(Iconsax.location, size: 13, color: AppColors.textLight),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    cabinet.adresse ?? '',
+                    style: AppTextStyles.caption,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ],
         ),
@@ -552,7 +498,6 @@ class _CabinetHorizontalCard extends StatelessWidget {
 }
 
 // ─── MEDECIN HORIZONTAL CARD ───────────────────────────────────
-// Design Expert: Card avec avatar, specialty tag, elegant
 class _MedecinHorizontalCard extends StatelessWidget {
   final MedecinModel medecin;
   const _MedecinHorizontalCard({required this.medecin});
@@ -576,17 +521,15 @@ class _MedecinHorizontalCard extends StatelessWidget {
         },
       ),
       child: Container(
-        width: 140,
-        margin: EdgeInsets.only(right: DSSpacing.md),
-        padding: EdgeInsets.all(DSSpacing.md),
+        width: 150,
+        margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
-          color: DSColors.surfaceLight,
-          borderRadius: DSBorderRadius.mediumRadius,
-          border: Border.all(color: DSColors.borderLight, width: 1),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withAlpha(13),
-              blurRadius: 8,
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 10,
               offset: const Offset(0, 2),
             ),
           ],
@@ -594,63 +537,49 @@ class _MedecinHorizontalCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Avatar with ring
-            Container(
-              padding: EdgeInsets.all(3),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: DSColors.primaryUltraLight, width: 2),
-              ),
-              child: UserAvatar(
-                photoUrl: medecin.photo,
-                initials:
-                    '${(medecin.prenom ?? '').isNotEmpty ? medecin.prenom![0] : ''}'
-                    '${(medecin.nom ?? '').isNotEmpty ? medecin.nom![0] : ''}',
-                radius: 28,
-                fontSize: 18,
+            UserAvatar(
+              photoUrl: medecin.photo,
+              initials:
+                  '${(medecin.prenom ?? '').isNotEmpty ? medecin.prenom![0] : ''}'
+                  '${(medecin.nom ?? '').isNotEmpty ? medecin.nom![0] : ''}',
+              radius: 36,
+              fontSize: 22,
+            ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                'Dr. ${medecin.prenom ?? ''}',
+                style: AppTextStyles.bodyBold.copyWith(fontSize: 13),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-            SizedBox(height: DSSpacing.sm),
-            Text(
-              'Dr. ${medecin.prenom ?? ''}',
-              style: DSTypography.labelMedium.copyWith(
-                color: DSColors.textPrimary,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            SizedBox(height: DSSpacing.xs),
-            Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: DSSpacing.sm,
-                vertical: 2,
-              ),
-              decoration: BoxDecoration(
-                color: DSColors.primaryUltraLight,
-                borderRadius: DSBorderRadius.smallRadius,
-              ),
+            const SizedBox(height: 2),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(
                 medecin.specialiteNom ?? '',
-                style: DSTypography.caption.copyWith(
-                  color: DSColors.primary,
-                  fontSize: 10,
+                style: AppTextStyles.caption.copyWith(
+                  color: AppColors.primary,
+                  fontSize: 11,
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            SizedBox(height: DSSpacing.xs),
-            Text(
-              medecin.cabinetNom ?? '',
-              style: DSTypography.caption.copyWith(
-                color: DSColors.textSecondary,
-                fontSize: 10,
+            const SizedBox(height: 2),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                medecin.cabinetNom ?? '',
+                style: AppTextStyles.caption.copyWith(fontSize: 10),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -660,38 +589,43 @@ class _MedecinHorizontalCard extends StatelessWidget {
 }
 
 // ─── SPECIALITES GRID ──────────────────────────────────────────
-// Design Expert: Grid with icons, optimized for mobile
 class _SpecialitesGrid extends StatelessWidget {
   final List<SpecialiteModel> specialites;
   const _SpecialitesGrid({required this.specialites});
 
-  IconData _getIcon(String name) {
-    final n = name.toLowerCase();
-    if (n.contains('cardi') || n.contains('coeur')) return Iconsax.heart;
-    if (n.contains('dermat') || n.contains('peau')) return Iconsax.brush_1;
-    if (n.contains('pedia') || n.contains('enfant')) return Iconsax.lovely;
-    if (n.contains('ophtal') || n.contains('yeux')) return Iconsax.eye;
-    if (n.contains('dent') || n.contains('oral')) return Iconsax.shield_tick;
-    if (n.contains('neuro')) return Iconsax.health;
-    if (n.contains('ortho')) return Iconsax.element_4;
-    if (n.contains('gyneco') || n.contains('femme')) return Iconsax.woman;
-    return Iconsax.activity;
+  IconData _getIcon(String icon) {
+    switch (icon) {
+      case 'medical':
+        return Iconsax.health;
+      case 'heart':
+        return Iconsax.heart;
+      case 'skin':
+        return Iconsax.brush_1;
+      case 'baby':
+        return Iconsax.lovely;
+      case 'eye':
+        return Iconsax.eye;
+      case 'tooth':
+        return Iconsax.shield_tick;
+      default:
+        return Iconsax.health;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: DSSpacing.screenMargin),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
-          mainAxisSpacing: DSSpacing.md,
-          crossAxisSpacing: DSSpacing.md,
-          childAspectRatio: 0.85,
+          crossAxisCount: 3,
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childAspectRatio: 1,
         ),
-        itemCount: specialites.length > 8 ? 8 : specialites.length,
+        itemCount: specialites.length,
         itemBuilder: (_, i) {
           final spec = specialites[i];
           return GestureDetector(
@@ -700,34 +634,37 @@ class _SpecialitesGrid extends StatelessWidget {
               arguments: {'specialiteId': spec.id},
             ),
             child: Container(
-              padding: EdgeInsets.all(DSSpacing.sm),
               decoration: BoxDecoration(
-                color: DSColors.surfaceLight,
-                borderRadius: DSBorderRadius.mediumRadius,
-                border: Border.all(color: DSColors.borderLight, width: 1),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    padding: EdgeInsets.all(DSSpacing.sm),
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: DSColors.primaryUltraLight,
+                      color: AppColors.primary.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      _getIcon(spec.nom ?? ''),
-                      color: DSColors.primary,
-                      size: 20,
+                      _getIcon(''),
+                      color: AppColors.primary,
+                      size: 24,
                     ),
                   ),
-                  SizedBox(height: DSSpacing.xs),
+                  const SizedBox(height: 8),
                   Text(
                     spec.nom ?? '',
-                    style: DSTypography.caption.copyWith(
+                    style: AppTextStyles.caption.copyWith(
                       fontWeight: FontWeight.w500,
-                      color: DSColors.textPrimary,
-                      fontSize: 11,
                     ),
                     textAlign: TextAlign.center,
                     maxLines: 2,

@@ -25,7 +25,6 @@ const Map<String, String> en = {
   Tr.featuredDoctors: 'Featured Doctors',
   Tr.getStarted: 'Get Started',
   Tr.skip: 'Skip',
-  Tr.testAccount: 'Test account:\nfatou.sall@email.com / 123456',
   Tr.fillAllFields: 'Please fill in all required fields',
   Tr.loginSuccess: 'Login successful',
   Tr.register: 'Register',
@@ -38,9 +37,12 @@ const Map<String, String> en = {
   Tr.noAccount: 'Don\'t have an account?',
   Tr.registerSuccess: 'Registration successful',
   Tr.passwordMismatch: 'Passwords do not match',
-  Tr.loginFailed: 'The email or password is incorrect. Check your credentials and try again.',
-  Tr.connectionError: 'Unable to reach the server. Check your internet connection.',
-  Tr.registerError: 'Registration failed. This email address may already be in use.',
+  Tr.loginFailed:
+      'The email or password is incorrect. Check your credentials and try again.',
+  Tr.connectionError:
+      'Unable to reach the server. Check your internet connection.',
+  Tr.registerError:
+      'Registration failed. This email address may already be in use.',
   Tr.disconnectConfirm: 'Are you sure you want to logout?',
   Tr.disconnect: 'Logout',
   Tr.forgotPassword: 'Forgot password?',
@@ -105,7 +107,11 @@ const Map<String, String> en = {
   Tr.appointmentConfirmed: 'Appointment confirmed!',
   Tr.appointmentConfirmedMsg: 'Your appointment has been booked successfully',
   Tr.noSlots: 'No available slots',
+  Tr.noSlotsThisWeek: 'No slots available this week',
   Tr.tryAnotherDate: 'Try another date',
+  Tr.weekOf: 'Week of',
+  Tr.previousWeek: 'Previous week',
+  Tr.nextWeek: 'Next week',
 
   // Appointments
   Tr.all: 'All',
@@ -121,7 +127,8 @@ const Map<String, String> en = {
   Tr.bookFirstAppointment: 'Book your first appointment!',
   Tr.cancelAppointment: 'Cancel appointment',
   Tr.cancelConfirm: 'Are you sure you want to cancel this appointment?',
-  Tr.cancelIrreversible: 'Are you sure you want to cancel this appointment? This action is irreversible.',
+  Tr.cancelIrreversible:
+      'Are you sure you want to cancel this appointment? This action is irreversible.',
   Tr.cancelRdv: 'Cancel appointment',
   Tr.noKeep: 'No, keep it',
   Tr.yesCancel: 'Yes, cancel',
@@ -153,36 +160,47 @@ const Map<String, String> en = {
   Tr.lastNameRequired: 'Please enter your last name',
   Tr.phoneRequired: 'Please enter your phone number',
   Tr.phoneInvalid: 'The phone number is not valid (e.g. 77 123 45 67)',
-  Tr.motifTooShort: 'The consultation reason must be at least 3 characters long',
+  Tr.motifTooShort:
+      'The consultation reason must be at least 3 characters long',
 
   // Network errors
   Tr.networkError: 'No internet connection. Check your Wi-Fi or mobile data.',
-  Tr.serverError: 'The server is experiencing issues. Please try again shortly.',
-  Tr.timeoutError: 'The request took too long. Check your connection and try again.',
+  Tr.serverError:
+      'The server is experiencing issues. Please try again shortly.',
+  Tr.timeoutError:
+      'The request took too long. Check your connection and try again.',
   Tr.sessionExpired: 'Your session has expired. Please log in again.',
   Tr.emailAlreadyUsed: 'This email address is already used by another account.',
   Tr.phoneAlreadyUsed: 'This phone number is already used by another account.',
   Tr.accountNotFound: 'No account found for this email address.',
   Tr.wrongPassword: 'The password is incorrect. Check and try again.',
-  Tr.slotAlreadyTaken: 'This slot was just booked by another patient. Choose a different time.',
+  Tr.slotAlreadyTaken:
+      'This slot was just booked by another patient. Choose a different time.',
   Tr.cannotCancelPast: 'Cannot cancel an appointment that has already passed.',
 
   // Error messages (viewmodels)
   Tr.loadingError: 'Unable to load data. Check your connection.',
-  Tr.loadingCabinetsError: 'Unable to load the list of cabinets. Check your connection.',
-  Tr.loadingSpecialtiesError: 'Unable to load specialties. Check your connection.',
-  Tr.loadingDoctorsError: 'Unable to load the list of doctors. Check your connection.',
+  Tr.loadingCabinetsError:
+      'Unable to load the list of cabinets. Check your connection.',
+  Tr.loadingSpecialtiesError:
+      'Unable to load specialties. Check your connection.',
+  Tr.loadingDoctorsError:
+      'Unable to load the list of doctors. Check your connection.',
   Tr.loadingDoctorError: 'Unable to load doctor information.',
   Tr.loadingSlotsError: 'Unable to load available slots. Try a different date.',
-  Tr.loadingAppointmentsError: 'Unable to load your appointments. Check your connection.',
-  Tr.createAppointmentError: 'Booking failed. This slot may no longer be available.',
-  Tr.cancelAppointmentError: 'Appointment cancellation failed. Please try again.',
+  Tr.loadingAppointmentsError:
+      'Unable to load your appointments. Check your connection.',
+  Tr.createAppointmentError:
+      'Booking failed. This slot may no longer be available.',
+  Tr.cancelAppointmentError:
+      'Appointment cancellation failed. Please try again.',
   Tr.noResults: 'No results',
   Tr.allFilter: 'All',
 
   // Forgot / Reset password
   Tr.forgotPasswordTitle: 'Forgot Password',
-  Tr.forgotPasswordDesc: 'Enter your email address. You will receive a reset code.',
+  Tr.forgotPasswordDesc:
+      'Enter your email address. You will receive a reset code.',
   Tr.sendCode: 'Send Code',
   Tr.resetCodeSent: 'A 6-digit code has been sent to your email.',
   Tr.resetCode: 'Reset Code',

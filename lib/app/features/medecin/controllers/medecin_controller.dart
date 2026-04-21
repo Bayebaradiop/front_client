@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import '../../../core/mixins/snackbar_mixin.dart';
 import '../../../routes/app_routes.dart';
@@ -20,11 +21,13 @@ class MedecinController extends GetxController with SnackbarMixin {
   final selectedSpecialiteId = Rxn<int>();
   final selectedCabinetId = Rxn<int>();
   final selectedMedecin = Rxn<Map<String, dynamic>>();
+  final today = _normalizeDate(DateTime.now());
+  late final Rx<DateTime> weekStart = today.obs;
 
   // Données créneaux pour la page détail
-  final selectedDate = DateTime.now().obs;
+  final selectedDate = Rxn<DateTime>();
   final selectedCreneau = Rxn<Map<String, dynamic>>();
-  final motifController = ''.obs;
+  final motifController = TextEditingController();
   final isBooking = false.obs;
 
   // Médecins convertis en Map pour les vues
@@ -32,6 +35,13 @@ class MedecinController extends GetxController with SnackbarMixin {
   final specialitesFilter = <Map<String, dynamic>>[].obs;
 
   final creneaux = <Map<String, dynamic>>[].obs;
+  final creneauxParDate = <String, List<Map<String, dynamic>>>{}.obs;
+
+  List<DateTime> get weekDates =>
+      List.generate(7, (index) => weekStart.value.add(Duration(days: index)));
+
+  bool get canGoToPreviousWeek => weekStart.value.isAfter(today);
+  bool get hasSlotsThisWeek => weekDates.any(hasSlotsForDate);
 
   List<Map<String, dynamic>> get medecinsFiltres {
     return medecins.where((m) {
@@ -60,10 +70,17 @@ class MedecinController extends GetxController with SnackbarMixin {
       }
       if (args.containsKey('medecin')) {
         selectedMedecin.value = args['medecin'];
-        loadCreneaux();
+        _resetBookingState();
+        loadWeekCreneaux();
       }
     }
     _loadMedecins();
+  }
+
+  @override
+  void onClose() {
+    motifController.dispose();
+    super.onClose();
   }
 
   Future<void> _loadMedecins() async {
@@ -76,21 +93,25 @@ class MedecinController extends GetxController with SnackbarMixin {
     } else {
       // Convertir les modèles en Map pour les vues
       medecins.value = _viewModel.medecins
-          .map((m) => {
-                'id': m.id,
-                'prenom': m.prenom ?? '',
-                'nom': m.nom ?? '',
-                'photo': m.photo,
-                'telephone': m.telephone ?? '',
-                'email': m.email ?? '',
-                'specialiteId': m.specialiteId,
-                'specialiteNom': m.specialiteNom ?? '',
-                'cabinetId': m.cabinetId,
-                'cabinetNom': m.cabinetNom ?? '',
-              })
+          .map(
+            (m) => {
+              'id': m.id,
+              'prenom': m.prenom ?? '',
+              'nom': m.nom ?? '',
+              'photo': m.photo,
+              'telephone': m.telephone ?? '',
+              'email': m.email ?? '',
+              'specialiteId': m.specialiteId,
+              'specialiteNom': m.specialiteNom ?? '',
+              'cabinetId': m.cabinetId,
+              'cabinetNom': m.cabinetNom ?? '',
+            },
+          )
           .toList();
       // Reconstruire les filtres de spécialités depuis les données réelles
-      final specs = <Map<String, dynamic>>[{'id': null, 'nom': Tr.allFilter.tr}];
+      final specs = <Map<String, dynamic>>[
+        {'id': null, 'nom': Tr.allFilter.tr},
+      ];
       final seen = <int?>{};
       for (final m in _viewModel.medecins) {
         if (!seen.contains(m.specialiteId)) {
@@ -102,6 +123,7 @@ class MedecinController extends GetxController with SnackbarMixin {
     }
   }
 
+  @override
   Future<void> refresh() async {
     await _loadMedecins();
   }
@@ -112,40 +134,55 @@ class MedecinController extends GetxController with SnackbarMixin {
 
   void selectMedecin(Map<String, dynamic> medecin) {
     selectedMedecin.value = medecin;
-    loadCreneaux();
+    _resetBookingState();
+    loadWeekCreneaux();
   }
 
   void selectDate(DateTime date) {
-    selectedDate.value = date;
-    loadCreneaux();
+    final normalizedDate = _normalizeDate(date);
+    if (!hasSlotsForDate(normalizedDate)) return;
+
+    selectedDate.value = normalizedDate;
+    selectedCreneau.value = null;
+    _syncSelectedDateSlots();
   }
 
-  Future<void> loadCreneaux() async {
+  Future<void> previousWeek() async {
+    if (!canGoToPreviousWeek || isLoadingCreneaux.value) return;
+
+    weekStart.value = weekStart.value.subtract(const Duration(days: 7));
+    await loadWeekCreneaux(preserveSelectedDate: false);
+  }
+
+  Future<void> nextWeek() async {
+    if (isLoadingCreneaux.value) return;
+
+    weekStart.value = weekStart.value.add(const Duration(days: 7));
+    await loadWeekCreneaux(preserveSelectedDate: false);
+  }
+
+  Future<void> loadWeekCreneaux({bool preserveSelectedDate = true}) async {
     final medecinId = selectedMedecin.value?['id'] as int?;
     if (medecinId == null) return;
 
-    final date = selectedDate.value;
-    final dateStr =
-        '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-
-    final error = await _viewModel.fetchDisponibilites(medecinId, date: dateStr);
+    final error = await _viewModel.fetchDisponibilitesWeek(
+      medecinId,
+      startDate: weekStart.value,
+    );
     if (error != null) {
+      selectedDate.value = null;
+      selectedCreneau.value = null;
+      creneaux.clear();
+      creneauxParDate.clear();
       showError(error);
       return;
     }
 
-    creneaux.value = _viewModel.disponibilites
-        .map((c) => {
-              'id': c.id,
-              'date': c.date,
-              'heureDebut': c.heureDebut,
-              'heureFin': c.heureFin,
-              'disponible': c.disponible,
-              'medecinId': c.medecinId,
-              'medecinNom': c.medecinNom,
-              'medecinPrenom': c.medecinPrenom,
-            })
-        .toList();
+    creneauxParDate.value = _viewModel.disponibilitesSemaine.map(
+      (date, slots) => MapEntry(date, slots.map(_toCreneauMap).toList()),
+    );
+
+    _syncSelectionForCurrentWeek(preserveSelectedDate: preserveSelectedDate);
   }
 
   void selectCreneau(Map<String, dynamic> creneau) {
@@ -155,15 +192,17 @@ class MedecinController extends GetxController with SnackbarMixin {
   }
 
   Future<void> confirmBooking() async {
+    final motif = motifController.text.trim();
+
     if (selectedCreneau.value == null) {
       showError(Tr.selectSlotError.tr);
       return;
     }
-    if (motifController.value.trim().isEmpty) {
+    if (motif.isEmpty) {
       showError(Tr.enterReasonError.tr);
       return;
     }
-    if (motifController.value.trim().length < 3) {
+    if (motif.length < 3) {
       showError(Tr.motifTooShort.tr);
       return;
     }
@@ -171,7 +210,7 @@ class MedecinController extends GetxController with SnackbarMixin {
     isBooking.value = true;
     final error = await _rdvViewModel.createRdv({
       'creneauId': selectedCreneau.value!['id'],
-      'motif': motifController.value,
+      'motif': motif,
     });
     isBooking.value = false;
 
@@ -179,6 +218,9 @@ class MedecinController extends GetxController with SnackbarMixin {
       showError(error);
       return;
     }
+
+    motifController.clear();
+    selectedCreneau.value = null;
 
     // Retourner à home et afficher l'onglet RDV
     Get.until((route) => route.settings.name == AppRoutes.home);
@@ -188,5 +230,94 @@ class MedecinController extends GetxController with SnackbarMixin {
       Get.find<RendezvousController>().refresh();
     } catch (_) {}
     showSuccess(Tr.appointmentConfirmed.tr, Tr.appointmentConfirmedMsg.tr);
+  }
+
+  bool hasSlotsForDate(DateTime date) {
+    return (creneauxParDate[_formatDate(date)] ?? const []).isNotEmpty;
+  }
+
+  bool isSelectedDate(DateTime date) {
+    return _isSameDate(selectedDate.value, date);
+  }
+
+  void _resetBookingState() {
+    weekStart.value = today;
+    selectedDate.value = today;
+    selectedCreneau.value = null;
+    motifController.clear();
+    creneaux.clear();
+    creneauxParDate.clear();
+  }
+
+  void _syncSelectionForCurrentWeek({bool preserveSelectedDate = true}) {
+    final currentSelection = selectedDate.value;
+    DateTime? nextSelection;
+
+    if (preserveSelectedDate &&
+        currentSelection != null &&
+        _isDateInCurrentWeek(currentSelection) &&
+        hasSlotsForDate(currentSelection)) {
+      nextSelection = currentSelection;
+    } else {
+      nextSelection = _firstAvailableDateInWeek();
+    }
+
+    selectedDate.value = nextSelection;
+    selectedCreneau.value = null;
+    _syncSelectedDateSlots();
+  }
+
+  void _syncSelectedDateSlots() {
+    final date = selectedDate.value;
+    if (date == null) {
+      creneaux.clear();
+      return;
+    }
+
+    creneaux.value = List<Map<String, dynamic>>.from(
+      creneauxParDate[_formatDate(date)] ?? const [],
+    );
+  }
+
+  DateTime? _firstAvailableDateInWeek() {
+    for (final date in weekDates) {
+      if (hasSlotsForDate(date)) {
+        return date;
+      }
+    }
+    return null;
+  }
+
+  bool _isDateInCurrentWeek(DateTime date) {
+    return weekDates.any((weekDate) => _isSameDate(weekDate, date));
+  }
+
+  Map<String, dynamic> _toCreneauMap(dynamic c) {
+    return {
+      'id': c.id,
+      'date': c.date,
+      'heureDebut': c.heureDebut,
+      'heureFin': c.heureFin,
+      'disponible': c.disponible,
+      'medecinId': c.medecinId,
+      'medecinNom': c.medecinNom,
+      'medecinPrenom': c.medecinPrenom,
+    };
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
+  static DateTime _normalizeDate(DateTime date) {
+    return DateTime(date.year, date.month, date.day);
+  }
+
+  bool _isSameDate(DateTime? first, DateTime? second) {
+    if (first == null || second == null) return false;
+
+    return first.year == second.year &&
+        first.month == second.month &&
+        first.day == second.day;
   }
 }
