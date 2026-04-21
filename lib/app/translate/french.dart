@@ -25,7 +25,6 @@ const Map<String, String> fr = {
   Tr.featuredDoctors: 'Médecins en vedette',
   Tr.getStarted: 'Commencer',
   Tr.skip: 'Passer',
-  Tr.testAccount: 'Compte test :\nfatou.sall@email.com / 123456',
   Tr.fillAllFields: 'Veuillez remplir tous les champs obligatoires',
   Tr.loginSuccess: 'Connexion réussie',
   Tr.register: 'Inscription',
@@ -38,13 +37,17 @@ const Map<String, String> fr = {
   Tr.noAccount: 'Pas encore de compte ?',
   Tr.registerSuccess: 'Inscription réussie',
   Tr.passwordMismatch: 'Les mots de passe ne correspondent pas',
-  Tr.loginFailed: 'L\'email ou le mot de passe est incorrect. Vérifiez vos identifiants et réessayez.',
-  Tr.connectionError: 'Impossible de contacter le serveur. Vérifiez votre connexion internet.',
-  Tr.registerError: 'L\'inscription a échoué. Cette adresse email est peut-être déjà utilisée.',
+  Tr.loginFailed:
+      'L\'email ou le mot de passe est incorrect. Vérifiez vos identifiants et réessayez.',
+  Tr.connectionError:
+      'Impossible de contacter le serveur. Vérifiez votre connexion internet.',
+  Tr.registerError:
+      'L\'inscription a échoué. Cette adresse email est peut-être déjà utilisée.',
   Tr.disconnectConfirm: 'Êtes-vous sûr de vouloir vous déconnecter ?',
   Tr.disconnect: 'Déconnexion',
   Tr.forgotPassword: 'Mot de passe oublié ?',
-  Tr.forgotPasswordHint: 'Contactez votre cabinet médical pour réinitialiser votre mot de passe.',
+  Tr.forgotPasswordHint:
+      'Contactez votre cabinet médical pour réinitialiser votre mot de passe.',
 
   // Navigation
   Tr.home: 'Accueil',
@@ -105,7 +108,11 @@ const Map<String, String> fr = {
   Tr.appointmentConfirmed: 'Rendez-vous confirmé !',
   Tr.appointmentConfirmedMsg: 'Votre rendez-vous a été pris avec succès',
   Tr.noSlots: 'Aucun créneau disponible',
+  Tr.noSlotsThisWeek: 'Aucun créneau disponible cette semaine',
   Tr.tryAnotherDate: 'Essayez une autre date',
+  Tr.weekOf: 'Semaine du',
+  Tr.previousWeek: 'Semaine précédente',
+  Tr.nextWeek: 'Semaine suivante',
 
   // Appointments
   Tr.all: 'Tous',
@@ -121,7 +128,8 @@ const Map<String, String> fr = {
   Tr.bookFirstAppointment: 'Prenez votre premier rendez-vous !',
   Tr.cancelAppointment: 'Annuler le rendez-vous',
   Tr.cancelConfirm: 'Êtes-vous sûr de vouloir annuler ce rendez-vous ?',
-  Tr.cancelIrreversible: 'Êtes-vous sûr de vouloir annuler ce rendez-vous ? Cette action est irréversible.',
+  Tr.cancelIrreversible:
+      'Êtes-vous sûr de vouloir annuler ce rendez-vous ? Cette action est irréversible.',
   Tr.cancelRdv: 'Annuler le RDV',
   Tr.noKeep: 'Non, garder',
   Tr.yesCancel: 'Oui, annuler',
@@ -142,7 +150,8 @@ const Map<String, String> fr = {
   Tr.save: 'Enregistrer',
   Tr.success: 'Succès',
   Tr.profileUpdated: 'Profil mis à jour avec succès',
-  Tr.profileUpdateError: 'La mise à jour du profil a échoué. Veuillez réessayer.',
+  Tr.profileUpdateError:
+      'La mise à jour du profil a échoué. Veuillez réessayer.',
 
   // Validation erreurs précises
   Tr.emailRequired: 'Veuillez saisir votre adresse email',
@@ -153,36 +162,52 @@ const Map<String, String> fr = {
   Tr.lastNameRequired: 'Veuillez saisir votre nom de famille',
   Tr.phoneRequired: 'Veuillez saisir votre numéro de téléphone',
   Tr.phoneInvalid: "Le numéro de téléphone n'est pas valide (ex: 77 123 45 67)",
-  Tr.motifTooShort: 'Le motif de consultation doit contenir au moins 3 caractères',
+  Tr.motifTooShort:
+      'Le motif de consultation doit contenir au moins 3 caractères',
 
   // Erreurs réseau précises
-  Tr.networkError: 'Pas de connexion internet. Vérifiez votre Wi-Fi ou vos données mobiles.',
-  Tr.serverError: 'Le serveur rencontre un problème. Veuillez réessayer dans quelques instants.',
-  Tr.timeoutError: 'La requête a pris trop de temps. Vérifiez votre connexion et réessayez.',
+  Tr.networkError:
+      'Pas de connexion internet. Vérifiez votre Wi-Fi ou vos données mobiles.',
+  Tr.serverError:
+      'Le serveur rencontre un problème. Veuillez réessayer dans quelques instants.',
+  Tr.timeoutError:
+      'La requête a pris trop de temps. Vérifiez votre connexion et réessayez.',
   Tr.sessionExpired: 'Votre session a expiré. Veuillez vous reconnecter.',
-  Tr.emailAlreadyUsed: "Cette adresse email est déjà utilisée par un autre compte.",
-  Tr.phoneAlreadyUsed: "Ce numéro de téléphone est déjà utilisé par un autre compte.",
+  Tr.emailAlreadyUsed:
+      "Cette adresse email est déjà utilisée par un autre compte.",
+  Tr.phoneAlreadyUsed:
+      "Ce numéro de téléphone est déjà utilisé par un autre compte.",
   Tr.accountNotFound: 'Aucun compte ne correspond à cette adresse email.',
   Tr.wrongPassword: 'Le mot de passe est incorrect. Vérifiez et réessayez.',
-  Tr.slotAlreadyTaken: "Ce créneau vient d'être réservé par un autre patient. Choisissez un autre horaire.",
+  Tr.slotAlreadyTaken:
+      "Ce créneau vient d'être réservé par un autre patient. Choisissez un autre horaire.",
   Tr.cannotCancelPast: "Impossible d'annuler un rendez-vous déjà passé.",
 
   // Error messages (viewmodels)
-  Tr.loadingError: 'Impossible de charger les données. Vérifiez votre connexion.',
-  Tr.loadingCabinetsError: 'Impossible de charger la liste des cabinets. Vérifiez votre connexion.',
-  Tr.loadingSpecialtiesError: 'Impossible de charger les spécialités. Vérifiez votre connexion.',
-  Tr.loadingDoctorsError: 'Impossible de charger la liste des médecins. Vérifiez votre connexion.',
+  Tr.loadingError:
+      'Impossible de charger les données. Vérifiez votre connexion.',
+  Tr.loadingCabinetsError:
+      'Impossible de charger la liste des cabinets. Vérifiez votre connexion.',
+  Tr.loadingSpecialtiesError:
+      'Impossible de charger les spécialités. Vérifiez votre connexion.',
+  Tr.loadingDoctorsError:
+      'Impossible de charger la liste des médecins. Vérifiez votre connexion.',
   Tr.loadingDoctorError: "Impossible de charger les informations du médecin.",
-  Tr.loadingSlotsError: 'Impossible de charger les créneaux disponibles. Essayez une autre date.',
-  Tr.loadingAppointmentsError: 'Impossible de charger vos rendez-vous. Vérifiez votre connexion.',
-  Tr.createAppointmentError: "La prise de rendez-vous a échoué. Ce créneau n'est peut-être plus disponible.",
-  Tr.cancelAppointmentError: "L'annulation du rendez-vous a échoué. Veuillez réessayer.",
+  Tr.loadingSlotsError:
+      'Impossible de charger les créneaux disponibles. Essayez une autre date.',
+  Tr.loadingAppointmentsError:
+      'Impossible de charger vos rendez-vous. Vérifiez votre connexion.',
+  Tr.createAppointmentError:
+      "La prise de rendez-vous a échoué. Ce créneau n'est peut-être plus disponible.",
+  Tr.cancelAppointmentError:
+      "L'annulation du rendez-vous a échoué. Veuillez réessayer.",
   Tr.noResults: 'Aucun résultat',
   Tr.allFilter: 'Toutes',
 
   // Forgot / Reset password
   Tr.forgotPasswordTitle: 'Mot de passe oublié',
-  Tr.forgotPasswordDesc: 'Entrez votre adresse email. Vous recevrez un code de réinitialisation.',
+  Tr.forgotPasswordDesc:
+      'Entrez votre adresse email. Vous recevrez un code de réinitialisation.',
   Tr.sendCode: 'Envoyer le code',
   Tr.resetCodeSent: 'Un code de 6 chiffres a été envoyé à votre email.',
   Tr.resetCode: 'Code de réinitialisation',
@@ -191,7 +216,8 @@ const Map<String, String> fr = {
   Tr.newPassword: 'Nouveau mot de passe',
   Tr.confirmNewPassword: 'Confirmer le nouveau mot de passe',
   Tr.resetPassword: 'Réinitialiser',
-  Tr.passwordResetSuccess: 'Mot de passe réinitialisé avec succès. Connectez-vous.',
+  Tr.passwordResetSuccess:
+      'Mot de passe réinitialisé avec succès. Connectez-vous.',
   Tr.forgotPasswordError: "Impossible d'envoyer le code. Vérifiez votre email.",
   Tr.resetPasswordError: 'Échec de la réinitialisation. Vérifiez votre code.',
   Tr.backToLogin: 'Retour à la connexion',

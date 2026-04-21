@@ -14,8 +14,12 @@ class LoginView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<AuthController>();
-    final emailCtrl = TextEditingController(text: controller.emailController.value);
-    final passwordCtrl = TextEditingController(text: controller.passwordController.value);
+    final emailCtrl = TextEditingController(
+      text: controller.emailController.value,
+    );
+    final passwordCtrl = TextEditingController(
+      text: controller.passwordController.value,
+    );
     final obscurePassword = true.obs;
 
     return Scaffold(
@@ -61,17 +65,22 @@ class LoginView extends StatelessWidget {
                 () => TextField(
                   controller: passwordCtrl,
                   obscureText: obscurePassword.value,
-                  onChanged: (value) => controller.passwordController.value = value,
+                  onChanged: (value) =>
+                      controller.passwordController.value = value,
                   onSubmitted: (_) => controller.login(),
                   decoration: InputDecoration(
                     hintText: Tr.password.tr,
-                    prefixIcon: const Icon(Iconsax.lock, color: AppColors.primary),
+                    prefixIcon: const Icon(
+                      Iconsax.lock,
+                      color: AppColors.primary,
+                    ),
                     suffixIcon: IconButton(
                       icon: Icon(
                         obscurePassword.value ? Iconsax.eye_slash : Iconsax.eye,
                         color: AppColors.textLight,
                       ),
-                      onPressed: () => obscurePassword.value = !obscurePassword.value,
+                      onPressed: () =>
+                          obscurePassword.value = !obscurePassword.value,
                     ),
                   ),
                 ),
@@ -83,7 +92,9 @@ class LoginView extends StatelessWidget {
                   onPressed: () => Get.toNamed(AppRoutes.forgotPassword),
                   child: Text(
                     Tr.forgotPassword.tr,
-                    style: AppTextStyles.bodyBold.copyWith(color: AppColors.primary),
+                    style: AppTextStyles.bodyBold.copyWith(
+                      color: AppColors.primary,
+                    ),
                   ),
                 ),
               ),
@@ -97,29 +108,22 @@ class LoginView extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Text(
-                  Tr.testAccount.tr,
-                  style: AppTextStyles.body,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              Wrap(
+                alignment: WrapAlignment.center,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 4,
                 children: [
                   Text(Tr.noAccount.tr, style: AppTextStyles.body),
                   TextButton(
                     onPressed: () => Get.toNamed(AppRoutes.register),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                    ),
                     child: Text(
                       Tr.createAccount.tr,
-                      style: AppTextStyles.bodyBold.copyWith(color: AppColors.primary),
+                      style: AppTextStyles.bodyBold.copyWith(
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
                 ],

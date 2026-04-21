@@ -23,7 +23,6 @@ abstract class Tr {
   static const email = 'email';
   static const password = 'password';
   static const connect = 'connect';
-  static const testAccount = 'test_account';
   static const fillAllFields = 'fill_all_fields';
   static const loginSuccess = 'login_success';
   static const register = 'register';
@@ -103,7 +102,11 @@ abstract class Tr {
   static const appointmentConfirmed = 'appointment_confirmed';
   static const appointmentConfirmedMsg = 'appointment_confirmed_msg';
   static const noSlots = 'no_slots';
+  static const noSlotsThisWeek = 'no_slots_this_week';
   static const tryAnotherDate = 'try_another_date';
+  static const weekOf = 'week_of';
+  static const previousWeek = 'previous_week';
+  static const nextWeek = 'next_week';
 
   // Appointments
   static const all = 'all';
