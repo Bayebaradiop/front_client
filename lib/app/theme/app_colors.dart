@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 
 /// Design System - Couleurs MediBook
-/// Couleur principale: BLEU (#1976D2)
+/// Couleur principale: TEAL MEDICAL (#2F7D79)
 class AppColors {
   // ═══════════════════════════════════════════════════════════════
-  // COULEURS PRIMAIRES - BLEU MEDICAL
+  // COULEURS PRIMAIRES - TEAL MEDICAL
   // ═══════════════════════════════════════════════════════════════
   
-  /// Bleu principal - confiance, santé
-  static const Color primary = Color(0xFF1976D2);
+  /// Teal principal - confiance, santé, modernité
+  static const Color primary = Color(0xFF2F7D79);
   
-  /// Bleu clair - accents, highlights
-  static const Color primaryLight = Color(0xFF64B5F6);
+  /// Teal clair - accents, highlights
+  static const Color primaryLight = Color(0xFF4FA7A1);
   
-  /// Bleu foncé - texte sur fond clair, appbar
-  static const Color primaryDark = Color(0xFF0D47A1);
+  /// Teal foncé - texte sur fond clair, appbar
+  static const Color primaryDark = Color(0xFF245F5C);
   
-  /// Bleu très clair - backgrounds subtils
-  static const Color primaryUltraLight = Color(0xFFE3F2FD);
+  /// Teal très clair - backgrounds subtils
+  static const Color primaryUltraLight = Color(0xFFEAF6F5);
   
   /// Secondary white
   static const Color secondary = Color(0xFFFFFFFF);
@@ -26,7 +26,7 @@ class AppColors {
   // BACKGROUNDS
   // ═══════════════════════════════════════════════════════════════
   
-  static const Color background = Color(0xFFF8FAFC);
+  static const Color background = Color(0xFFEAF6F5);
   static const Color cardBackground = Color(0xFFFFFFFF);
   static const Color surface = Color(0xFFFFFFFF);
 
@@ -34,8 +34,8 @@ class AppColors {
   // COULEURS DE TEXTE
   // ═══════════════════════════════════════════════════════════════
   
-  /// Texte principal - bleu foncé pour contraste
-  static const Color textPrimary = Color(0xFF0D47A1);
+  /// Texte principal - teal fonce pour contraste
+  static const Color textPrimary = Color(0xFF245F5C);
   
   /// Texte secondaire - gris foncé
   static const Color textSecondary = Color(0xFF475569);
@@ -53,8 +53,8 @@ class AppColors {
   /// En attente - Orange
   static const Color statusEnAttente = Color(0xFFF59E0B);
   
-  /// Confirmé - Bleu
-  static const Color statusConfirme = Color(0xFF1976D2);
+  /// Confirmé - Teal
+  static const Color statusConfirme = Color(0xFF2F7D79);
   
   /// Terminé - Gris
   static const Color statusTermine = Color(0xFF64748B);
@@ -75,8 +75,8 @@ class AppColors {
   /// Warning - Orange
   static const Color warning = Color(0xFFF59E0B);
   
-  /// Info - Bleu
-  static const Color info = Color(0xFF3B82F6);
+  /// Info - Teal clair
+  static const Color info = Color(0xFF4FA7A1);
   
   static const Color divider = Color(0xFFE2E8F0);
   static const Color shimmerBase = Color(0xFFE2E8F0);
@@ -100,18 +100,18 @@ class AppColors {
   // GRADIENTS
   // ═══════════════════════════════════════════════════════════════
   
-  /// Gradient splash screen - Bleu
+  /// Gradient splash screen - Teal
   static const LinearGradient splashGradient = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
-    colors: [Color(0xFF0D47A1), Color(0xFF64B5F6)],
+    colors: [Color(0xFF245F5C), Color(0xFF4FA7A1)],
   );
 
-  /// Gradient header cards - Bleu subtil
+  /// Gradient header cards - Teal subtil
   static const LinearGradient cardGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFF1976D2), Color(0xFF42A5F5)],
+    colors: [Color(0xFF2F7D79), Color(0xFF4FA7A1)],
   );
 
   // ═══════════════════════════════════════════════════════════════

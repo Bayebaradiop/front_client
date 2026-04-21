@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import '../../../theme/app_colors.dart';
-import '../../../theme/app_text_styles.dart';
-import '../../../core/widgets/custom_app_bar.dart';
-import '../../../core/widgets/custom_card.dart';
-import '../../../core/widgets/shimmer_loading.dart';
+
 import '../../../core/widgets/empty_state.dart';
+import '../../../core/widgets/shimmer_loading.dart';
 import '../../../core/widgets/user_avatar.dart';
 import '../../../routes/app_routes.dart';
-import '../controllers/rendezvous_controller.dart';
+import '../../../theme/app_colors.dart';
+import '../../../theme/design_system/index.dart';
 import '../../../translate/translation_keys.dart';
+import '../controllers/rendezvous_controller.dart';
 
 class MesRdvView extends StatelessWidget {
   final bool embedded;
@@ -22,75 +21,70 @@ class MesRdvView extends StatelessWidget {
     final controller = Get.find<RendezvousController>();
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: embedded
           ? null
-          : CustomAppBar(title: Tr.myAppointments.tr),
+          : AppBar(
+              title: Text(
+                Tr.myAppointments.tr,
+                style: DSTypography.headingSmall.copyWith(
+                  color: DSColors.white,
+                  fontSize: 20,
+                ),
+              ),
+              backgroundColor: AppColors.primary,
+              foregroundColor: DSColors.white,
+              elevation: 0,
+              centerTitle: true,
+            ),
       body: Column(
         children: [
           if (embedded)
             SafeArea(
               bottom: false,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                child: Text(Tr.myAppointments.tr,
-                    style: AppTextStyles.heading2),
+                padding: EdgeInsets.fromLTRB(
+                  DSSpacing.screenMargin,
+                  DSSpacing.lg,
+                  DSSpacing.screenMargin,
+                  0,
+                ),
+                child: _RdvHero(controller: controller),
+              ),
+            )
+          else
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                DSSpacing.screenMargin,
+                DSSpacing.lg,
+                DSSpacing.screenMargin,
+                0,
+              ),
+              child: _RdvIntro(controller: controller),
+            ),
+          SizedBox(height: DSSpacing.lg),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: DSSpacing.screenMargin),
+            child: Obx(
+              () => _RdvFilterBar(
+                selectedIndex: controller.selectedTabIndex.value,
+                onChanged: (index) => controller.selectedTabIndex.value = index,
               ),
             ),
-          // TabBar
-          Container(
-            margin: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-            decoration: BoxDecoration(
-              color: AppColors.divider.withValues(alpha: 0.4),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Obx(() => Row(
-                  children: [
-                    _TabItem(
-                      label: Tr.all.tr,
-                      isSelected: controller.selectedTabIndex.value == 0,
-                      onTap: () => controller.selectedTabIndex.value = 0,
-                    ),
-                    _TabItem(
-                      label: Tr.pending.tr,
-                      isSelected: controller.selectedTabIndex.value == 1,
-                      onTap: () => controller.selectedTabIndex.value = 1,
-                    ),
-                    _TabItem(
-                      label: Tr.confirmed.tr,
-                      isSelected: controller.selectedTabIndex.value == 2,
-                      onTap: () => controller.selectedTabIndex.value = 2,
-                    ),
-                    _TabItem(
-                      label: Tr.history.tr,
-                      isSelected: controller.selectedTabIndex.value == 3,
-                      onTap: () => controller.selectedTabIndex.value = 3,
-                    ),
-                  ],
-                )),
           ),
-
-          // Liste
+          SizedBox(height: DSSpacing.md),
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value) {
-                return const ShimmerLoading(itemCount: 4, height: 130);
+                return Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: DSSpacing.screenMargin,
+                  ),
+                  child: const ShimmerLoading(itemCount: 4, height: 168),
+                );
               }
 
-              List<Map<String, dynamic>> list;
-              switch (controller.selectedTabIndex.value) {
-                case 1:
-                  list = controller.rdvEnAttente;
-                  break;
-                case 2:
-                  list = controller.rdvConfirmes;
-                  break;
-                case 3:
-                  list = controller.rdvHistorique;
-                  break;
-                default:
-                  list = controller.tousLesRdv;
-              }
-
+              final list = _currentList(controller);
               if (list.isEmpty) {
                 return EmptyState(
                   icon: Iconsax.calendar_1,
@@ -104,15 +98,20 @@ class MesRdvView extends StatelessWidget {
                 onRefresh: () async => controller.refresh(),
                 child: AnimationLimiter(
                   child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    padding: EdgeInsets.only(
+                      left: DSSpacing.screenMargin,
+                      right: DSSpacing.screenMargin,
+                      top: DSSpacing.xs,
+                      bottom: DSSpacing.bottomSafe,
+                    ),
                     itemCount: list.length,
                     itemBuilder: (context, index) {
                       final rdv = list[index];
                       return AnimationConfiguration.staggeredList(
                         position: index,
-                        duration: const Duration(milliseconds: 400),
+                        duration: const Duration(milliseconds: 350),
                         child: SlideAnimation(
-                          verticalOffset: 50.0,
+                          verticalOffset: 24,
                           child: FadeInAnimation(
                             child: _RdvCard(
                               rdv: rdv,
@@ -131,48 +130,217 @@ class MesRdvView extends StatelessWidget {
       ),
     );
   }
+
+  List<Map<String, dynamic>> _currentList(RendezvousController controller) {
+    switch (controller.selectedTabIndex.value) {
+      case 1:
+        return controller.rdvEnAttente;
+      case 2:
+        return controller.rdvConfirmes;
+      case 3:
+        return controller.rdvHistorique;
+      default:
+        return controller.tousLesRdv;
+    }
+  }
 }
 
-// ─── TAB ITEM ──────────────────────────────────────────────────
-class _TabItem extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-  const _TabItem({
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
+class _RdvHero extends StatelessWidget {
+  final RendezvousController controller;
+  const _RdvHero({required this.controller});
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            color: isSelected ? AppColors.primary : Colors.transparent,
-            borderRadius: BorderRadius.circular(12),
+    return Container(
+      padding: EdgeInsets.all(DSSpacing.lg),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppColors.primaryDark, AppColors.primary],
+        ),
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primaryDark.withAlpha(24),
+            blurRadius: 22,
+            offset: const Offset(0, 10),
           ),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight:
-                  isSelected ? FontWeight.w600 : FontWeight.normal,
-              color: isSelected ? Colors.white : AppColors.textSecondary,
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            Tr.myAppointments.tr,
+            style: DSTypography.labelLarge.copyWith(
+              color: DSColors.white.withAlpha(225),
             ),
           ),
+          SizedBox(height: DSSpacing.sm),
+          Text(
+            'Suivez vos consultations avec une vue plus claire et plus sereine.',
+            style: DSTypography.headingSmall.copyWith(
+              color: DSColors.white,
+              fontSize: 24,
+              height: 1.2,
+            ),
+          ),
+          SizedBox(height: DSSpacing.sm),
+          Text(
+            'Confirmez rapidement ce qui vient, retrouvez votre historique et gardez une lecture simple de votre parcours de soin.',
+            style: DSTypography.bodyMedium.copyWith(
+              color: DSColors.white.withAlpha(214),
+            ),
+          ),
+          SizedBox(height: DSSpacing.lg),
+          Obx(
+            () => Wrap(
+              spacing: DSSpacing.sm,
+              runSpacing: DSSpacing.sm,
+              children: [
+                _HeroPill(
+                  value: '${controller.tousLesRdv.length}',
+                  label: Tr.all.tr,
+                ),
+                _HeroPill(
+                  value: '${controller.rdvEnAttente.length}',
+                  label: Tr.pending.tr,
+                ),
+                _HeroPill(
+                  value: '${controller.rdvConfirmes.length}',
+                  label: Tr.confirmed.tr,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RdvIntro extends StatelessWidget {
+  final RendezvousController controller;
+  const _RdvIntro({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(
+      () => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            Tr.myAppointments.tr,
+            style: DSTypography.headingSmall.copyWith(
+              color: DSColors.textPrimary,
+            ),
+          ),
+          SizedBox(height: DSSpacing.xs),
+          Text(
+            '${controller.tousLesRdv.length} rendez-vous disponibles dans votre espace patient.',
+            style: DSTypography.bodyMedium.copyWith(
+              color: DSColors.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HeroPill extends StatelessWidget {
+  final String value;
+  final String label;
+
+  const _HeroPill({required this.value, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: DSSpacing.md,
+        vertical: DSSpacing.sm,
+      ),
+      decoration: BoxDecoration(
+        color: DSColors.white.withAlpha(18),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: DSColors.white.withAlpha(28)),
+      ),
+      child: RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: '$value ',
+              style: DSTypography.labelLarge.copyWith(color: DSColors.white),
+            ),
+            TextSpan(
+              text: label,
+              style: DSTypography.bodySmall.copyWith(
+                color: DSColors.white.withAlpha(214),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-// ─── RDV CARD ──────────────────────────────────────────────────
+class _RdvFilterBar extends StatelessWidget {
+  final int selectedIndex;
+  final ValueChanged<int> onChanged;
+
+  const _RdvFilterBar({
+    required this.selectedIndex,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final items = [
+      Tr.all.tr,
+      Tr.pending.tr,
+      Tr.confirmed.tr,
+      Tr.history.tr,
+    ];
+
+    return Container(
+      padding: EdgeInsets.all(DSSpacing.xs),
+      decoration: BoxDecoration(
+        color: DSColors.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: DSColors.borderLight),
+      ),
+      child: Row(
+        children: List.generate(items.length, (index) {
+          final isSelected = selectedIndex == index;
+          return Expanded(
+            child: GestureDetector(
+              onTap: () => onChanged(index),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 220),
+                padding: EdgeInsets.symmetric(vertical: DSSpacing.sm),
+                decoration: BoxDecoration(
+                  color: isSelected ? AppColors.primary : Colors.transparent,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: Text(
+                  items[index],
+                  textAlign: TextAlign.center,
+                  style: DSTypography.labelSmall.copyWith(
+                    color: isSelected ? DSColors.white : DSColors.textSecondary,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+}
+
 class _RdvCard extends StatelessWidget {
   final Map<String, dynamic> rdv;
   final RendezvousController controller;
@@ -214,117 +382,184 @@ class _RdvCard extends StatelessWidget {
     final color = _statusColor(statut);
     final rawDebut = (rdv['heureDebut'] as String?) ?? '';
     final rawFin = (rdv['heureFin'] as String?) ?? '';
-    final heureDebut = rawDebut.length >= 5 ? rawDebut.substring(0, 5) : rawDebut;
+    final heureDebut =
+        rawDebut.length >= 5 ? rawDebut.substring(0, 5) : rawDebut;
     final heureFin = rawFin.length >= 5 ? rawFin.substring(0, 5) : rawFin;
 
-    return CustomCard(
-      borderLeftColor: color,
-      onTap: () =>
-          Get.toNamed(AppRoutes.rdvDetail, arguments: {'rdv': rdv}),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              UserAvatar(
-                photoUrl: rdv['medecinPhoto'] as String?,
-                initials: '${((rdv['medecinPrenom'] as String?) ?? '').isNotEmpty ? (rdv['medecinPrenom'] as String)[0] : ''}'
-                    '${((rdv['medecinNom'] as String?) ?? '').isNotEmpty ? (rdv['medecinNom'] as String)[0] : ''}',
-                radius: 22,
-                backgroundColor: color.withValues(alpha: 0.1),
-                textColor: color,
-                fontSize: 14,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
+    return Container(
+      margin: EdgeInsets.only(bottom: DSSpacing.md),
+      decoration: BoxDecoration(
+        color: DSColors.surface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: DSColors.borderLight),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(10),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(24),
+        child: InkWell(
+          onTap: () => Get.toNamed(AppRoutes.rdvDetail, arguments: {'rdv': rdv}),
+          borderRadius: BorderRadius.circular(24),
+          child: Padding(
+            padding: EdgeInsets.all(DSSpacing.lg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Dr. ${rdv['medecinPrenom']} ${rdv['medecinNom']}',
-                      style: AppTextStyles.bodyBold,
+                    Container(
+                      padding: EdgeInsets.all(DSSpacing.xs),
+                      decoration: BoxDecoration(
+                        color: color.withAlpha(18),
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      child: UserAvatar(
+                        photoUrl: rdv['medecinPhoto'] as String?,
+                        initials:
+                            '${((rdv['medecinPrenom'] as String?) ?? '').isNotEmpty ? (rdv['medecinPrenom'] as String)[0] : ''}'
+                            '${((rdv['medecinNom'] as String?) ?? '').isNotEmpty ? (rdv['medecinNom'] as String)[0] : ''}',
+                        radius: 22,
+                        backgroundColor: color,
+                        textColor: DSColors.white,
+                        fontSize: 14,
+                      ),
                     ),
-                    Text(
-                      rdv['medecinSpecialite'] ?? '',
-                      style: AppTextStyles.caption
-                          .copyWith(color: AppColors.primary),
+                    SizedBox(width: DSSpacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Dr. ${rdv['medecinPrenom'] ?? ''} ${rdv['medecinNom'] ?? ''}',
+                            style: DSTypography.labelLarge.copyWith(
+                              color: DSColors.textPrimary,
+                              height: 1.2,
+                            ),
+                          ),
+                          SizedBox(height: DSSpacing.xs),
+                          Text(
+                            rdv['medecinSpecialite'] ?? '',
+                            style: DSTypography.bodyMedium.copyWith(
+                              color: AppColors.primary,
+                            ),
+                          ),
+                          if (((rdv['cabinetNom'] ?? '') as String).isNotEmpty) ...[
+                            SizedBox(height: DSSpacing.xs),
+                            Text(
+                              rdv['cabinetNom'] ?? '',
+                              style: DSTypography.bodySmall.copyWith(
+                                color: DSColors.textSecondary,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: DSSpacing.sm),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: DSSpacing.sm,
+                        vertical: DSSpacing.xs,
+                      ),
+                      decoration: BoxDecoration(
+                        color: color.withAlpha(16),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Text(
+                        _statusLabel(statut),
+                        style: DSTypography.labelSmall.copyWith(color: color),
+                      ),
                     ),
                   ],
                 ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  _statusLabel(statut),
-                  style: TextStyle(
-                    color: color,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
+                SizedBox(height: DSSpacing.md),
+                Container(
+                  padding: EdgeInsets.all(DSSpacing.md),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryUltraLight,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(
+                      color: AppColors.primaryLight.withAlpha(60),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _MetaItem(
+                              icon: Iconsax.calendar_1,
+                              label: Tr.date.tr,
+                              value: rdv['date'] ?? '',
+                            ),
+                          ),
+                          SizedBox(width: DSSpacing.sm),
+                          Expanded(
+                            child: _MetaItem(
+                              icon: Iconsax.clock,
+                              label: Tr.time.tr,
+                              value: '$heureDebut - $heureFin',
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (((rdv['cabinetAdresse'] ?? '') as String).isNotEmpty) ...[
+                        SizedBox(height: DSSpacing.sm),
+                        _MetaItem(
+                          icon: Iconsax.location,
+                          label: Tr.address.tr,
+                          value: rdv['cabinetAdresse'] ?? '',
+                        ),
+                      ],
+                    ],
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Container(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: AppColors.background,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              children: [
-                const Icon(Iconsax.calendar_1,
-                    size: 14, color: AppColors.textLight),
-                const SizedBox(width: 6),
-                Text(rdv['date'] ?? '',
-                    style: AppTextStyles.caption
-                        .copyWith(fontWeight: FontWeight.w500)),
-                const SizedBox(width: 14),
-                const Icon(Iconsax.clock,
-                    size: 14, color: AppColors.textLight),
-                const SizedBox(width: 6),
-                Text('$heureDebut - $heureFin',
-                    style: AppTextStyles.caption
-                        .copyWith(fontWeight: FontWeight.w500)),
-                const Spacer(),
-                const Icon(Iconsax.hospital,
-                    size: 14, color: AppColors.textLight),
-                const SizedBox(width: 6),
-                Flexible(
-                  child: Text(
-                    rdv['cabinetNom'] ?? '',
-                    style: AppTextStyles.caption,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                if (controller.canCancel(statut)) ...[
+                  SizedBox(height: DSSpacing.md),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () => _showCancelDialog(context),
+                          icon: const Icon(
+                            Iconsax.close_circle,
+                            size: 16,
+                            color: AppColors.error,
+                          ),
+                          label: Text(
+                            Tr.cancel.tr,
+                            style: DSTypography.labelMedium.copyWith(
+                              color: AppColors.error,
+                            ),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.error,
+                            side: const BorderSide(color: AppColors.error),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                              vertical: DSSpacing.sm,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
+                ],
               ],
             ),
           ),
-          if (controller.canCancel(statut)) ...[
-            const SizedBox(height: 8),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton.icon(
-                onPressed: () => _showCancelDialog(context),
-                icon: const Icon(Iconsax.close_circle,
-                    size: 16, color: AppColors.error),
-                label: Text(
-                  Tr.cancel.tr,
-                  style: const TextStyle(
-                      color: AppColors.error, fontSize: 13),
-                ),
-              ),
-            ),
-          ],
-        ],
+        ),
       ),
     );
   }
@@ -333,25 +568,38 @@ class _RdvCard extends StatelessWidget {
     Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
         ),
         title: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: EdgeInsets.all(DSSpacing.sm),
               decoration: BoxDecoration(
-                color: AppColors.error.withValues(alpha: 0.1),
+                color: AppColors.error.withAlpha(20),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Iconsax.warning_2,
-                  color: AppColors.error, size: 22),
+              child: const Icon(
+                Iconsax.warning_2,
+                color: AppColors.error,
+                size: 22,
+              ),
             ),
-            const SizedBox(width: 10),
-            Text(Tr.cancelRdv.tr),
+            SizedBox(width: DSSpacing.sm),
+            Expanded(
+              child: Text(
+                Tr.cancelRdv.tr,
+                style: DSTypography.labelLarge.copyWith(
+                  color: DSColors.textPrimary,
+                ),
+              ),
+            ),
           ],
         ),
         content: Text(
           Tr.cancelIrreversible.tr,
+          style: DSTypography.bodyMedium.copyWith(
+            color: DSColors.textSecondary,
+          ),
         ),
         actions: [
           TextButton(
@@ -367,6 +615,51 @@ class _RdvCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _MetaItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _MetaItem({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 16, color: AppColors.primary),
+        SizedBox(width: DSSpacing.sm),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: DSTypography.labelSmall.copyWith(
+                  color: DSColors.textSecondary,
+                ),
+              ),
+              SizedBox(height: 2),
+              Text(
+                value,
+                style: DSTypography.bodyMedium.copyWith(
+                  color: DSColors.textPrimary,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

@@ -42,8 +42,6 @@ class CabinetsView extends StatelessWidget {
               itemCount: controller.cabinets.length,
               itemBuilder: (context, index) {
                 final cabinet = controller.cabinets[index];
-                final color = AppColors.fromHex(
-                    cabinet.couleurPrimaire ?? '#007bff');
                 return AnimationConfiguration.staggeredList(
                   position: index,
                   duration: const Duration(milliseconds: 400),
@@ -51,7 +49,6 @@ class CabinetsView extends StatelessWidget {
                     verticalOffset: 50.0,
                     child: FadeInAnimation(
                       child: CustomCard(
-                        borderLeftColor: color,
                         onTap: () {
                           controller.selectCabinet(cabinet);
                           Get.toNamed(AppRoutes.cabinetDetail,
@@ -63,7 +60,7 @@ class CabinetsView extends StatelessWidget {
                               logoUrl: cabinet.logo,
                               size: 52,
                               borderRadius: 14,
-                              accentColor: color,
+                              accentColor: AppColors.primary,
                             ),
                             const SizedBox(width: 14),
                             Expanded(

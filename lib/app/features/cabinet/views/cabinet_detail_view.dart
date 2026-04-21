@@ -18,10 +18,8 @@ class CabinetDetailView extends StatelessWidget {
     final controller = Get.find<CabinetController>();
     final cabinet = controller.selectedCabinet.value ??
         (Get.arguments is CabinetModel ? Get.arguments as CabinetModel : null);
-    final color =
-        AppColors.fromHex(cabinet?.couleurPrimaire ?? '#007bff');
-    final accentColor =
-        AppColors.fromHex(cabinet?.couleurSecondaire ?? '#43A047');
+    final cabinetAccent =
+        AppColors.fromHex(cabinet?.couleurPrimaire ?? '#2F7D79');
     // Texte sur fond primaire = toujours blanc (lisibilité garantie)
     const textOnPrimary = Colors.white;
 
@@ -32,7 +30,7 @@ class CabinetDetailView extends StatelessWidget {
           SliverAppBar(
             expandedHeight: 200,
             pinned: true,
-            backgroundColor: color,
+            backgroundColor: AppColors.primary,
             foregroundColor: textOnPrimary,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back_ios_rounded,
@@ -42,13 +40,10 @@ class CabinetDetailView extends StatelessWidget {
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
+                  gradient: const LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [
-                      color,
-                      color.withValues(alpha: 0.8),
-                    ],
+                    colors: [AppColors.primaryDark, AppColors.primary],
                   ),
                 ),
                 child: SafeArea(
@@ -62,7 +57,7 @@ class CabinetDetailView extends StatelessWidget {
                             logoUrl: cabinet?.logo,
                             size: 72,
                             borderRadius: 20,
-                            accentColor: Colors.white,
+                            accentColor: AppColors.primary,
                           ),
                           const SizedBox(height: 12),
                           Text(
@@ -74,6 +69,28 @@ class CabinetDetailView extends StatelessWidget {
                               color: textOnPrimary,
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.16),
+                              borderRadius: BorderRadius.circular(999),
+                              border: Border.all(
+                                color: cabinetAccent.withValues(alpha: 0.35),
+                              ),
+                            ),
+                            child: Text(
+                              Tr.cabinet.tr,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                         ],
@@ -98,19 +115,19 @@ class CabinetDetailView extends StatelessWidget {
                     icon: Iconsax.location,
                     label: Tr.address.tr,
                     value: cabinet?.adresse ?? '',
-                    color: color,
+                    color: AppColors.primary,
                   ),
                   _InfoRow(
                     icon: Iconsax.call,
                     label: Tr.phone.tr,
                     value: cabinet?.telephone ?? '',
-                    color: color,
+                    color: AppColors.primary,
                   ),
                   _InfoRow(
                     icon: Iconsax.sms,
                     label: Tr.email.tr,
                     value: cabinet?.email ?? '',
-                    color: color,
+                    color: AppColors.primary,
                   ),
                   const SizedBox(height: 24),
 
@@ -136,12 +153,12 @@ class CabinetDetailView extends StatelessWidget {
                                 Container(
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                    color: accentColor.withValues(alpha: 0.1),
+                                    color: AppColors.primaryUltraLight,
                                     borderRadius:
                                         BorderRadius.circular(12),
                                   ),
                                   child: Icon(Iconsax.health,
-                                      color: accentColor, size: 22),
+                                      color: cabinetAccent, size: 22),
                                 ),
                                 const SizedBox(width: 14),
                                 Expanded(
@@ -160,8 +177,8 @@ class CabinetDetailView extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                                Icon(Icons.arrow_forward_ios_rounded,
-                                    size: 16, color: color),
+                                const Icon(Icons.arrow_forward_ios_rounded,
+                                    size: 16, color: AppColors.textLight),
                               ],
                             ),
                           );
@@ -181,7 +198,7 @@ class CabinetDetailView extends StatelessWidget {
                       icon: const Icon(Iconsax.user_search),
                       label: Text(Tr.seeDoctors.tr),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: color,
+                        backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),

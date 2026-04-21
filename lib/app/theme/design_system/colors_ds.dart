@@ -5,19 +5,19 @@ import 'package:flutter/material.dart';
 class DSColors {
   DSColors._(); // Private constructor
 
-  // ─── PRIMARY (BLEU SEUL) ───────────────────────────────────
-  static const Color primary = Color(0xFF2563EB); // Bleu unique & cohérent
+  // ─── PRIMARY (TEAL MEDICAL) ────────────────────────────────
+  static const Color primary = Color(0xFF2F7D79); // Teal medical premium
 
   // ─── PRIMARY VARIANTS ────────────────────────────────────────
   static const Color primaryDark = Color(
-    0xFF1D4ED8,
-  ); // Bleu foncé - pressed state
+    0xFF245F5C,
+  ); // Teal fonce - pressed state
   static const Color primaryLight = Color(
-    0xFF3B82F6,
-  ); // Bleu clair - hover state
+    0xFF4FA7A1,
+  ); // Teal clair - hover state
   static const Color primaryUltraLight = Color(
-    0xFFDBEAFE,
-  ); // Bleu très clair - backgrounds
+    0xFFEAF6F5,
+  ); // Fond teal tres leger - backgrounds
 
   // ─── NEUTRAL SCALE (GRIS SIMPLES) ──────────────────────────
   // Light Mode
@@ -25,7 +25,7 @@ class DSColors {
   static const Color textSecondary = Color(
     0xFF6B7280,
   ); // Gris moyen pour subtitle
-  static const Color background = Color(0xFFFAFAFA); // Blanc cassé (très léger)
+  static const Color background = Color(0xFFEAF6F5); // Fond medical tres leger
   static const Color surface = Color(0xFFFFFFFF); // Blanc pur pour cartes
   static const Color border = Color(
     0xFFE5E7EB,
@@ -41,8 +41,8 @@ class DSColors {
   // ─── SEMANTIC (MINIMAL) ─────────────────────────────────────
   static const Color error = Color(0xFFDC2626); // Rouge (erreurs seulement)
   static const Color success = Color(
-    0xFF0EA5E9,
-  ); // Bleu ciel (confirmation - inspiré Doctorlib)
+    0xFF2F7D79,
+  ); // Confirme/succes dans la meme famille visuelle
 
   // ─── UTILITY ────────────────────────────────────────────────
   static const Color white = Color(0xFFFFFFFF);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import '../../theme/app_colors.dart';
 
 /// Widget réutilisable pour afficher le logo d'un cabinet.
 /// Affiche l'image réseau si disponible, sinon retourne à une icône stylisée.
@@ -14,7 +15,7 @@ class CabinetLogo extends StatelessWidget {
     this.logoUrl,
     this.size = 48,
     this.borderRadius = 14,
-    this.accentColor = const Color(0xFF2E7D32),
+    this.accentColor = AppColors.primary,
   });
 
   @override

@@ -112,7 +112,7 @@ class _WelcomeViewState extends State<WelcomeView>
             colors: [
               AppColors.primary,
               AppColors.primaryLight,
-              Color(0xFF4ECDC4),
+              AppColors.primaryUltraLight,
             ],
           ),
         ),
