@@ -1,203 +1,272 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'app_colors.dart';
+import 'design_system/colors_ds.dart';
+import 'design_system/typography_ds.dart';
+import 'design_system/spacing_ds.dart';
+import 'design_system/border_radius_ds.dart';
 
 class AppTheme {
   static ThemeData get lightTheme => ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.primary,
-          primary: AppColors.primary,
-          secondary: AppColors.primaryLight,
-          surface: AppColors.surface,
-          error: AppColors.error,
+    useMaterial3: true,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: DSColors.primary,
+      primary: DSColors.primary,
+      surface: DSColors.surface,
+      error: DSColors.error,
+      brightness: Brightness.light,
+    ),
+    scaffoldBackgroundColor: DSColors.background,
+    appBarTheme: AppBarTheme(
+      backgroundColor: DSColors.primary,
+      foregroundColor: DSColors.white,
+      elevation: 0,
+      centerTitle: true,
+      titleTextStyle: DSTypography.headingSmall.copyWith(color: DSColors.white),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: DSColors.primary,
+        foregroundColor: DSColors.white,
+        disabledBackgroundColor: DSColors.border,
+        disabledForegroundColor: DSColors.textSecondary,
+        elevation: 2,
+        padding: EdgeInsets.symmetric(
+          horizontal: DSSpacing.buttonPaddingH,
+          vertical: DSSpacing.buttonPaddingV,
         ),
-        scaffoldBackgroundColor: AppColors.background,
-        textTheme: GoogleFonts.poppinsTextTheme(),
-        appBarTheme: AppBarTheme(
-          backgroundColor: AppColors.primary,
-          foregroundColor: AppColors.textWhite,
-          elevation: 0,
-          centerTitle: true,
-          titleTextStyle: GoogleFonts.poppins(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textWhite,
-          ),
+        shape: RoundedRectangleBorder(
+          borderRadius: DSBorderRadius.mediumRadius,
         ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: AppColors.textWhite,
-            elevation: 2,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            textStyle: GoogleFonts.poppins(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+        textStyle: DSTypography.labelLarge,
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: DSColors.primary,
+        disabledForegroundColor: DSColors.textSecondary,
+        side: BorderSide(color: DSColors.primary, width: 2),
+        padding: EdgeInsets.symmetric(
+          horizontal: DSSpacing.buttonPaddingH,
+          vertical: DSSpacing.buttonPaddingV,
         ),
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: AppColors.cardBackground,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: AppColors.divider),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: AppColors.divider),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide:
-                const BorderSide(color: AppColors.primary, width: 2),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: AppColors.error),
-          ),
-          hintStyle: GoogleFonts.poppins(
-            color: AppColors.textLight,
-            fontSize: 14,
-          ),
+        shape: RoundedRectangleBorder(
+          borderRadius: DSBorderRadius.mediumRadius,
         ),
-        cardTheme: CardThemeData(
-          color: AppColors.cardBackground,
-          elevation: 2,
-          shadowColor: Colors.black12,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        textStyle: DSTypography.labelLarge,
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: DSColors.primary,
+        disabledForegroundColor: DSColors.textSecondary,
+        padding: EdgeInsets.symmetric(
+          horizontal: DSSpacing.lg,
+          vertical: DSSpacing.md,
         ),
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: AppColors.cardBackground,
-          selectedItemColor: AppColors.primary,
-          unselectedItemColor: AppColors.textLight,
-          type: BottomNavigationBarType.fixed,
-          elevation: 8,
-        ),
-        tabBarTheme: TabBarThemeData(
-          labelColor: AppColors.primary,
-          unselectedLabelColor: AppColors.textLight,
-          indicatorColor: AppColors.primary,
-          labelStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-          unselectedLabelStyle: GoogleFonts.poppins(),
-        ),
-        chipTheme: ChipThemeData(
-          backgroundColor: AppColors.background,
-          selectedColor: AppColors.primary.withValues(alpha: 0.15),
-          labelStyle: GoogleFonts.poppins(fontSize: 13),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          side: BorderSide(color: AppColors.divider),
-        ),
-      );
+        textStyle: DSTypography.labelLarge,
+      ),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: DSColors.white,
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: DSSpacing.inputPadding,
+        vertical: DSSpacing.inputPadding,
+      ),
+      border: OutlineInputBorder(
+        borderRadius: DSBorderRadius.mediumRadius,
+        borderSide: BorderSide(color: DSColors.borderLight, width: 1.5),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: DSBorderRadius.mediumRadius,
+        borderSide: BorderSide(color: DSColors.borderLight, width: 1.5),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: DSBorderRadius.mediumRadius,
+        borderSide: BorderSide(color: DSColors.primary, width: 2),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: DSBorderRadius.mediumRadius,
+        borderSide: BorderSide(color: DSColors.error, width: 2),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: DSBorderRadius.mediumRadius,
+        borderSide: BorderSide(color: DSColors.error, width: 2),
+      ),
+      hintStyle: DSTypography.bodyLarge.copyWith(
+        color: DSColors.textSecondary.withAlpha(153),
+      ),
+      labelStyle: DSTypography.labelMedium.copyWith(
+        color: DSColors.textPrimary,
+      ),
+      errorStyle: DSTypography.caption.copyWith(color: DSColors.error),
+    ),
+    cardTheme: CardThemeData(
+      color: DSColors.surfaceLight,
+      elevation: 2,
+      shadowColor: Colors.black.withAlpha(25),
+      shape: RoundedRectangleBorder(borderRadius: DSBorderRadius.mediumRadius),
+      margin: EdgeInsets.zero,
+    ),
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: DSColors.surfaceLight,
+      selectedItemColor: DSColors.primary,
+      unselectedItemColor: DSColors.textSecondary,
+      type: BottomNavigationBarType.fixed,
+      elevation: 8,
+      selectedLabelStyle: DSTypography.labelSmall,
+      unselectedLabelStyle: DSTypography.labelSmall,
+    ),
+    tabBarTheme: TabBarThemeData(
+      labelColor: DSColors.primary,
+      unselectedLabelColor: DSColors.textSecondary,
+      indicatorColor: DSColors.primary,
+      labelStyle: DSTypography.labelLarge,
+      unselectedLabelStyle: DSTypography.bodyMedium,
+    ),
+    chipTheme: ChipThemeData(
+      backgroundColor: DSColors.background,
+      selectedColor: DSColors.primary.withAlpha(38),
+      labelStyle: DSTypography.labelMedium,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      side: BorderSide(color: DSColors.borderLight),
+    ),
+    dividerTheme: DividerThemeData(
+      color: DSColors.borderLight.withAlpha(128),
+      thickness: 1,
+      space: DSSpacing.itemSpacing,
+    ),
+  );
 
   static ThemeData get darkTheme => ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.dark,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.primary,
-          brightness: Brightness.dark,
-          primary: AppColors.primaryLight,
-          secondary: AppColors.primary,
-          surface: AppColors.darkSurface,
-          error: AppColors.error,
+    useMaterial3: true,
+    brightness: Brightness.dark,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: DSColors.primary,
+      primary: DSColors.primary,
+      surface: DSColors.darkSurface,
+      error: DSColors.error,
+      brightness: Brightness.dark,
+    ),
+    scaffoldBackgroundColor: DSColors.darkBackground,
+    appBarTheme: AppBarTheme(
+      backgroundColor: DSColors.darkSurface,
+      foregroundColor: DSColors.darkTextPrimary,
+      elevation: 0,
+      centerTitle: true,
+      titleTextStyle: DSTypography.headingSmall.copyWith(
+        color: DSColors.darkTextPrimary,
+      ),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: DSColors.primary,
+        foregroundColor: DSColors.white,
+        disabledBackgroundColor: DSColors.darkBorder,
+        disabledForegroundColor: DSColors.darkTextSecondary,
+        elevation: 2,
+        padding: EdgeInsets.symmetric(
+          horizontal: DSSpacing.buttonPaddingH,
+          vertical: DSSpacing.buttonPaddingV,
         ),
-        scaffoldBackgroundColor: AppColors.darkBackground,
-        textTheme: GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme),
-        appBarTheme: AppBarTheme(
-          backgroundColor: AppColors.darkCardBackground,
-          foregroundColor: AppColors.darkTextPrimary,
-          elevation: 0,
-          centerTitle: true,
-          titleTextStyle: GoogleFonts.poppins(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: AppColors.darkTextPrimary,
-          ),
+        shape: RoundedRectangleBorder(
+          borderRadius: DSBorderRadius.mediumRadius,
         ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: AppColors.textWhite,
-            elevation: 2,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            textStyle: GoogleFonts.poppins(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+        textStyle: DSTypography.labelLarge,
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: DSColors.primary,
+        side: BorderSide(color: DSColors.primary, width: 2),
+        padding: EdgeInsets.symmetric(
+          horizontal: DSSpacing.buttonPaddingH,
+          vertical: DSSpacing.buttonPaddingV,
         ),
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: AppColors.darkCardBackground,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: AppColors.darkDivider),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: AppColors.darkDivider),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide:
-                const BorderSide(color: AppColors.primaryLight, width: 2),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: AppColors.error),
-          ),
-          hintStyle: GoogleFonts.poppins(
-            color: AppColors.darkTextLight,
-            fontSize: 14,
-          ),
+        shape: RoundedRectangleBorder(
+          borderRadius: DSBorderRadius.mediumRadius,
         ),
-        cardTheme: CardThemeData(
-          color: AppColors.darkCardBackground,
-          elevation: 2,
-          shadowColor: Colors.black26,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        textStyle: DSTypography.labelLarge,
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: DSColors.primary,
+        padding: EdgeInsets.symmetric(
+          horizontal: DSSpacing.lg,
+          vertical: DSSpacing.md,
         ),
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: AppColors.darkCardBackground,
-          selectedItemColor: AppColors.primaryLight,
-          unselectedItemColor: AppColors.darkTextLight,
-          type: BottomNavigationBarType.fixed,
-          elevation: 8,
-        ),
-        tabBarTheme: TabBarThemeData(
-          labelColor: AppColors.primaryLight,
-          unselectedLabelColor: AppColors.darkTextLight,
-          indicatorColor: AppColors.primaryLight,
-          labelStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-          unselectedLabelStyle: GoogleFonts.poppins(),
-        ),
-        chipTheme: ChipThemeData(
-          backgroundColor: AppColors.darkBackground,
-          selectedColor: AppColors.primary.withValues(alpha: 0.3),
-          labelStyle: GoogleFonts.poppins(fontSize: 13),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          side: BorderSide(color: AppColors.darkDivider),
-        ),
-      );
+        textStyle: DSTypography.labelLarge,
+      ),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: DSColors.darkSurface.withAlpha(128),
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: DSSpacing.inputPadding,
+        vertical: DSSpacing.inputPadding,
+      ),
+      border: OutlineInputBorder(
+        borderRadius: DSBorderRadius.mediumRadius,
+        borderSide: BorderSide(color: DSColors.darkBorder, width: 1.5),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: DSBorderRadius.mediumRadius,
+        borderSide: BorderSide(color: DSColors.darkBorder, width: 1.5),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: DSBorderRadius.mediumRadius,
+        borderSide: BorderSide(color: DSColors.primary, width: 2),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: DSBorderRadius.mediumRadius,
+        borderSide: BorderSide(color: DSColors.error, width: 2),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: DSBorderRadius.mediumRadius,
+        borderSide: BorderSide(color: DSColors.error, width: 2),
+      ),
+      hintStyle: DSTypography.bodyLarge.copyWith(
+        color: DSColors.darkTextSecondary.withAlpha(128),
+      ),
+      labelStyle: DSTypography.labelMedium.copyWith(
+        color: DSColors.darkTextPrimary,
+      ),
+      errorStyle: DSTypography.caption.copyWith(color: DSColors.error),
+    ),
+    cardTheme: CardThemeData(
+      color: DSColors.darkSurface,
+      elevation: 2,
+      shadowColor: Colors.black.withAlpha(77),
+      shape: RoundedRectangleBorder(borderRadius: DSBorderRadius.mediumRadius),
+      margin: EdgeInsets.zero,
+    ),
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: DSColors.darkSurface,
+      selectedItemColor: DSColors.primary,
+      unselectedItemColor: DSColors.darkTextSecondary,
+      type: BottomNavigationBarType.fixed,
+      elevation: 8,
+      selectedLabelStyle: DSTypography.labelSmall,
+      unselectedLabelStyle: DSTypography.labelSmall,
+    ),
+    tabBarTheme: TabBarThemeData(
+      labelColor: DSColors.primary,
+      unselectedLabelColor: DSColors.darkTextSecondary,
+      indicatorColor: DSColors.primary,
+      labelStyle: DSTypography.labelLarge,
+      unselectedLabelStyle: DSTypography.bodyMedium,
+    ),
+    chipTheme: ChipThemeData(
+      backgroundColor: DSColors.darkBackground,
+      selectedColor: DSColors.primary.withAlpha(64),
+      labelStyle: DSTypography.labelMedium,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      side: BorderSide(color: DSColors.darkBorder),
+    ),
+    dividerTheme: DividerThemeData(
+      color: DSColors.darkBorder.withAlpha(77),
+      thickness: 1,
+      space: DSSpacing.itemSpacing,
+    ),
+  );
 }
