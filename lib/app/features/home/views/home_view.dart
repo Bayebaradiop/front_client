@@ -108,10 +108,7 @@ class _HomeContent extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _SectionHeader(
-                          title: Tr.nextAppointment.tr,
-                          subtitle: 'Retrouvez les informations essentielles de votre consultation.',
-                        ),
+                        _SectionHeader(title: Tr.nextAppointment.tr),
                         SizedBox(height: DSSpacing.md),
                         _ProchainRdvCard(rdv: rdv),
                       ],
@@ -120,10 +117,11 @@ class _HomeContent extends StatelessWidget {
                 }),
                 SizedBox(height: DSSpacing.xl),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: DSSpacing.screenMargin),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: DSSpacing.screenMargin,
+                  ),
                   child: _SectionHeader(
                     title: Tr.medicalCabinets.tr,
-                    subtitle: 'Des établissements présentés de manière plus claire et plus rassurante.',
                     actionLabel: Tr.seeAll.tr,
                     onAction: () => Get.toNamed(AppRoutes.cabinets),
                   ),
@@ -132,20 +130,24 @@ class _HomeContent extends StatelessWidget {
                 Obx(
                   () => controller.isLoading.value
                       ? SizedBox(
-                          height: 188,
+                          height: 208,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            padding: EdgeInsets.only(left: DSSpacing.screenMargin),
+                            padding: EdgeInsets.only(
+                              left: DSSpacing.screenMargin,
+                            ),
                             itemCount: 3,
                             itemBuilder: (_, __) =>
-                                const ShimmerCard(width: 272, height: 176),
+                                const ShimmerCard(width: 260, height: 196),
                           ),
                         )
                       : SizedBox(
-                          height: 188,
+                          height: 208,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            padding: EdgeInsets.only(left: DSSpacing.screenMargin),
+                            padding: EdgeInsets.only(
+                              left: DSSpacing.screenMargin,
+                            ),
                             itemCount: controller.cabinets.length,
                             itemBuilder: (_, i) => _CabinetHorizontalCard(
                               cabinet: controller.cabinets[i],
@@ -155,10 +157,11 @@ class _HomeContent extends StatelessWidget {
                 ),
                 SizedBox(height: DSSpacing.xl),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: DSSpacing.screenMargin),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: DSSpacing.screenMargin,
+                  ),
                   child: _SectionHeader(
                     title: Tr.specialties.tr,
-                    subtitle: 'Choisissez une spécialité avec une lecture plus simple et plus accessible.',
                     actionLabel: Tr.seeAll.tr,
                     onAction: () => Get.toNamed(AppRoutes.specialites),
                   ),
@@ -176,10 +179,11 @@ class _HomeContent extends StatelessWidget {
                 ),
                 SizedBox(height: DSSpacing.xl),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: DSSpacing.screenMargin),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: DSSpacing.screenMargin,
+                  ),
                   child: _SectionHeader(
                     title: Tr.doctors.tr,
-                    subtitle: 'Une sélection de praticiens présentée avec davantage de clarté.',
                     actionLabel: Tr.seeAll.tr,
                     onAction: () => Get.toNamed(AppRoutes.medecins),
                   ),
@@ -191,7 +195,9 @@ class _HomeContent extends StatelessWidget {
                           height: 240,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            padding: EdgeInsets.only(left: DSSpacing.screenMargin),
+                            padding: EdgeInsets.only(
+                              left: DSSpacing.screenMargin,
+                            ),
                             itemCount: 3,
                             itemBuilder: (_, __) =>
                                 const ShimmerCard(width: 184, height: 208),
@@ -201,7 +207,9 @@ class _HomeContent extends StatelessWidget {
                           height: 240,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            padding: EdgeInsets.only(left: DSSpacing.screenMargin),
+                            padding: EdgeInsets.only(
+                              left: DSSpacing.screenMargin,
+                            ),
                             itemCount: controller.medecins.length > 6
                                 ? 6
                                 : controller.medecins.length,
@@ -272,7 +280,6 @@ class _HomeHero extends StatelessWidget {
                         color: Colors.white.withAlpha(235),
                       ),
                     ),
-                   
                   ],
                 ),
               ),
@@ -293,10 +300,9 @@ class _HomeHero extends StatelessWidget {
               ),
             ],
           ),
-          
-          
+
           SizedBox(height: DSSpacing.sm),
-        
+
           SizedBox(height: DSSpacing.lg),
           GestureDetector(
             onTap: () => controller.changeTab(2),
@@ -470,16 +476,10 @@ class _HeroStatPill extends StatelessWidget {
 
 class _SectionHeader extends StatelessWidget {
   final String title;
-  final String subtitle;
   final String? actionLabel;
   final VoidCallback? onAction;
 
-  const _SectionHeader({
-    required this.title,
-    required this.subtitle,
-    this.actionLabel,
-    this.onAction,
-  });
+  const _SectionHeader({required this.title, this.actionLabel, this.onAction});
 
   @override
   Widget build(BuildContext context) {
@@ -495,13 +495,6 @@ class _SectionHeader extends StatelessWidget {
                 style: DSTypography.headingSmall.copyWith(
                   color: DSColors.textPrimary,
                   fontSize: 21,
-                ),
-              ),
-              SizedBox(height: DSSpacing.xs),
-              Text(
-                subtitle,
-                style: DSTypography.bodyMedium.copyWith(
-                  color: DSColors.textSecondary,
                 ),
               ),
             ],
@@ -522,7 +515,8 @@ class _ProchainRdvCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final doctorName = 'Dr. ${rdv.medecinPrenom ?? ''} ${rdv.medecinNom ?? ''}'.trim();
+    final doctorName = 'Dr. ${rdv.medecinPrenom ?? ''} ${rdv.medecinNom ?? ''}'
+        .trim();
     final timeRange =
         '${(rdv.heureDebut ?? '').length >= 5 ? rdv.heureDebut!.substring(0, 5) : ''} - ${(rdv.heureFin ?? '').length >= 5 ? rdv.heureFin!.substring(0, 5) : ''}';
 
@@ -673,12 +667,12 @@ class _CabinetHorizontalCard extends StatelessWidget {
     return GestureDetector(
       onTap: () => Get.toNamed(AppRoutes.cabinetDetail, arguments: cabinet),
       child: Container(
-        width: 272,
+        width: 260,
         margin: EdgeInsets.only(right: DSSpacing.md),
-        padding: EdgeInsets.all(DSSpacing.lg),
+        padding: EdgeInsets.all(DSSpacing.md),
         decoration: BoxDecoration(
           color: DSColors.surface,
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(22),
           border: Border.all(color: DSColors.borderLight),
           boxShadow: [
             BoxShadow(
@@ -694,14 +688,14 @@ class _CabinetHorizontalCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding: EdgeInsets.all(DSSpacing.sm),
+                  padding: EdgeInsets.all(DSSpacing.xs),
                   decoration: BoxDecoration(
                     color: AppColors.primaryUltraLight,
-                    borderRadius: BorderRadius.circular(18),
+                    borderRadius: BorderRadius.circular(14),
                   ),
                   child: CabinetLogo(
                     logoUrl: cabinet.logo,
-                    size: 40,
+                    size: 36,
                     borderRadius: 12,
                     accentColor: accentColor,
                   ),
@@ -720,6 +714,7 @@ class _CabinetHorizontalCard extends StatelessWidget {
                     Tr.cabinet.tr,
                     style: DSTypography.labelSmall.copyWith(
                       color: AppColors.primary,
+                      fontSize: 11,
                     ),
                   ),
                 ),
@@ -730,7 +725,7 @@ class _CabinetHorizontalCard extends StatelessWidget {
               cabinet.nom ?? '',
               style: DSTypography.headingSmall.copyWith(
                 color: DSColors.textPrimary,
-                fontSize: 20,
+                fontSize: 18,
                 height: 1.15,
               ),
               maxLines: 2,
@@ -747,6 +742,7 @@ class _CabinetHorizontalCard extends StatelessWidget {
                     cabinet.adresse ?? '',
                     style: DSTypography.bodyMedium.copyWith(
                       color: DSColors.textSecondary,
+                      height: 1.35,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -754,68 +750,8 @@ class _CabinetHorizontalCard extends StatelessWidget {
                 ),
               ],
             ),
-            const Spacer(),
-            Row(
-              children: [
-                if ((cabinet.telephone ?? '').isNotEmpty)
-                  Expanded(
-                    child: _CabinetInfoChip(
-                      icon: Iconsax.call,
-                      label: Tr.phone.tr,
-                    ),
-                  ),
-                if ((cabinet.telephone ?? '').isNotEmpty &&
-                    (cabinet.email ?? '').isNotEmpty)
-                  SizedBox(width: DSSpacing.sm),
-                if ((cabinet.email ?? '').isNotEmpty)
-                  Expanded(
-                    child: _CabinetInfoChip(
-                      icon: Iconsax.sms,
-                      label: Tr.email.tr,
-                    ),
-                  ),
-              ],
-            ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _CabinetInfoChip extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const _CabinetInfoChip({required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: DSSpacing.sm,
-        vertical: DSSpacing.sm,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.primaryUltraLight,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: DSColors.borderLight),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 14, color: DSColors.primary),
-          SizedBox(width: DSSpacing.xs),
-          Flexible(
-            child: Text(
-              label,
-              style: DSTypography.labelSmall.copyWith(
-                color: DSColors.textPrimary,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -970,6 +906,8 @@ class _SpecialitesGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final visibleSpecialites = specialites.take(4).toList(growable: false);
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: DSSpacing.screenMargin),
       child: GridView.builder(
@@ -979,11 +917,11 @@ class _SpecialitesGrid extends StatelessWidget {
           crossAxisCount: 2,
           mainAxisSpacing: 12,
           crossAxisSpacing: 12,
-          childAspectRatio: 1.42,
+          childAspectRatio: 1.28,
         ),
-        itemCount: specialites.length,
+        itemCount: visibleSpecialites.length,
         itemBuilder: (_, i) {
-          final spec = specialites[i];
+          final spec = visibleSpecialites[i];
           return GestureDetector(
             onTap: () => Get.toNamed(
               AppRoutes.medecins,
@@ -1003,48 +941,34 @@ class _SpecialitesGrid extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Row(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: EdgeInsets.all(DSSpacing.md),
+                    width: 42,
+                    height: 42,
+                    alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: DSColors.primaryUltraLight,
-                      borderRadius: BorderRadius.circular(18),
+                      borderRadius: BorderRadius.circular(14),
                     ),
                     child: Icon(
                       _getIcon(''),
                       color: DSColors.primary,
-                      size: 22,
+                      size: 20,
                     ),
                   ),
-                  SizedBox(width: DSSpacing.md),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          spec.nom ?? '',
-                          style: DSTypography.labelLarge.copyWith(
-                            color: DSColors.textPrimary,
-                            height: 1.2,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        SizedBox(height: DSSpacing.xs),
-                        Text(
-                          spec.description?.trim().isNotEmpty == true
-                              ? spec.description!
-                              : Tr.browseBySpecialty.tr,
-                          style: DSTypography.bodySmall.copyWith(
-                            color: DSColors.textSecondary,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+                  SizedBox(height: DSSpacing.sm),
+                  Text(
+                    spec.nom ?? '',
+                    style: DSTypography.labelLarge.copyWith(
+                      color: DSColors.textPrimary,
+                      fontSize: 15,
+                      height: 1.2,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Design System Typography
 /// Échelle typographique standardisée avec line-height optimisé
@@ -7,7 +6,7 @@ class DSTypography {
   DSTypography._();
 
   // ─── FONT FAMILY ──────────────────────────────────────────
-  static TextStyle get _baseStyle => GoogleFonts.inter();
+  static const TextStyle _baseStyle = TextStyle();
 
   // ─── DISPLAY & HEADINGS ───────────────────────────────────
 

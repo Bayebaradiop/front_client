@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
 class AppTextStyles {
@@ -13,57 +12,42 @@ class AppTextStyles {
   static Color get _textLight =>
       _dark ? AppColors.darkTextLight : AppColors.textLight;
 
-  static TextStyle get heading1 => GoogleFonts.poppins(
-        fontSize: 28,
-        fontWeight: FontWeight.bold,
-        color: _textPrimary,
-      );
+  static TextStyle get heading1 =>
+      TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: _textPrimary);
 
-  static TextStyle get heading2 => GoogleFonts.poppins(
-        fontSize: 22,
-        fontWeight: FontWeight.bold,
-        color: _textPrimary,
-      );
+  static TextStyle get heading2 =>
+      TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: _textPrimary);
 
-  static TextStyle get heading3 => GoogleFonts.poppins(
-        fontSize: 18,
-        fontWeight: FontWeight.w600,
-        color: _textPrimary,
-      );
+  static TextStyle get heading3 =>
+      TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: _textPrimary);
 
-  static TextStyle get subtitle => GoogleFonts.poppins(
-        fontSize: 16,
-        fontWeight: FontWeight.w500,
-        color: _textSecondary,
-      );
+  static TextStyle get subtitle => TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+    color: _textSecondary,
+  );
 
-  static TextStyle get body => GoogleFonts.poppins(
-        fontSize: 14,
-        fontWeight: FontWeight.normal,
-        color: _textSecondary,
-      );
+  static TextStyle get body => TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.normal,
+    color: _textSecondary,
+  );
 
-  static TextStyle get bodyBold => GoogleFonts.poppins(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        color: _textPrimary,
-      );
+  static TextStyle get bodyBold =>
+      TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _textPrimary);
 
-  static TextStyle get caption => GoogleFonts.poppins(
-        fontSize: 12,
-        fontWeight: FontWeight.normal,
-        color: _textLight,
-      );
+  static TextStyle get caption =>
+      TextStyle(fontSize: 12, fontWeight: FontWeight.normal, color: _textLight);
 
-  static TextStyle get button => GoogleFonts.poppins(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        color: AppColors.textWhite,
-      );
+  static TextStyle get button => const TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textWhite,
+  );
 
-  static TextStyle get label => GoogleFonts.poppins(
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-        color: _textSecondary,
-      );
+  static TextStyle get label => TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+    color: _textSecondary,
+  );
 }

@@ -89,7 +89,7 @@ class MesRdvView extends StatelessWidget {
                 return EmptyState(
                   icon: Iconsax.calendar_1,
                   title: Tr.noAppointments.tr,
-                  subtitle: Tr.bookFirstAppointment.tr,
+                  subtitle: 'Planifiez votre premier rendez-vous.',
                 );
               }
 
@@ -113,10 +113,7 @@ class MesRdvView extends StatelessWidget {
                         child: SlideAnimation(
                           verticalOffset: 24,
                           child: FadeInAnimation(
-                            child: _RdvCard(
-                              rdv: rdv,
-                              controller: controller,
-                            ),
+                            child: _RdvCard(rdv: rdv, controller: controller),
                           ),
                         ),
                       );
@@ -179,16 +176,16 @@ class _RdvHero extends StatelessWidget {
           ),
           SizedBox(height: DSSpacing.sm),
           Text(
-            'Suivez vos consultations avec une vue plus claire et plus sereine.',
+            'Vos rendez-vous, plus simplement.',
             style: DSTypography.headingSmall.copyWith(
               color: DSColors.white,
-              fontSize: 24,
+              fontSize: 22,
               height: 1.2,
             ),
           ),
           SizedBox(height: DSSpacing.sm),
           Text(
-            'Confirmez rapidement ce qui vient, retrouvez votre historique et gardez une lecture simple de votre parcours de soin.',
+            'Retrouvez l\'essentiel en un coup d\'oeil.',
             style: DSTypography.bodyMedium.copyWith(
               color: DSColors.white.withAlpha(214),
             ),
@@ -238,7 +235,7 @@ class _RdvIntro extends StatelessWidget {
           ),
           SizedBox(height: DSSpacing.xs),
           Text(
-            '${controller.tousLesRdv.length} rendez-vous disponibles dans votre espace patient.',
+            '${controller.tousLesRdv.length} rendez-vous dans votre espace.',
             style: DSTypography.bodyMedium.copyWith(
               color: DSColors.textSecondary,
             ),
@@ -291,19 +288,11 @@ class _RdvFilterBar extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onChanged;
 
-  const _RdvFilterBar({
-    required this.selectedIndex,
-    required this.onChanged,
-  });
+  const _RdvFilterBar({required this.selectedIndex, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
-    final items = [
-      Tr.all.tr,
-      Tr.pending.tr,
-      Tr.confirmed.tr,
-      Tr.history.tr,
-    ];
+    final items = [Tr.all.tr, Tr.pending.tr, Tr.confirmed.tr, Tr.history.tr];
 
     return Container(
       padding: EdgeInsets.all(DSSpacing.xs),
@@ -382,8 +371,9 @@ class _RdvCard extends StatelessWidget {
     final color = _statusColor(statut);
     final rawDebut = (rdv['heureDebut'] as String?) ?? '';
     final rawFin = (rdv['heureFin'] as String?) ?? '';
-    final heureDebut =
-        rawDebut.length >= 5 ? rawDebut.substring(0, 5) : rawDebut;
+    final heureDebut = rawDebut.length >= 5
+        ? rawDebut.substring(0, 5)
+        : rawDebut;
     final heureFin = rawFin.length >= 5 ? rawFin.substring(0, 5) : rawFin;
 
     return Container(
@@ -404,7 +394,8 @@ class _RdvCard extends StatelessWidget {
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(24),
         child: InkWell(
-          onTap: () => Get.toNamed(AppRoutes.rdvDetail, arguments: {'rdv': rdv}),
+          onTap: () =>
+              Get.toNamed(AppRoutes.rdvDetail, arguments: {'rdv': rdv}),
           borderRadius: BorderRadius.circular(24),
           child: Padding(
             padding: EdgeInsets.all(DSSpacing.lg),
@@ -450,7 +441,8 @@ class _RdvCard extends StatelessWidget {
                               color: AppColors.primary,
                             ),
                           ),
-                          if (((rdv['cabinetNom'] ?? '') as String).isNotEmpty) ...[
+                          if (((rdv['cabinetNom'] ?? '') as String)
+                              .isNotEmpty) ...[
                             SizedBox(height: DSSpacing.xs),
                             Text(
                               rdv['cabinetNom'] ?? '',
@@ -512,7 +504,8 @@ class _RdvCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      if (((rdv['cabinetAdresse'] ?? '') as String).isNotEmpty) ...[
+                      if (((rdv['cabinetAdresse'] ?? '') as String)
+                          .isNotEmpty) ...[
                         SizedBox(height: DSSpacing.sm),
                         _MetaItem(
                           icon: Iconsax.location,
@@ -567,9 +560,7 @@ class _RdvCard extends StatelessWidget {
   void _showCancelDialog(BuildContext context) {
     Get.dialog(
       AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Row(
           children: [
             Container(
@@ -602,15 +593,10 @@ class _RdvCard extends StatelessWidget {
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text(Tr.noKeep.tr),
-          ),
+          TextButton(onPressed: () => Get.back(), child: Text(Tr.noKeep.tr)),
           ElevatedButton(
             onPressed: () => controller.annulerRdv(rdv['id']),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
             child: Text(Tr.yesCancel.tr),
           ),
         ],
