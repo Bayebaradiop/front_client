@@ -8,6 +8,7 @@ class CustomCard extends StatelessWidget {
   final EdgeInsetsGeometry? margin;
   final Color? borderLeftColor;
   final double borderRadius;
+  final Color? backgroundColor;
 
   const CustomCard({
     super.key,
@@ -16,27 +17,33 @@ class CustomCard extends StatelessWidget {
     this.padding,
     this.margin,
     this.borderLeftColor,
-    this.borderRadius = 16,
+    this.borderRadius = 20,
+    this.backgroundColor,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = backgroundColor ?? (isDark ? AppColors.darkCardBackground : AppColors.cardBackground);
+
     return Container(
       margin: margin ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
-        color: isDark ? AppColors.darkCardBackground : AppColors.cardBackground,
+        color: bg,
         borderRadius: BorderRadius.circular(borderRadius),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.06),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+            color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.03),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
           ),
         ],
         border: borderLeftColor != null
             ? Border(left: BorderSide(color: borderLeftColor!, width: 4))
-            : null,
+            : Border.all(
+                color: isDark ? AppColors.darkDivider : AppColors.divider,
+                width: 1,
+              ),
       ),
       child: Material(
         color: Colors.transparent,

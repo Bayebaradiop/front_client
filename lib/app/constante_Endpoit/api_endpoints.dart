@@ -3,7 +3,7 @@ abstract class ApiEndpoints {
   // Peut etre surchargée au lancement avec:
   // flutter run --dart-define=API_BASE_URL=http://192.168.1.xx:8085/api/
   static const String _defaultBaseUrl =
-      'https://medibook-app.ashyforest-850fd289.spaincentral.azurecontainerapps.io/api/';
+      'https://medibook-app.thankfulmeadow-d1fe3f52.spaincentral.azurecontainerapps.io/api/';
   static const String _configuredBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
     defaultValue: _defaultBaseUrl,

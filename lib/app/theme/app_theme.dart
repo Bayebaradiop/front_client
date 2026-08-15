@@ -2,25 +2,30 @@ import 'package:flutter/material.dart';
 import 'design_system/colors_ds.dart';
 import 'design_system/typography_ds.dart';
 import 'design_system/spacing_ds.dart';
-import 'design_system/border_radius_ds.dart';
 
 class AppTheme {
   static ThemeData get lightTheme => ThemeData(
     useMaterial3: true,
+    fontFamily: 'Plus Jakarta Sans',
     colorScheme: ColorScheme.fromSeed(
       seedColor: DSColors.primary,
       primary: DSColors.primary,
+      secondary: DSColors.primaryLight,
       surface: DSColors.surface,
       error: DSColors.error,
       brightness: Brightness.light,
     ),
     scaffoldBackgroundColor: DSColors.background,
     appBarTheme: AppBarTheme(
-      backgroundColor: DSColors.primary,
-      foregroundColor: DSColors.white,
+      backgroundColor: DSColors.surface,
+      foregroundColor: DSColors.textPrimary,
       elevation: 0,
+      scrolledUnderElevation: 0,
       centerTitle: true,
-      titleTextStyle: DSTypography.headingSmall.copyWith(color: DSColors.white),
+      titleTextStyle: DSTypography.headingSmall.copyWith(
+        color: DSColors.textPrimary,
+        fontWeight: FontWeight.w800,
+      ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
@@ -28,110 +33,103 @@ class AppTheme {
         foregroundColor: DSColors.white,
         disabledBackgroundColor: DSColors.border,
         disabledForegroundColor: DSColors.textSecondary,
-        elevation: 2,
-        padding: EdgeInsets.symmetric(
-          horizontal: DSSpacing.buttonPaddingH,
-          vertical: DSSpacing.buttonPaddingV,
-        ),
+        elevation: 0,
+        shadowColor: DSColors.primary.withValues(alpha: 0.3),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         shape: RoundedRectangleBorder(
-          borderRadius: DSBorderRadius.mediumRadius,
+          borderRadius: BorderRadius.circular(18),
         ),
-        textStyle: DSTypography.labelLarge,
+        textStyle: DSTypography.labelLarge.copyWith(fontWeight: FontWeight.w700),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         foregroundColor: DSColors.primary,
         disabledForegroundColor: DSColors.textSecondary,
-        side: BorderSide(color: DSColors.primary, width: 2),
-        padding: EdgeInsets.symmetric(
-          horizontal: DSSpacing.buttonPaddingH,
-          vertical: DSSpacing.buttonPaddingV,
-        ),
+        side: const BorderSide(color: DSColors.primary, width: 1.5),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         shape: RoundedRectangleBorder(
-          borderRadius: DSBorderRadius.mediumRadius,
+          borderRadius: BorderRadius.circular(18),
         ),
-        textStyle: DSTypography.labelLarge,
+        textStyle: DSTypography.labelLarge.copyWith(fontWeight: FontWeight.w700),
       ),
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
         foregroundColor: DSColors.primary,
         disabledForegroundColor: DSColors.textSecondary,
-        padding: EdgeInsets.symmetric(
-          horizontal: DSSpacing.lg,
-          vertical: DSSpacing.md,
-        ),
-        textStyle: DSTypography.labelLarge,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        textStyle: DSTypography.labelLarge.copyWith(fontWeight: FontWeight.w700),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: DSColors.white,
-      contentPadding: EdgeInsets.symmetric(
-        horizontal: DSSpacing.inputPadding,
-        vertical: DSSpacing.inputPadding,
-      ),
+      fillColor: DSColors.surface,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       border: OutlineInputBorder(
-        borderRadius: DSBorderRadius.mediumRadius,
-        borderSide: BorderSide(color: DSColors.borderLight, width: 1.5),
+        borderRadius: BorderRadius.circular(18),
+        borderSide: const BorderSide(color: DSColors.border, width: 1),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: DSBorderRadius.mediumRadius,
-        borderSide: BorderSide(color: DSColors.borderLight, width: 1.5),
+        borderRadius: BorderRadius.circular(18),
+        borderSide: const BorderSide(color: DSColors.border, width: 1),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: DSBorderRadius.mediumRadius,
-        borderSide: BorderSide(color: DSColors.primary, width: 2),
+        borderRadius: BorderRadius.circular(18),
+        borderSide: const BorderSide(color: DSColors.primary, width: 2),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: DSBorderRadius.mediumRadius,
-        borderSide: BorderSide(color: DSColors.error, width: 2),
+        borderRadius: BorderRadius.circular(18),
+        borderSide: const BorderSide(color: DSColors.error, width: 1.5),
       ),
       focusedErrorBorder: OutlineInputBorder(
-        borderRadius: DSBorderRadius.mediumRadius,
-        borderSide: BorderSide(color: DSColors.error, width: 2),
+        borderRadius: BorderRadius.circular(18),
+        borderSide: const BorderSide(color: DSColors.error, width: 2),
       ),
-      hintStyle: DSTypography.bodyLarge.copyWith(
-        color: DSColors.textSecondary.withAlpha(153),
+      hintStyle: DSTypography.bodyMedium.copyWith(
+        color: DSColors.textLight,
       ),
       labelStyle: DSTypography.labelMedium.copyWith(
         color: DSColors.textPrimary,
+        fontWeight: FontWeight.w600,
       ),
       errorStyle: DSTypography.caption.copyWith(color: DSColors.error),
     ),
     cardTheme: CardThemeData(
-      color: DSColors.surfaceLight,
-      elevation: 2,
-      shadowColor: Colors.black.withAlpha(25),
-      shape: RoundedRectangleBorder(borderRadius: DSBorderRadius.mediumRadius),
+      color: DSColors.surface,
+      elevation: 0,
+      shadowColor: Colors.black.withValues(alpha: 0.04),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+        side: const BorderSide(color: DSColors.border, width: 1),
+      ),
       margin: EdgeInsets.zero,
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: DSColors.surfaceLight,
+      backgroundColor: DSColors.surface,
       selectedItemColor: DSColors.primary,
-      unselectedItemColor: DSColors.textSecondary,
+      unselectedItemColor: DSColors.textLight,
       type: BottomNavigationBarType.fixed,
-      elevation: 8,
-      selectedLabelStyle: DSTypography.labelSmall,
-      unselectedLabelStyle: DSTypography.labelSmall,
+      elevation: 0,
+      selectedLabelStyle: DSTypography.labelSmall.copyWith(fontWeight: FontWeight.w700),
+      unselectedLabelStyle: DSTypography.labelSmall.copyWith(fontWeight: FontWeight.w500),
     ),
     tabBarTheme: TabBarThemeData(
       labelColor: DSColors.primary,
       unselectedLabelColor: DSColors.textSecondary,
       indicatorColor: DSColors.primary,
-      labelStyle: DSTypography.labelLarge,
-      unselectedLabelStyle: DSTypography.bodyMedium,
+      labelStyle: DSTypography.labelLarge.copyWith(fontWeight: FontWeight.w700),
+      unselectedLabelStyle: DSTypography.bodyMedium.copyWith(fontWeight: FontWeight.w500),
     ),
     chipTheme: ChipThemeData(
-      backgroundColor: DSColors.background,
-      selectedColor: DSColors.primary.withAlpha(38),
-      labelStyle: DSTypography.labelMedium,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      side: BorderSide(color: DSColors.borderLight),
+      backgroundColor: DSColors.primaryUltraLight,
+      selectedColor: DSColors.primary,
+      labelStyle: DSTypography.labelMedium.copyWith(fontWeight: FontWeight.w600),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      side: BorderSide.none,
     ),
-    dividerTheme: DividerThemeData(
-      color: DSColors.borderLight.withAlpha(128),
+    dividerTheme: const DividerThemeData(
+      color: DSColors.border,
       thickness: 1,
       space: DSSpacing.itemSpacing,
     ),
@@ -140,9 +138,10 @@ class AppTheme {
   static ThemeData get darkTheme => ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
+    fontFamily: 'Plus Jakarta Sans',
     colorScheme: ColorScheme.fromSeed(
       seedColor: DSColors.primary,
-      primary: DSColors.primary,
+      primary: DSColors.primaryLight,
       surface: DSColors.darkSurface,
       error: DSColors.error,
       brightness: Brightness.dark,
@@ -155,118 +154,38 @@ class AppTheme {
       centerTitle: true,
       titleTextStyle: DSTypography.headingSmall.copyWith(
         color: DSColors.darkTextPrimary,
+        fontWeight: FontWeight.w800,
       ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: DSColors.primary,
-        foregroundColor: DSColors.white,
+        backgroundColor: DSColors.primaryLight,
+        foregroundColor: DSColors.black,
         disabledBackgroundColor: DSColors.darkBorder,
         disabledForegroundColor: DSColors.darkTextSecondary,
-        elevation: 2,
-        padding: EdgeInsets.symmetric(
-          horizontal: DSSpacing.buttonPaddingH,
-          vertical: DSSpacing.buttonPaddingV,
-        ),
+        elevation: 0,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         shape: RoundedRectangleBorder(
-          borderRadius: DSBorderRadius.mediumRadius,
+          borderRadius: BorderRadius.circular(18),
         ),
-        textStyle: DSTypography.labelLarge,
+        textStyle: DSTypography.labelLarge.copyWith(fontWeight: FontWeight.w700),
       ),
-    ),
-    outlinedButtonTheme: OutlinedButtonThemeData(
-      style: OutlinedButton.styleFrom(
-        foregroundColor: DSColors.primary,
-        side: BorderSide(color: DSColors.primary, width: 2),
-        padding: EdgeInsets.symmetric(
-          horizontal: DSSpacing.buttonPaddingH,
-          vertical: DSSpacing.buttonPaddingV,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: DSBorderRadius.mediumRadius,
-        ),
-        textStyle: DSTypography.labelLarge,
-      ),
-    ),
-    textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(
-        foregroundColor: DSColors.primary,
-        padding: EdgeInsets.symmetric(
-          horizontal: DSSpacing.lg,
-          vertical: DSSpacing.md,
-        ),
-        textStyle: DSTypography.labelLarge,
-      ),
-    ),
-    inputDecorationTheme: InputDecorationTheme(
-      filled: true,
-      fillColor: DSColors.darkSurface.withAlpha(128),
-      contentPadding: EdgeInsets.symmetric(
-        horizontal: DSSpacing.inputPadding,
-        vertical: DSSpacing.inputPadding,
-      ),
-      border: OutlineInputBorder(
-        borderRadius: DSBorderRadius.mediumRadius,
-        borderSide: BorderSide(color: DSColors.darkBorder, width: 1.5),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: DSBorderRadius.mediumRadius,
-        borderSide: BorderSide(color: DSColors.darkBorder, width: 1.5),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: DSBorderRadius.mediumRadius,
-        borderSide: BorderSide(color: DSColors.primary, width: 2),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: DSBorderRadius.mediumRadius,
-        borderSide: BorderSide(color: DSColors.error, width: 2),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: DSBorderRadius.mediumRadius,
-        borderSide: BorderSide(color: DSColors.error, width: 2),
-      ),
-      hintStyle: DSTypography.bodyLarge.copyWith(
-        color: DSColors.darkTextSecondary.withAlpha(128),
-      ),
-      labelStyle: DSTypography.labelMedium.copyWith(
-        color: DSColors.darkTextPrimary,
-      ),
-      errorStyle: DSTypography.caption.copyWith(color: DSColors.error),
     ),
     cardTheme: CardThemeData(
       color: DSColors.darkSurface,
-      elevation: 2,
-      shadowColor: Colors.black.withAlpha(77),
-      shape: RoundedRectangleBorder(borderRadius: DSBorderRadius.mediumRadius),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+        side: const BorderSide(color: DSColors.darkBorder, width: 1),
+      ),
       margin: EdgeInsets.zero,
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: DSColors.darkSurface,
-      selectedItemColor: DSColors.primary,
+      selectedItemColor: DSColors.primaryLight,
       unselectedItemColor: DSColors.darkTextSecondary,
       type: BottomNavigationBarType.fixed,
-      elevation: 8,
-      selectedLabelStyle: DSTypography.labelSmall,
-      unselectedLabelStyle: DSTypography.labelSmall,
-    ),
-    tabBarTheme: TabBarThemeData(
-      labelColor: DSColors.primary,
-      unselectedLabelColor: DSColors.darkTextSecondary,
-      indicatorColor: DSColors.primary,
-      labelStyle: DSTypography.labelLarge,
-      unselectedLabelStyle: DSTypography.bodyMedium,
-    ),
-    chipTheme: ChipThemeData(
-      backgroundColor: DSColors.darkBackground,
-      selectedColor: DSColors.primary.withAlpha(64),
-      labelStyle: DSTypography.labelMedium,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      side: BorderSide(color: DSColors.darkBorder),
-    ),
-    dividerTheme: DividerThemeData(
-      color: DSColors.darkBorder.withAlpha(77),
-      thickness: 1,
-      space: DSSpacing.itemSpacing,
+      elevation: 0,
     ),
   );
 }

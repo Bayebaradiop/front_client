@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/design_system/colors_ds.dart';
+import '../../theme/design_system/typography_ds.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -19,25 +20,48 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bg = backgroundColor ?? DSColors.surface;
+    final fg = foregroundColor ?? DSColors.textPrimary;
+
     return AppBar(
       title: Text(
         title,
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          color: foregroundColor ?? AppColors.textWhite,
+        style: DSTypography.headingSmall.copyWith(
+          color: fg,
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
         ),
       ),
-      backgroundColor: backgroundColor ?? AppColors.primary,
-      foregroundColor: foregroundColor ?? AppColors.textWhite,
+      backgroundColor: bg,
+      foregroundColor: fg,
+      scrolledUnderElevation: 0.5,
       leading: showBack
-          ? IconButton(
-              icon: const Icon(Icons.arrow_back_ios_rounded),
-              onPressed: () => Navigator.of(context).pop(),
+          ? Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: DSColors.primaryUltraLight,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: IconButton(
+                  icon: Icon(Icons.arrow_back_ios_new_rounded, size: 16, color: fg),
+                  onPressed: () => Navigator.of(context).pop(),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+              ),
             )
           : null,
       actions: actions,
       elevation: 0,
       centerTitle: true,
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(1.0),
+        child: Container(
+          color: DSColors.borderLight,
+          height: 1.0,
+        ),
+      ),
     );
   }
 
