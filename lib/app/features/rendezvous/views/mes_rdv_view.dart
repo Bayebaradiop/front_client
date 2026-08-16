@@ -130,12 +130,11 @@ class MesRdvView extends StatelessWidget {
 
   List<Map<String, dynamic>> _currentList(RendezvousController controller) {
     switch (controller.selectedTabIndex.value) {
-      case 1:
-        return controller.rdvEnAttente;
-      case 2:
+      case 0:
         return controller.rdvConfirmes;
-      case 3:
+      case 1:
         return controller.rdvHistorique;
+      case 2:
       default:
         return controller.tousLesRdv;
     }
@@ -185,7 +184,7 @@ class _RdvHero extends StatelessWidget {
           ),
           SizedBox(height: DSSpacing.sm),
           Text(
-            'Retrouvez l\'essentiel en un coup d\'oeil.',
+            'Vos réservations sont instantanément confirmées.',
             style: DSTypography.bodyMedium.copyWith(
               color: DSColors.white.withAlpha(214),
             ),
@@ -201,12 +200,12 @@ class _RdvHero extends StatelessWidget {
                   label: Tr.all.tr,
                 ),
                 _HeroPill(
-                  value: '${controller.rdvEnAttente.length}',
-                  label: Tr.pending.tr,
-                ),
-                _HeroPill(
                   value: '${controller.rdvConfirmes.length}',
                   label: Tr.confirmed.tr,
+                ),
+                _HeroPill(
+                  value: '${controller.rdvHistorique.length}',
+                  label: Tr.history.tr,
                 ),
               ],
             ),
@@ -292,7 +291,7 @@ class _RdvFilterBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final items = [Tr.all.tr, Tr.pending.tr, Tr.confirmed.tr, Tr.history.tr];
+    final items = [Tr.confirmed.tr, Tr.history.tr, Tr.all.tr];
 
     return Container(
       padding: EdgeInsets.all(DSSpacing.xs),

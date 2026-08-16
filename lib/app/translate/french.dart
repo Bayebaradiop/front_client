@@ -106,7 +106,7 @@ const Map<String, String> fr = {
   Tr.confirmAppointment: 'Confirmer le rendez-vous',
   Tr.bookingSuccess: 'Rendez-vous réservé avec succès !',
   Tr.appointmentConfirmed: 'Rendez-vous confirmé !',
-  Tr.appointmentConfirmedMsg: 'Votre rendez-vous a été pris avec succès',
+  Tr.appointmentConfirmedMsg: 'Votre rendez-vous a été confirmé immédiatement.',
   Tr.noSlots: 'Aucun créneau disponible',
   Tr.noSlotsThisWeek: 'Aucun créneau disponible cette semaine',
   Tr.tryAnotherDate: 'Essayez une autre date',
