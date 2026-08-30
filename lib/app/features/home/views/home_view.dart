@@ -1,6 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import '../../../core/utils/calendar_utils.dart';
+import '../../../core/utils/date_formatter.dart';
 import '../../../models/cabinet_model.dart';
 import '../../../models/medecin_model.dart';
 import '../../../models/specialite_model.dart';
@@ -17,7 +21,6 @@ import '../controllers/home_controller.dart';
 import '../../auth/controllers/auth_controller.dart';
 import '../../rendezvous/views/mes_rdv_view.dart';
 import '../../../translate/translation_keys.dart';
-import '../../../theme/theme_controller.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -67,7 +70,10 @@ class _CustomFloatingNavBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: DSColors.surface,
         borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: DSColors.borderLight, width: 1),
+        border: Border.all(
+          color: DSColors.borderLight,
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.08),
@@ -134,7 +140,10 @@ class _NavBarItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
@@ -326,11 +335,7 @@ class _HomeHero extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [DSColors.primaryDark, DSColors.primary],
-        ),
+        color: DSColors.primaryDark,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
@@ -503,118 +508,280 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
-// ─── PROCHAIN RDV CARD ─────────────────────────────────────────
-class _ProchainRdvCard extends StatelessWidget {
+// ─── PROCHAIN RDV CARD (DYNAMIC ISLAND STYLE WITH LIVE COUNTDOWN) ──────
+class _ProchainRdvCard extends StatefulWidget {
   final RendezVousModel rdv;
   const _ProchainRdvCard({required this.rdv});
 
   @override
+  State<_ProchainRdvCard> createState() => _ProchainRdvCardState();
+}
+
+class _ProchainRdvCardState extends State<_ProchainRdvCard> {
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 30), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  String _calculateCountdown() {
+    final dateStr = widget.rdv.date;
+    final timeStr = widget.rdv.heureDebut;
+    if (dateStr == null || timeStr == null) return 'Prochainement';
+
+    try {
+      final formattedTime = timeStr.length >= 5 ? timeStr.substring(0, 5) : timeStr;
+      DateTime? rdvDate;
+      if (dateStr.contains('-')) {
+        rdvDate = DateTime.parse('${dateStr}T$formattedTime:00');
+      } else if (dateStr.contains('/')) {
+        final parts = dateStr.split('/');
+        if (parts.length == 3) {
+          rdvDate = DateTime.parse('${parts[2]}-${parts[1].padLeft(2, '0')}-${parts[0].padLeft(2, '0')}T$formattedTime:00');
+        }
+      }
+
+      if (rdvDate != null) {
+        final now = DateTime.now();
+        final diff = rdvDate.difference(now);
+
+        if (diff.isNegative) {
+          if (diff.inHours.abs() < 2) return 'En cours';
+          return 'Aujourd\'hui';
+        }
+
+        if (diff.inMinutes < 60) {
+          return 'Dans ${diff.inMinutes} min';
+        } else if (diff.inHours < 24) {
+          final hours = diff.inHours;
+          final mins = diff.inMinutes % 60;
+          return mins > 0 ? 'Dans ${hours}h${mins.toString().padLeft(2, '0')}' : 'Dans ${hours}h';
+        } else if (diff.inDays == 1) {
+          return 'Demain à $formattedTime';
+        } else {
+          return 'Dans ${diff.inDays} jours';
+        }
+      }
+    } catch (_) {}
+
+    return 'Prochain RDV';
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final rdv = widget.rdv;
     final doctorName = 'Dr. ${rdv.medecinPrenom ?? ''} ${rdv.medecinNom ?? ''}'.trim();
     final timeRange =
         '${(rdv.heureDebut ?? '').length >= 5 ? rdv.heureDebut!.substring(0, 5) : ''} - ${(rdv.heureFin ?? '').length >= 5 ? rdv.heureFin!.substring(0, 5) : ''}';
+    final countdown = _calculateCountdown();
 
     return Container(
-      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: DSColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: DSColors.borderLight),
+        color: const Color(0xFF0F172A),
+        borderRadius: BorderRadius.circular(26),
+        border: Border.all(color: const Color(0xFF1E293B), width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 14,
-            offset: const Offset(0, 4),
+            color: const Color(0xFF0F172A).withValues(alpha: 0.35),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              UserAvatar(
-                photoUrl: rdv.medecinPhoto,
-                initials:
-                    '${(rdv.medecinPrenom ?? '').isNotEmpty ? rdv.medecinPrenom![0] : ''}'
-                    '${(rdv.medecinNom ?? '').isNotEmpty ? rdv.medecinNom![0] : ''}',
-                radius: 20,
-                backgroundColor: DSColors.primaryUltraLight,
-                textColor: DSColors.primary,
-                fontSize: 13,
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      doctorName,
-                      style: DSTypography.headingSmall.copyWith(
-                        color: DSColors.textPrimary,
-                        fontSize: 15,
-                      ),
-                    ),
-                    Text(
-                      rdv.medecinSpecialite ?? '',
-                      style: DSTypography.bodySmall.copyWith(
-                        color: DSColors.primary,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: DSColors.primaryUltraLight,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  rdv.statut ?? '',
-                  style: DSTypography.labelSmall.copyWith(
-                    color: DSColors.primaryDark,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 10,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: DSColors.primaryUltraLight.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Row(
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Dynamic Island Pill Header
+            Row(
               children: [
-                const Icon(Iconsax.calendar_1, size: 14, color: DSColors.primary),
-                const SizedBox(width: 6),
-                Text(
-                  rdv.date ?? '',
-                  style: DSTypography.labelSmall.copyWith(
-                    color: DSColors.textPrimary,
-                    fontWeight: FontWeight.w600,
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E293B),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: const Color(0xFF10B981).withValues(alpha: 0.4),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 7,
+                        height: 7,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF10B981),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        countdown.toUpperCase(),
+                        style: DSTypography.labelSmall.copyWith(
+                          color: const Color(0xFF10B981),
+                          fontWeight: FontWeight.w800,
+                          fontSize: 10,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 14),
-                const Icon(Iconsax.clock, size: 14, color: DSColors.primary),
-                const SizedBox(width: 6),
+                const Spacer(),
                 Text(
-                  timeRange,
-                  style: DSTypography.labelSmall.copyWith(
-                    color: DSColors.textPrimary,
+                  DateFormatter.formatFullFrenchDate(rdv.date),
+                  style: DSTypography.bodySmall.copyWith(
+                    color: Colors.white70,
                     fontWeight: FontWeight.w600,
+                    fontSize: 11,
                   ),
                 ),
               ],
             ),
-          ),
-        ],
+
+            const SizedBox(height: 14),
+
+            // Doctor Details Row
+            Row(
+              children: [
+                UserAvatar(
+                  photoUrl: rdv.medecinPhoto,
+                  initials:
+                      '${(rdv.medecinPrenom ?? '').isNotEmpty ? rdv.medecinPrenom![0] : ''}'
+                      '${(rdv.medecinNom ?? '').isNotEmpty ? rdv.medecinNom![0] : ''}',
+                  radius: 24,
+                  backgroundColor: Colors.white.withValues(alpha: 0.15),
+                  textColor: Colors.white,
+                  fontSize: 16,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        doctorName,
+                        style: DSTypography.headingSmall.copyWith(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        rdv.medecinSpecialite ?? '',
+                        style: DSTypography.bodySmall.copyWith(
+                          color: DSColors.primaryLight,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 14),
+
+            // Heure & Adresse Row
+            Row(
+              children: [
+                const Icon(Iconsax.clock, size: 14, color: Colors.white70),
+                const SizedBox(width: 6),
+                Text(
+                  timeRange,
+                  style: DSTypography.labelSmall.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                if (rdv.cabinetNom != null) ...[
+                  const SizedBox(width: 12),
+                  const Icon(Iconsax.hospital, size: 14, color: Colors.white70),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      rdv.cabinetNom!,
+                      style: DSTypography.bodySmall.copyWith(
+                        color: Colors.white70,
+                        fontSize: 11,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
+            // Action Buttons
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      HapticFeedback.mediumImpact();
+                      Get.toNamed(AppRoutes.rdvDetail, arguments: {'rdv': rdv.toJson()});
+                    },
+                    icon: const Icon(Iconsax.ticket, size: 15, color: Colors.white),
+                    label: Text(
+                      'Voir Billet',
+                      style: DSTypography.labelSmall.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: DSColors.primary,
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      elevation: 0,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Material(
+                  color: Colors.white.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(14),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(14),
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      CalendarUtils().exportAppointmentToCalendar(
+                        doctorName: doctorName,
+                        specialty: rdv.medecinSpecialite ?? '',
+                        date: rdv.date ?? '',
+                        timeRange: timeRange,
+                        cabinetAddress: rdv.cabinetAdresse,
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      child: const Icon(Iconsax.calendar_add, size: 18, color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1433,50 +1600,6 @@ class _ProfileContent extends StatelessWidget {
               icon: Iconsax.calendar_1,
               title: Tr.myAppointments.tr,
               onTap: () => controller.changeTab(1),
-            ),
-            _ProfileMenuItem(
-              icon: Iconsax.notification,
-              title: Tr.notifications.tr,
-              onTap: () {},
-            ),
-
-            // Dark Mode Switch
-            Builder(
-              builder: (context) {
-                final themeCtrl = Get.find<ThemeController>();
-                return CustomCard(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  onTap: themeCtrl.toggleTheme,
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(7),
-                        decoration: BoxDecoration(
-                          color: DSColors.primaryUltraLight,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Icon(
-                          Get.isDarkMode ? Iconsax.sun_1 : Iconsax.moon,
-                          color: DSColors.primary,
-                          size: 18,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          Tr.darkMode.tr,
-                          style: DSTypography.labelLarge,
-                        ),
-                      ),
-                      Switch.adaptive(
-                        value: Get.isDarkMode,
-                        activeTrackColor: DSColors.primary,
-                        onChanged: (_) => themeCtrl.toggleTheme(),
-                      ),
-                    ],
-                  ),
-                );
-              },
             ),
 
             const SizedBox(height: 12),

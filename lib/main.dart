@@ -7,7 +7,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'app/firebase_options.dart';
 import 'app/theme/app_theme.dart';
-import 'app/theme/theme_controller.dart';
 import 'app/routes/app_pages.dart';
 import 'app/routes/app_routes.dart';
 import 'app/translate/app_translations.dart';
@@ -35,15 +34,12 @@ void main() async {
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  final themeCtrl = Get.put(ThemeController());
   Get.put(NotificationController());
 
   SystemChrome.setSystemUIOverlayStyle(
-    SystemUiOverlayStyle(
+    const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      statusBarIconBrightness: themeCtrl.isDarkMode
-          ? Brightness.light
-          : Brightness.light,
+      statusBarIconBrightness: Brightness.dark,
     ),
   );
 
@@ -55,17 +51,14 @@ class MediBookApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeCtrl = Get.find<ThemeController>();
     final notifCtrl = Get.find<NotificationController>();
-
     notifCtrl.setupForegroundHandler();
 
     return GetMaterialApp(
       title: 'MediBook',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: themeCtrl.themeMode,
+      themeMode: ThemeMode.light,
       translations: AppTranslations(),
       locale: const Locale('fr', 'FR'),
       fallbackLocale: const Locale('fr', 'FR'),

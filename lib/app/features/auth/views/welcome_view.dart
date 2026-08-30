@@ -105,17 +105,7 @@ class _WelcomeViewState extends State<WelcomeView>
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppColors.primary,
-              AppColors.primaryLight,
-              AppColors.primaryUltraLight,
-            ],
-          ),
-        ),
+        color: AppColors.primary,
         child: SafeArea(
           child: Column(
             children: [
@@ -418,16 +408,9 @@ class _DoctorCard extends StatelessWidget {
                   Container(
                     width: 80,
                     height: 80,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: SweepGradient(
-                        colors: [
-                          AppColors.primary,
-                          AppColors.primaryLight,
-                          AppColors.primary,
-                        ],
-                        transform: GradientRotation(animationValue * 6.28),
-                      ),
+                      color: AppColors.primaryLight,
                     ),
                   ),
                 // Doctor photo

@@ -3,13 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
-import '../../../theme/app_colors.dart';
-import '../../../theme/app_text_styles.dart';
+
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/user_avatar.dart';
-import '../controllers/medecin_controller.dart';
+import '../../../theme/design_system/colors_ds.dart';
+import '../../../theme/design_system/typography_ds.dart';
 import '../../../translate/translation_keys.dart';
+import '../controllers/medecin_controller.dart';
 
 class MedecinDetailView extends StatelessWidget {
   const MedecinDetailView({super.key});
@@ -21,514 +22,494 @@ class MedecinDetailView extends StatelessWidget {
     final controller = Get.find<MedecinController>();
 
     return Scaffold(
+      backgroundColor: DSColors.background,
       body: Obx(() {
         final medecin = controller.selectedMedecin.value;
         if (medecin == null) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+            child: CircularProgressIndicator(color: DSColors.primary),
+          );
         }
 
-        return CustomScrollView(
-          slivers: [
-            // Profil médecin header
-            SliverAppBar(
-              expandedHeight: 240,
-              pinned: true,
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_rounded),
-                onPressed: () => Get.back(),
-              ),
-              flexibleSpace: FlexibleSpaceBar(
-                background: Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [AppColors.primaryDark, AppColors.primary],
+        final doctorName = 'Dr. ${medecin['prenom']} ${medecin['nom']}';
+        final hasSelectedSlot = controller.selectedCreneau.value != null;
+
+        return Stack(
+          children: [
+            CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                // Executive Header
+                SliverAppBar(
+                  expandedHeight: 250,
+                  pinned: true,
+                  backgroundColor: DSColors.primaryDark,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  leading: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CircleAvatar(
+                      backgroundColor: Colors.black.withValues(alpha: 0.25),
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back_ios_rounded, size: 18, color: Colors.white),
+                        onPressed: () => Get.back(),
+                      ),
                     ),
                   ),
-                  child: SafeArea(
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: Container(
+                      color: DSColors.primaryDark,
+                      child: SafeArea(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const SizedBox(height: 16),
+                            UserAvatar(
+                              photoUrl: medecin['photo'] as String?,
+                              initials:
+                                  '${(medecin['prenom'] as String)[0]}${(medecin['nom'] as String)[0]}',
+                              radius: 44,
+                              backgroundColor: Colors.white24,
+                              textColor: Colors.white,
+                              fontSize: 26,
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              doctorName,
+                              style: DSTypography.headingMedium.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.18),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: Colors.white30),
+                              ),
+                              child: Text(
+                                medecin['specialiteNom'] ?? '',
+                                style: DSTypography.labelSmall.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Iconsax.location, size: 14, color: Colors.white70),
+                                const SizedBox(width: 4),
+                                Text(
+                                  medecin['cabinetNom'] ?? '',
+                                  style: DSTypography.bodySmall.copyWith(
+                                    color: Colors.white70,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 120),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 30),
-                        UserAvatar(
-                          photoUrl: medecin['photo'] as String?,
-                          initials:
-                              '${(medecin['prenom'] as String)[0]}${(medecin['nom'] as String)[0]}',
-                          radius: 42,
-                          backgroundColor: Colors.white24,
-                          textColor: Colors.white,
-                          fontSize: 28,
+                        // Section Header: Date Selection
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: DSColors.primaryUltraLight,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Icon(Iconsax.calendar_1, size: 18, color: DSColors.primary),
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              Tr.chooseDate.tr,
+                              style: DSTypography.headingSmall.copyWith(
+                                color: DSColors.textPrimary,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Dr. ${medecin['prenom']} ${medecin['nom']}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white24,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            medecin['specialiteNom'] ?? '',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 13,
+                        const SizedBox(height: 14),
+
+                        // Week Calendar Component
+                        Obx(
+                          () => Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: DSColors.surface,
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(color: DSColors.borderLight),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.04),
+                                  blurRadius: 16,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            _formatWeekRange(controller.weekStart.value),
+                                            style: DSTypography.labelLarge.copyWith(
+                                              color: DSColors.primary,
+                                              fontWeight: FontWeight.w800,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 2),
+                                          Text(
+                                            controller.selectedDate.value == null
+                                                ? Tr.noSlotsThisWeek.tr
+                                                : _formatReadableDate(
+                                                    DateFormat('yyyy-MM-dd', _locale).format(
+                                                      controller.selectedDate.value!,
+                                                    ),
+                                                  ),
+                                            style: DSTypography.bodySmall.copyWith(
+                                              color: DSColors.textSecondary,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Row(
+                                      children: [
+                                        _WeekNavigationButton(
+                                          icon: Icons.chevron_left_rounded,
+                                          tooltip: Tr.previousWeek.tr,
+                                          onPressed: controller.canGoToPreviousWeek &&
+                                                  !controller.isLoadingCreneaux.value
+                                              ? () {
+                                                  HapticFeedback.lightImpact();
+                                                  controller.previousWeek();
+                                                }
+                                              : null,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        _WeekNavigationButton(
+                                          icon: Icons.chevron_right_rounded,
+                                          tooltip: Tr.nextWeek.tr,
+                                          onPressed: controller.isLoadingCreneaux.value
+                                              ? null
+                                              : () {
+                                                  HapticFeedback.lightImpact();
+                                                  controller.nextWeek();
+                                                },
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+                                if (controller.isLoadingCreneaux.value)
+                                  const SizedBox(
+                                    height: 96,
+                                    child: Center(
+                                      child: CircularProgressIndicator(color: DSColors.primary),
+                                    ),
+                                  )
+                                else
+                                  SizedBox(
+                                    height: 104,
+                                    child: ListView.separated(
+                                      scrollDirection: Axis.horizontal,
+                                      physics: const BouncingScrollPhysics(),
+                                      itemCount: controller.weekDates.length,
+                                      separatorBuilder: (_, __) => const SizedBox(width: 8),
+                                      itemBuilder: (_, index) {
+                                        final date = controller.weekDates[index];
+                                        final isSelected = controller.isSelectedDate(date);
+                                        final isAvailable = controller.hasSlotsForDate(date);
+
+                                        return GestureDetector(
+                                          onTap: isAvailable
+                                              ? () {
+                                                  HapticFeedback.selectionClick();
+                                                  controller.selectDate(date);
+                                                }
+                                              : null,
+                                          child: AnimatedContainer(
+                                            duration: const Duration(milliseconds: 220),
+                                            width: 58,
+                                            padding: const EdgeInsets.symmetric(vertical: 10),
+                                            decoration: BoxDecoration(
+                                              color: isSelected
+                                                  ? DSColors.primary
+                                                  : isAvailable
+                                                      ? DSColors.surface
+                                                      : DSColors.background,
+                                              borderRadius: BorderRadius.circular(20),
+                                              border: Border.all(
+                                                color: isSelected
+                                                    ? DSColors.primary
+                                                    : isAvailable
+                                                        ? DSColors.primaryLight.withValues(alpha: 0.4)
+                                                        : DSColors.borderLight,
+                                              ),
+                                              boxShadow: isSelected
+                                                  ? [
+                                                      BoxShadow(
+                                                        color: DSColors.primary.withValues(alpha: 0.3),
+                                                        blurRadius: 12,
+                                                        offset: const Offset(0, 4),
+                                                      ),
+                                                    ]
+                                                  : null,
+                                            ),
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  _formatDayLabel(date),
+                                                  style: DSTypography.labelSmall.copyWith(
+                                                    fontSize: 10,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: isSelected
+                                                        ? Colors.white70
+                                                        : isAvailable
+                                                            ? DSColors.textSecondary
+                                                            : DSColors.textLight,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  '${date.day}',
+                                                  style: DSTypography.headingSmall.copyWith(
+                                                    fontWeight: FontWeight.w800,
+                                                    fontSize: 20,
+                                                    color: isSelected
+                                                        ? Colors.white
+                                                        : isAvailable
+                                                            ? DSColors.textPrimary
+                                                            : DSColors.textLight,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 2),
+                                                Text(
+                                                  _formatMonthLabel(date),
+                                                  style: DSTypography.labelSmall.copyWith(
+                                                    fontSize: 10,
+                                                    color: isSelected
+                                                        ? Colors.white70
+                                                        : isAvailable
+                                                            ? DSColors.textSecondary
+                                                            : DSColors.textLight,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 6),
+                                                Container(
+                                                  width: 5,
+                                                  height: 5,
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: isSelected
+                                                        ? Colors.white
+                                                        : isAvailable
+                                                            ? DSColors.primary
+                                                            : Colors.transparent,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                              ],
                             ),
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          medecin['cabinetNom'] ?? '',
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 12,
+                        const SizedBox(height: 28),
+
+                        // Section Header: Slots
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: DSColors.primaryUltraLight,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Icon(Iconsax.clock, size: 18, color: DSColors.primary),
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              Tr.availableSlots.tr,
+                              style: DSTypography.headingSmall.copyWith(
+                                color: DSColors.textPrimary,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 14),
+
+                        Obx(() {
+                          if (controller.isLoadingCreneaux.value) {
+                            return const Center(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(vertical: 32),
+                                child: CircularProgressIndicator(color: DSColors.primary),
+                              ),
+                            );
+                          }
+                          if (controller.selectedDate.value == null || controller.creneaux.isEmpty) {
+                            return EmptyState(
+                              icon: Iconsax.clock,
+                              title: Tr.noSlots.tr,
+                              subtitle: Tr.tryAnotherDate.tr,
+                            );
+                          }
+
+                          // Group creneaux into Matin and Après-Midi
+                          final matinCreneaux = controller.creneaux.where((c) {
+                            final h = int.tryParse((c['heureDebut'] as String).split(':')[0]) ?? 0;
+                            return h < 12;
+                          }).toList();
+
+                          final apremCreneaux = controller.creneaux.where((c) {
+                            final h = int.tryParse((c['heureDebut'] as String).split(':')[0]) ?? 0;
+                            return h >= 12;
+                          }).toList();
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (matinCreneaux.isNotEmpty) ...[
+                                Row(
+                                  children: [
+                                    const Icon(Icons.wb_sunny_rounded, size: 16, color: Color(0xFFF59E0B)),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      'Matin',
+                                      style: DSTypography.labelLarge.copyWith(
+                                        color: DSColors.textPrimary,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                _SlotWrap(creneaux: matinCreneaux, controller: controller),
+                                const SizedBox(height: 20),
+                              ],
+                              if (apremCreneaux.isNotEmpty) ...[
+                                Row(
+                                  children: [
+                                    const Icon(Icons.nightlight_round, size: 16, color: DSColors.primary),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      'Après-midi',
+                                      style: DSTypography.labelLarge.copyWith(
+                                        color: DSColors.textPrimary,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                _SlotWrap(creneaux: apremCreneaux, controller: controller),
+                              ],
+                            ],
+                          );
+                        }),
+                        const SizedBox(height: 28),
+
+                        // Reason for consultation
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: DSColors.primaryUltraLight,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Icon(Iconsax.document_text, size: 18, color: DSColors.primary),
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              Tr.consultationReason.tr,
+                              style: DSTypography.headingSmall.copyWith(
+                                color: DSColors.textPrimary,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: controller.motifController,
+                          maxLines: 3,
+                          style: DSTypography.bodyMedium.copyWith(color: DSColors.textPrimary),
+                          decoration: InputDecoration(
+                            hintText: Tr.describeReason.tr,
+                            contentPadding: const EdgeInsets.all(16),
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
 
-            SliverToBoxAdapter(
-              child: Padding(
+            // Sticky Bottom Action Bar
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
                 padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Titre section
-                    Text(Tr.chooseDate.tr, style: AppTextStyles.heading3),
-                    const SizedBox(height: 12),
-
-                    // Calendrier hebdomadaire
-                    Obx(
-                      () => Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: AppColors.cardBackground,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
-                              blurRadius: 10,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        _formatWeekRange(
-                                          controller.weekStart.value,
-                                        ),
-                                        style: AppTextStyles.bodyBold.copyWith(
-                                          color: AppColors.primary,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        controller.selectedDate.value == null
-                                            ? Tr.noSlotsThisWeek.tr
-                                            : _formatReadableDate(
-                                                DateFormat(
-                                                  'yyyy-MM-dd',
-                                                  _locale,
-                                                ).format(
-                                                  controller
-                                                      .selectedDate
-                                                      .value!,
-                                                ),
-                                              ),
-                                        style: AppTextStyles.caption.copyWith(
-                                          color:
-                                              controller.selectedDate.value ==
-                                                  null
-                                              ? AppColors.textLight
-                                              : AppColors.textSecondary,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Row(
-                                  children: [
-                                    _WeekNavigationButton(
-                                      icon: Icons.chevron_left_rounded,
-                                      tooltip: Tr.previousWeek.tr,
-                                      onPressed:
-                                          controller.canGoToPreviousWeek &&
-                                              !controller
-                                                  .isLoadingCreneaux
-                                                  .value
-                                          ? () {
-                                              HapticFeedback.lightImpact();
-                                              controller.previousWeek();
-                                            }
-                                          : null,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    _WeekNavigationButton(
-                                      icon: Icons.chevron_right_rounded,
-                                      tooltip: Tr.nextWeek.tr,
-                                      onPressed:
-                                          controller.isLoadingCreneaux.value
-                                          ? null
-                                          : () {
-                                              HapticFeedback.lightImpact();
-                                              controller.nextWeek();
-                                            },
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            if (controller.isLoadingCreneaux.value)
-                              const SizedBox(
-                                height: 96,
-                                child: Center(
-                                  child: CircularProgressIndicator(
-                                    color: AppColors.primary,
-                                  ),
-                                ),
-                              )
-                            else
-                              SizedBox(
-                                height: 108,
-                                child: ListView.separated(
-                                  scrollDirection: Axis.horizontal,
-                                  physics: const BouncingScrollPhysics(),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 1,
-                                  ),
-                                  itemCount: controller.weekDates.length,
-                                  separatorBuilder: (_, __) =>
-                                      const SizedBox(width: 4),
-                                  itemBuilder: (_, index) {
-                                    final date = controller.weekDates[index];
-                                    final isSelected = controller
-                                        .isSelectedDate(date);
-                                    final isAvailable = controller
-                                        .hasSlotsForDate(date);
-                                    final primaryTextColor = isSelected
-                                        ? Colors.white
-                                        : isAvailable
-                                        ? AppColors.textPrimary
-                                        : AppColors.textLight;
-                                    final secondaryTextColor = isSelected
-                                        ? Colors.white70
-                                        : isAvailable
-                                        ? AppColors.textSecondary
-                                        : AppColors.textLight;
-
-                                    return SizedBox(
-                                      width: 56,
-                                      child: Opacity(
-                                        opacity: isAvailable ? 1 : 0.65,
-                                        child: GestureDetector(
-                                          onTap: isAvailable
-                                              ? () {
-                                                  HapticFeedback.lightImpact();
-                                                  controller.selectDate(date);
-                                                }
-                                              : null,
-                                          child: AnimatedContainer(
-                                            duration: const Duration(
-                                              milliseconds: 200,
-                                            ),
-                                            padding: const EdgeInsets.fromLTRB(
-                                              4,
-                                              8,
-                                              4,
-                                              6,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: isSelected
-                                                  ? AppColors.primary
-                                                  : isAvailable
-                                                  ? AppColors.cardBackground
-                                                  : AppColors.background,
-                                              borderRadius:
-                                                  BorderRadius.circular(18),
-                                              border: Border.all(
-                                                color: isSelected
-                                                    ? AppColors.primary
-                                                    : isAvailable
-                                                    ? AppColors.primary
-                                                          .withValues(
-                                                            alpha: 0.18,
-                                                          )
-                                                    : AppColors.divider,
-                                              ),
-                                              boxShadow: isSelected
-                                                  ? [
-                                                      BoxShadow(
-                                                        color: AppColors.primary
-                                                            .withValues(
-                                                              alpha: 0.28,
-                                                            ),
-                                                        blurRadius: 10,
-                                                        offset: const Offset(
-                                                          0,
-                                                          4,
-                                                        ),
-                                                      ),
-                                                    ]
-                                                  : null,
-                                            ),
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                SizedBox(
-                                                  height: 14,
-                                                  child: Center(
-                                                    child: FittedBox(
-                                                      fit: BoxFit.scaleDown,
-                                                      child: Text(
-                                                        _formatDayLabel(date),
-                                                        maxLines: 1,
-                                                        softWrap: false,
-                                                        style: TextStyle(
-                                                          fontSize: 9,
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                          color:
-                                                              secondaryTextColor,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 4),
-                                                SizedBox(
-                                                  height: 34,
-                                                  child: Center(
-                                                    child: FittedBox(
-                                                      fit: BoxFit.scaleDown,
-                                                      child: Text(
-                                                        '${date.day}',
-                                                        maxLines: 1,
-                                                        softWrap: false,
-                                                        style: TextStyle(
-                                                          fontSize: 24,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color:
-                                                              primaryTextColor,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 2),
-                                                SizedBox(
-                                                  height: 14,
-                                                  child: Center(
-                                                    child: FittedBox(
-                                                      fit: BoxFit.scaleDown,
-                                                      child: Text(
-                                                        _formatMonthLabel(date),
-                                                        maxLines: 1,
-                                                        softWrap: false,
-                                                        style: TextStyle(
-                                                          fontSize: 10,
-                                                          color:
-                                                              secondaryTextColor,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                                const Spacer(),
-                                                AnimatedContainer(
-                                                  duration: const Duration(
-                                                    milliseconds: 200,
-                                                  ),
-                                                  width: 6,
-                                                  height: 6,
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: isSelected
-                                                        ? Colors.white
-                                                        : isAvailable
-                                                        ? AppColors.primary
-                                                        : Colors.transparent,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
+                decoration: BoxDecoration(
+                  color: DSColors.surface,
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 24,
+                      offset: const Offset(0, -6),
                     ),
-                    const SizedBox(height: 24),
-
-                    // Créneaux disponibles
-                    Text(Tr.availableSlots.tr, style: AppTextStyles.heading3),
-                    const SizedBox(height: 12),
-
-                    Obx(() {
-                      if (controller.isLoadingCreneaux.value) {
-                        return const Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 24),
-                            child: CircularProgressIndicator(
-                              color: AppColors.primary,
-                            ),
-                          ),
-                        );
-                      }
-                      if (controller.selectedDate.value == null) {
-                        return EmptyState(
-                          icon: Iconsax.clock,
-                          title: Tr.noSlotsThisWeek.tr,
-                          subtitle: Tr.tryAnotherDate.tr,
-                        );
-                      }
-                      if (controller.creneaux.isEmpty) {
-                        return EmptyState(
-                          icon: Iconsax.clock,
-                          title: Tr.noSlots.tr,
-                          subtitle: Tr.tryAnotherDate.tr,
-                        );
-                      }
-                      return Wrap(
-                        spacing: 10,
-                        runSpacing: 10,
-                        children: controller.creneaux.map((creneau) {
-                          final isDisponible = creneau['disponible'] == true;
-                          final isSelected =
-                              controller.selectedCreneau.value?['id'] ==
-                              creneau['id'];
-                          final heureDebut = (creneau['heureDebut'] as String)
-                              .substring(0, 5);
-                          final heureFin = (creneau['heureFin'] as String)
-                              .substring(0, 5);
-
-                          return GestureDetector(
-                            onTap: isDisponible
-                                ? () => controller.selectCreneau(creneau)
-                                : null,
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 200),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
-                              ),
-                              decoration: BoxDecoration(
-                                color: !isDisponible
-                                    ? AppColors.divider.withValues(alpha: 0.5)
-                                    : isSelected
-                                    ? AppColors.primary
-                                    : AppColors.cardBackground,
-                                borderRadius: BorderRadius.circular(14),
-                                border: isDisponible && !isSelected
-                                    ? Border.all(
-                                        color: AppColors.primary.withValues(
-                                          alpha: 0.3,
-                                        ),
-                                      )
-                                    : null,
-                                boxShadow: isSelected
-                                    ? [
-                                        BoxShadow(
-                                          color: AppColors.primary.withValues(
-                                            alpha: 0.3,
-                                          ),
-                                          blurRadius: 6,
-                                          offset: const Offset(0, 2),
-                                        ),
-                                      ]
-                                    : null,
-                              ),
-                              child: Text(
-                                '$heureDebut - $heureFin',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: !isDisponible
-                                      ? AppColors.textLight
-                                      : isSelected
-                                      ? Colors.white
-                                      : AppColors.primary,
-                                  decoration: !isDisponible
-                                      ? TextDecoration.lineThrough
-                                      : null,
-                                ),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      );
-                    }),
-                    const SizedBox(height: 24),
-
-                    // Motif
-                    Text(
-                      Tr.consultationReason.tr,
-                      style: AppTextStyles.heading3,
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: controller.motifController,
-                      maxLines: 3,
-                      decoration: InputDecoration(
-                        hintText: Tr.describeReason.tr,
-                        prefixIcon: const Padding(
-                          padding: EdgeInsets.only(bottom: 48),
-                          child: Icon(
-                            Iconsax.document_text,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Bouton confirmer
-                    Obx(
-                      () => CustomButton(
-                        text: Tr.confirmAppointment.tr,
-                        isLoading: controller.isBooking.value,
-                        icon: Iconsax.calendar_tick,
-                        onPressed: () {
-                          _showConfirmDialog(context, controller);
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 30),
                   ],
+                ),
+                child: SafeArea(
+                  top: false,
+                  child: Obx(
+                    () => CustomButton(
+                      text: Tr.confirmAppointment.tr,
+                      isLoading: controller.isBooking.value,
+                      icon: Iconsax.calendar_tick,
+                      onPressed: hasSelectedSlot
+                          ? () {
+                              HapticFeedback.mediumImpact();
+                              _showConfirmDialog(context, controller);
+                            }
+                          : null,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -542,36 +523,27 @@ class MedecinDetailView extends StatelessWidget {
     final creneau = controller.selectedCreneau.value;
     final medecin = controller.selectedMedecin.value;
 
-    if (creneau == null || medecin == null) {
-      Get.snackbar(
-        Tr.error.tr,
-        Tr.selectSlotError.tr,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.error,
-        colorText: Colors.white,
-      );
-      return;
-    }
+    if (creneau == null || medecin == null) return;
 
     Get.dialog(
       AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        backgroundColor: DSColors.surface,
         title: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
+              padding: const EdgeInsets.all(10),
+              decoration: const BoxDecoration(
+                color: DSColors.primaryUltraLight,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Iconsax.calendar_tick,
-                color: AppColors.primary,
-                size: 22,
-              ),
+              child: const Icon(Iconsax.calendar_tick, color: DSColors.primary, size: 22),
             ),
-            const SizedBox(width: 10),
-            Text(Tr.confirm.tr),
+            const SizedBox(width: 12),
+            Text(
+              Tr.confirm.tr,
+              style: DSTypography.headingSmall.copyWith(color: DSColors.textPrimary),
+            ),
           ],
         ),
         content: Column(
@@ -600,13 +572,27 @@ class MedecinDetailView extends StatelessWidget {
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: Text(Tr.cancel.tr)),
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text(
+              Tr.cancel.tr,
+              style: DSTypography.labelMedium.copyWith(color: DSColors.textSecondary),
+            ),
+          ),
           ElevatedButton(
             onPressed: () {
               Get.back();
               controller.confirmBooking();
             },
-            child: Text(Tr.confirm.tr),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: DSColors.primary,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            ),
+            child: Text(
+              Tr.confirm.tr,
+              style: DSTypography.labelMedium.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
+            ),
           ),
         ],
       ),
@@ -615,30 +601,20 @@ class MedecinDetailView extends StatelessWidget {
 
   String _formatWeekRange(DateTime start) {
     final end = start.add(const Duration(days: 6));
-
     if (start.month == end.month && start.year == end.year) {
       return '${Tr.weekOf.tr} ${DateFormat('d', _locale).format(start)} - ${DateFormat('d MMM y', _locale).format(end)}';
     }
-
-    if (start.year == end.year) {
-      return '${Tr.weekOf.tr} ${DateFormat('d MMM', _locale).format(start)} - ${DateFormat('d MMM y', _locale).format(end)}';
-    }
-
-    return '${Tr.weekOf.tr} ${DateFormat('d MMM y', _locale).format(start)} - ${DateFormat('d MMM y', _locale).format(end)}';
+    return '${Tr.weekOf.tr} ${DateFormat('d MMM', _locale).format(start)} - ${DateFormat('d MMM y', _locale).format(end)}';
   }
 
   String _formatReadableDate(String? rawDate) {
     final parsedDate = rawDate == null ? null : DateTime.tryParse(rawDate);
     if (parsedDate == null) return rawDate ?? '';
-
     return _capitalize(DateFormat('EEEE d MMMM y', _locale).format(parsedDate));
   }
 
   String _formatDayLabel(DateTime date) {
-    return DateFormat(
-      'EEE',
-      _locale,
-    ).format(date).replaceAll('.', '').toUpperCase();
+    return DateFormat('EEE', _locale).format(date).replaceAll('.', '').toUpperCase();
   }
 
   String _formatMonthLabel(DateTime date) {
@@ -648,6 +624,77 @@ class MedecinDetailView extends StatelessWidget {
   String _capitalize(String value) {
     if (value.isEmpty) return value;
     return '${value[0].toUpperCase()}${value.substring(1)}';
+  }
+}
+
+class _SlotWrap extends StatelessWidget {
+  final List<dynamic> creneaux;
+  final MedecinController controller;
+
+  const _SlotWrap({required this.creneaux, required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      children: creneaux.map((creneau) {
+        final isDisponible = creneau['disponible'] == true;
+        final isSelected = controller.selectedCreneau.value?['id'] == creneau['id'];
+        final heureDebut = (creneau['heureDebut'] as String).substring(0, 5);
+        final heureFin = (creneau['heureFin'] as String).substring(0, 5);
+
+        return GestureDetector(
+          onTap: isDisponible
+              ? () {
+                  HapticFeedback.selectionClick();
+                  controller.selectCreneau(creneau);
+                }
+              : null,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: !isDisponible
+                  ? DSColors.borderLight.withValues(alpha: 0.4)
+                  : isSelected
+                      ? DSColors.primary
+                      : DSColors.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isSelected
+                    ? DSColors.primary
+                    : isDisponible
+                        ? DSColors.primaryLight.withValues(alpha: 0.3)
+                        : DSColors.borderLight,
+              ),
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: DSColors.primary.withValues(alpha: 0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Text(
+              '$heureDebut - $heureFin',
+              style: DSTypography.labelSmall.copyWith(
+                fontWeight: FontWeight.w700,
+                fontSize: 12,
+                color: !isDisponible
+                    ? DSColors.textLight
+                    : isSelected
+                        ? Colors.white
+                        : DSColors.primary,
+                decoration: !isDisponible ? TextDecoration.lineThrough : null,
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
   }
 }
 
@@ -665,23 +712,21 @@ class _WeekNavigationButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isEnabled = onPressed != null;
-
     return Tooltip(
       message: tooltip,
       child: Material(
-        color: isEnabled
-            ? AppColors.primary.withValues(alpha: 0.08)
-            : AppColors.divider.withValues(alpha: 0.45),
-        borderRadius: BorderRadius.circular(14),
+        color: isEnabled ? DSColors.primaryUltraLight : DSColors.borderLight,
+        borderRadius: BorderRadius.circular(12),
         child: InkWell(
           onTap: onPressed,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           child: SizedBox(
-            width: 40,
-            height: 40,
+            width: 36,
+            height: 36,
             child: Icon(
               icon,
-              color: isEnabled ? AppColors.primary : AppColors.textLight,
+              size: 20,
+              color: isEnabled ? DSColors.primary : DSColors.textLight,
             ),
           ),
         ),
@@ -703,15 +748,24 @@ class _DialogInfoRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 70,
+            width: 80,
             child: Text(
               label,
-              style: AppTextStyles.caption.copyWith(
-                fontWeight: FontWeight.w600,
+              style: DSTypography.bodySmall.copyWith(
+                fontWeight: FontWeight.w700,
+                color: DSColors.textSecondary,
               ),
             ),
           ),
-          Expanded(child: Text(value, style: AppTextStyles.body)),
+          Expanded(
+            child: Text(
+              value,
+              style: DSTypography.bodySmall.copyWith(
+                fontWeight: FontWeight.w600,
+                color: DSColors.textPrimary,
+              ),
+            ),
+          ),
         ],
       ),
     );

@@ -5,6 +5,7 @@ import '../../../models/medecin_model.dart';
 import '../../../models/specialite_model.dart';
 import '../../../models/rendezvous_model.dart';
 import '../../../models/auth_model.dart';
+import '../../auth/controllers/auth_controller.dart';
 import '../viewmodel/home_viewmodel.dart';
 
 class HomeController extends GetxController with SnackbarMixin {
@@ -18,7 +19,7 @@ class HomeController extends GetxController with SnackbarMixin {
   RxList<SpecialiteModel> get specialites => _viewModel.specialites;
   RxList<MedecinModel> get medecins => _viewModel.medecins;
   Rxn<RendezVousModel> get prochainRdv => _viewModel.prochainRdv;
-  Rxn<AuthModel> get currentUser => _viewModel.currentUser;
+  Rxn<AuthModel> get currentUser => Get.find<AuthController>().currentUser;
 
   // État UI propre au controller
   final currentIndex = 0.obs;

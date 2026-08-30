@@ -1,58 +1,99 @@
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import '../../../core/utils/error_utils.dart';
 import '../../../models/cabinet_model.dart';
-import '../../../models/specialite_model.dart';
 import '../../../models/medecin_model.dart';
+import '../../../models/specialite_model.dart';
 import '../../../models/rendezvous_model.dart';
-import '../../../models/auth_model.dart';
 import '../repository/home_repository.dart';
 
-class HomeViewModel extends GetxController {
-  final HomeRepository _repo;
+class HomeViewModel {
+  final HomeRepository _repository;
+  final GetStorage _storage = GetStorage();
 
-  HomeViewModel(this._repo);
+  HomeViewModel(this._repository);
 
   final isLoading = false.obs;
   final cabinets = <CabinetModel>[].obs;
   final specialites = <SpecialiteModel>[].obs;
   final medecins = <MedecinModel>[].obs;
   final prochainRdv = Rxn<RendezVousModel>();
-  final currentUser = Rxn<AuthModel>();
 
-  final _storage = GetStorage();
+  bool isUpcoming(RendezVousModel rdv) {
+    final statut = (rdv.statut ?? '').toUpperCase();
+    if (statut == 'TERMINE' || statut == 'ANNULE') return false;
 
-  @override
-  void onInit() {
-    super.onInit();
-    _loadUser();
-    _storage.listenKey('user', (value) {
-      if (value != null) {
-        currentUser.value =
-            AuthModel.fromJson(Map<String, dynamic>.from(value));
-      } else {
-        currentUser.value = null;
+    final dateStr = rdv.date;
+    if (dateStr == null || dateStr.isEmpty) return false;
+
+    final timeStr = (rdv.heureDebut ?? '00:00');
+    final formattedTime = timeStr.length >= 5 ? timeStr.substring(0, 5) : '00:00';
+
+    DateTime? rdvDateTime;
+    try {
+      if (dateStr.contains('T')) {
+        rdvDateTime = DateTime.parse(dateStr);
+      } else if (dateStr.contains('-')) {
+        rdvDateTime = DateTime.parse('${dateStr}T$formattedTime:00');
+      } else if (dateStr.contains('/')) {
+        final parts = dateStr.split('/');
+        if (parts.length == 3) {
+          rdvDateTime = DateTime.parse('${parts[2]}-${parts[1].padLeft(2, '0')}-${parts[0].padLeft(2, '0')}T$formattedTime:00');
+        }
       }
-    });
-    fetchAll();
+    } catch (_) {}
+
+    if (rdvDateTime != null) {
+      // Un RDV est considéré à venir s'il est dans le futur (ou en cours dans l'heure)
+      return rdvDateTime.add(const Duration(hours: 1)).isAfter(DateTime.now());
+    }
+
+    return true;
   }
 
-  void _loadUser() {
-    final data = _storage.read('user');
-    if (data != null) {
-      currentUser.value =
-          AuthModel.fromJson(Map<String, dynamic>.from(data));
-    }
+  void loadFromCache() {
+    try {
+      final cCab = _storage.read('cached_cabinets');
+      if (cCab is List && cabinets.isEmpty) {
+        cabinets.value = cCab
+            .map((e) => CabinetModel.fromJson(Map<String, dynamic>.from(e)))
+            .toList();
+      }
+      final cSpec = _storage.read('cached_specialites');
+      if (cSpec is List && specialites.isEmpty) {
+        specialites.value = cSpec
+            .map((e) => SpecialiteModel.fromJson(Map<String, dynamic>.from(e)))
+            .toList();
+      }
+      final cMed = _storage.read('cached_medecins');
+      if (cMed is List && medecins.isEmpty) {
+        medecins.value = cMed
+            .map((e) => MedecinModel.fromJson(Map<String, dynamic>.from(e)))
+            .toList();
+      }
+      final cRdv = _storage.read('cached_prochain_rdv');
+      if (cRdv is Map && prochainRdv.value == null) {
+        final r = RendezVousModel.fromJson(Map<String, dynamic>.from(cRdv));
+        if (isUpcoming(r)) {
+          prochainRdv.value = r;
+        } else {
+          _storage.remove('cached_prochain_rdv');
+          prochainRdv.value = null;
+        }
+      }
+    } catch (_) {}
   }
 
   Future<String?> fetchAll() async {
-    isLoading.value = true;
+    // Si nous avons du contenu en cache, ne pas afficher le loader plein écran
+    if (cabinets.isEmpty && medecins.isEmpty && specialites.isEmpty) {
+      isLoading.value = true;
+    }
     try {
       final results = await Future.wait([
-        _repo.getCabinets(),
-        _repo.getSpecialites(),
-        _repo.getRdvConfirmes(),
-        _repo.getMedecins(),
+        _repository.getCabinets(),
+        _repository.getSpecialites(),
+        _repository.getRdvConfirmes(),
+        _repository.getMedecins(),
       ]);
 
       // Cabinets
@@ -63,21 +104,26 @@ class HomeViewModel extends GetxController {
             : (rCabinets.body['data'] ?? []);
         final List dataCab = rawCab is List
             ? rawCab
-            : (rawCab is Map && rawCab.containsKey('content') ? List.from(rawCab['content']) : []);
-        cabinets.value = dataCab.map((e) => CabinetModel.fromJson(e)).toList();
+            : (rawCab is Map && rawCab.containsKey('content')
+                ? List.from(rawCab['content'])
+                : []);
+        cabinets.value =
+            dataCab.map((e) => CabinetModel.fromJson(e)).toList();
+        _storage.write('cached_cabinets', dataCab);
       }
 
       // Spécialités
       final rSpecialites = results[1];
       if (rSpecialites.statusCode == 200) {
-        final List data = rSpecialites.body is List
+        final data = rSpecialites.body is List
             ? rSpecialites.body
             : (rSpecialites.body['data'] ?? []);
         specialites.value =
             data.map((e) => SpecialiteModel.fromJson(e)).toList();
+        _storage.write('cached_specialites', data);
       }
 
-      // Prochain RDV confirmé
+      // Prochain RDV confirmé (filtrer ceux à venir)
       final rRdv = results[2];
       if (rRdv.statusCode == 200) {
         final rawRdv = rRdv.body is List
@@ -85,10 +131,20 @@ class HomeViewModel extends GetxController {
             : (rRdv.body['data'] ?? []);
         final List dataRdv = rawRdv is List
             ? rawRdv
-            : (rawRdv is Map && rawRdv.containsKey('content') ? List.from(rawRdv['content']) : []);
-        final rdvList =
-            dataRdv.map((e) => RendezVousModel.fromJson(e)).toList();
+            : (rawRdv is Map && rawRdv.containsKey('content')
+                ? List.from(rawRdv['content'])
+                : []);
+        final rdvList = dataRdv
+            .map((e) => RendezVousModel.fromJson(e))
+            .where((r) => isUpcoming(r))
+            .toList();
+
         prochainRdv.value = rdvList.isNotEmpty ? rdvList.first : null;
+        if (prochainRdv.value != null) {
+          _storage.write('cached_prochain_rdv', prochainRdv.value!.toJson());
+        } else {
+          _storage.remove('cached_prochain_rdv');
+        }
       }
 
       // Médecins
@@ -99,14 +155,17 @@ class HomeViewModel extends GetxController {
             : (rMedecins.body['data'] ?? []);
         final List dataMed = rawMed is List
             ? rawMed
-            : (rawMed is Map && rawMed.containsKey('content') ? List.from(rawMed['content']) : []);
+            : (rawMed is Map && rawMed.containsKey('content')
+                ? List.from(rawMed['content'])
+                : []);
         medecins.value =
             dataMed.map((e) => MedecinModel.fromJson(e)).toList();
+        _storage.write('cached_medecins', dataMed);
       }
 
       return null;
     } catch (e) {
-      return ErrorUtils.handleException(e);
+      return 'Erreur lors du chargement des données: $e';
     } finally {
       isLoading.value = false;
     }

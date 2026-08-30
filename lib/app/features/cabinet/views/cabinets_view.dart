@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import '../../../theme/app_colors.dart';
-import '../../../theme/app_text_styles.dart';
-import '../../../core/widgets/custom_app_bar.dart';
-import '../../../core/widgets/custom_card.dart';
-import '../../../core/widgets/shimmer_loading.dart';
-import '../../../core/widgets/empty_state.dart';
+
 import '../../../core/widgets/cabinet_logo.dart';
+import '../../../core/widgets/custom_app_bar.dart';
+import '../../../core/widgets/empty_state.dart';
+import '../../../core/widgets/shimmer_loading.dart';
 import '../../../routes/app_routes.dart';
-import '../controllers/cabinet_controller.dart';
+import '../../../theme/design_system/colors_ds.dart';
+import '../../../theme/design_system/typography_ds.dart';
 import '../../../translate/translation_keys.dart';
+import '../controllers/cabinet_controller.dart';
 
 class CabinetsView extends StatelessWidget {
   const CabinetsView({super.key});
@@ -21,6 +22,7 @@ class CabinetsView extends StatelessWidget {
     final controller = Get.find<CabinetController>();
 
     return Scaffold(
+      backgroundColor: DSColors.background,
       appBar: CustomAppBar(title: Tr.medicalCabinets.tr),
       body: Obx(() {
         if (controller.isLoading.value) {
@@ -34,80 +36,120 @@ class CabinetsView extends StatelessWidget {
           );
         }
         return RefreshIndicator(
-          color: AppColors.primary,
+          color: DSColors.primary,
           onRefresh: () => controller.refresh(),
           child: AnimationLimiter(
             child: ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 12),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 120),
               itemCount: controller.cabinets.length,
               itemBuilder: (context, index) {
                 final cabinet = controller.cabinets[index];
                 return AnimationConfiguration.staggeredList(
                   position: index,
-                  duration: const Duration(milliseconds: 400),
+                  duration: const Duration(milliseconds: 350),
                   child: SlideAnimation(
-                    verticalOffset: 50.0,
+                    verticalOffset: 40.0,
                     child: FadeInAnimation(
-                      child: CustomCard(
-                        onTap: () {
-                          controller.selectCabinet(cabinet);
-                          Get.toNamed(AppRoutes.cabinetDetail,
-                              arguments: cabinet);
-                        },
-                        child: Row(
-                          children: [
-                            CabinetLogo(
-                              logoUrl: cabinet.logo,
-                              size: 52,
-                              borderRadius: 14,
-                              accentColor: AppColors.primary,
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        decoration: BoxDecoration(
+                          color: DSColors.surface,
+                          borderRadius: BorderRadius.circular(22),
+                          border: Border.all(color: DSColors.borderLight),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.03),
+                              blurRadius: 14,
+                              offset: const Offset(0, 4),
                             ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                          ],
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(22),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(22),
+                            onTap: () {
+                              HapticFeedback.selectionClick();
+                              Get.toNamed(
+                                AppRoutes.cabinetDetail,
+                                arguments: {'cabinet': cabinet},
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Row(
                                 children: [
-                                  Text(cabinet.nom ?? '',
-                                      style: AppTextStyles.bodyBold),
-                                  const SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      const Icon(Iconsax.location,
-                                          size: 14,
-                                          color: AppColors.textLight),
-                                      const SizedBox(width: 4),
-                                      Expanded(
-                                        child: Text(
-                                          cabinet.adresse ?? '',
-                                          style: AppTextStyles.caption,
-                                          maxLines: 1,
-                                          overflow:
-                                              TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ],
+                                  CabinetLogo(
+                                    logoUrl: cabinet.logo,
+                                    size: 54,
                                   ),
-                                  const SizedBox(height: 2),
-                                  Row(
-                                    children: [
-                                      const Icon(Iconsax.call,
-                                          size: 14,
-                                          color: AppColors.textLight),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        cabinet.telephone ?? '',
-                                        style: AppTextStyles.caption,
-                                      ),
-                                    ],
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          cabinet.nom ?? '',
+                                          style: DSTypography.headingSmall.copyWith(
+                                            color: DSColors.textPrimary,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Row(
+                                          children: [
+                                            const Icon(
+                                              Iconsax.location,
+                                              size: 14,
+                                              color: DSColors.primary,
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Expanded(
+                                              child: Text(
+                                                cabinet.adresse ?? '',
+                                                style: DSTypography.bodySmall.copyWith(
+                                                  color: DSColors.textSecondary,
+                                                ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        if (cabinet.telephone != null &&
+                                            cabinet.telephone!.isNotEmpty) ...[
+                                          const SizedBox(height: 2),
+                                          Row(
+                                            children: [
+                                              const Icon(
+                                                Iconsax.call,
+                                                size: 14,
+                                                color: DSColors.textLight,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                cabinet.telephone!,
+                                                style: DSTypography.bodySmall.copyWith(
+                                                  color: DSColors.textLight,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                  const Icon(
+                                    Icons.arrow_forward_ios_rounded,
+                                    size: 16,
+                                    color: DSColors.textLight,
                                   ),
                                 ],
                               ),
                             ),
-                            const Icon(Icons.arrow_forward_ios_rounded,
-                                size: 16,
-                                color: AppColors.textLight),
-                          ],
+                          ),
                         ),
                       ),
                     ),

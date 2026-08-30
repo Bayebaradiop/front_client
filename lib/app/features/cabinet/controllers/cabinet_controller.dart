@@ -1,8 +1,10 @@
 import 'package:get/get.dart';
 import '../../../core/mixins/snackbar_mixin.dart';
 import '../../../models/cabinet_model.dart';
+import '../../../models/medecin_model.dart';
 import '../../../models/specialite_model.dart';
 import '../viewmodel/cabinet_viewmodel.dart';
+import '../../home/controllers/home_controller.dart';
 
 class CabinetController extends GetxController with SnackbarMixin {
   final CabinetViewModel _viewModel;
@@ -17,6 +19,18 @@ class CabinetController extends GetxController with SnackbarMixin {
 
   // État UI propre au controller
   final selectedCabinet = Rxn<CabinetModel>();
+  final selectedTab = 0.obs; // 0: Équipe, 1: Services, 2: Horaires
+
+  List<MedecinModel> get medecinsDuCabinet {
+    final cabId = selectedCabinet.value?.id;
+    if (cabId == null) return [];
+    try {
+      final homeCtrl = Get.find<HomeController>();
+      return homeCtrl.medecins.where((m) => m.cabinetId == cabId).toList();
+    } catch (_) {
+      return [];
+    }
+  }
 
   @override
   void onInit() {
@@ -36,6 +50,7 @@ class CabinetController extends GetxController with SnackbarMixin {
 
   void selectCabinet(CabinetModel cabinet) {
     selectedCabinet.value = cabinet;
+    selectedTab.value = 0;
     loadSpecialites();
   }
 

@@ -49,4 +49,23 @@ class RendezVousModel {
       cabinetAdresse: json['cabinetAdresse'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'statut': statut,
+      'motif': motif,
+      'date': date,
+      'heureDebut': heureDebut,
+      'heureFin': heureFin,
+      'medecinId': medecinId,
+      'medecinNom': medecinNom,
+      'medecinPrenom': medecinPrenom,
+      'medecinSpecialite': medecinSpecialite,
+      'medecinPhoto': medecinPhoto,
+      'cabinetId': cabinetId,
+      'cabinetNom': cabinetNom,
+      'cabinetAdresse': cabinetAdresse,
+    };
+  }
 }

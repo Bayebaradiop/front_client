@@ -69,11 +69,7 @@ class LoginView extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [DSColors.primaryDark, DSColors.primary],
-                  ),
+                  color: DSColors.primary,
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(

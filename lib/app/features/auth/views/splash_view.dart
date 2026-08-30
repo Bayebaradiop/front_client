@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import '../../../theme/app_colors.dart';
+import '../../../theme/design_system/colors_ds.dart';
 import '../../../routes/app_routes.dart';
 import '../../../translate/translation_keys.dart';
 
@@ -38,10 +38,13 @@ class _SplashViewState extends State<SplashView>
     Future.delayed(const Duration(seconds: 3), () {
       final storage = GetStorage();
       final hasUser = storage.read('user') != null;
+      final hasToken = storage.read('jwt_cookie') != null;
 
-      if (hasUser) {
+      if (hasUser && hasToken) {
         Get.offAllNamed(AppRoutes.home);
       } else {
+        storage.remove('user');
+        storage.remove('jwt_cookie');
         Get.offAllNamed(AppRoutes.doctorIntro);
       }
     });
@@ -59,7 +62,7 @@ class _SplashViewState extends State<SplashView>
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(gradient: AppColors.splashGradient),
+        color: DSColors.primaryDark,
         child: FadeTransition(
           opacity: _fadeAnimation,
           child: ScaleTransition(

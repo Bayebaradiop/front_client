@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import '../../../theme/app_colors.dart';
-import '../../../theme/app_text_styles.dart';
+
+import '../../../core/utils/calendar_utils.dart';
+import '../../../core/utils/date_formatter.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/user_avatar.dart';
-import '../controllers/rendezvous_controller.dart';
+import '../../../theme/design_system/colors_ds.dart';
+import '../../../theme/design_system/typography_ds.dart';
 import '../../../translate/translation_keys.dart';
+import '../controllers/rendezvous_controller.dart';
 
 class RdvDetailView extends StatelessWidget {
   const RdvDetailView({super.key});
@@ -14,15 +18,15 @@ class RdvDetailView extends StatelessWidget {
   Color _statusColor(String statut) {
     switch (statut) {
       case 'EN_ATTENTE':
-        return AppColors.statusEnAttente;
+        return const Color(0xFFF59E0B);
       case 'CONFIRME':
-        return AppColors.statusConfirme;
+        return const Color(0xFF10B981);
       case 'TERMINE':
-        return AppColors.statusTermine;
+        return DSColors.primary;
       case 'ANNULE':
-        return AppColors.statusAnnule;
+        return const Color(0xFFEF4444);
       default:
-        return AppColors.textLight;
+        return DSColors.textLight;
     }
   }
 
@@ -60,8 +64,6 @@ class RdvDetailView extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<RendezvousController>();
 
-    // Set selectedRdv from navigation arguments, then refresh from API
-    // so the timeline always reflects the latest status from the database.
     final args = Get.arguments;
     if (args != null && args is Map && args.containsKey('rdv')) {
       final rdvArg = args['rdv'] as Map<String, dynamic>;
@@ -70,10 +72,32 @@ class RdvDetailView extends StatelessWidget {
     }
 
     return Scaffold(
+      backgroundColor: DSColors.background,
+      appBar: AppBar(
+        backgroundColor: DSColors.background,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_rounded, color: DSColors.textPrimary, size: 18),
+          onPressed: () => Get.back(),
+        ),
+        title: Text(
+          'Détails du Rendez-vous',
+          style: DSTypography.headingSmall.copyWith(
+            color: DSColors.textPrimary,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        centerTitle: true,
+      ),
       body: Obx(() {
         final rdv = controller.selectedRdv.value;
         if (rdv == null) {
-          return Center(child: Text(Tr.appointmentNotFound.tr));
+          return Center(
+            child: Text(
+              Tr.appointmentNotFound.tr,
+              style: DSTypography.bodyMedium.copyWith(color: DSColors.textSecondary),
+            ),
+          );
         }
 
         final statut = (rdv['statut'] as String?) ?? 'EN_ATTENTE';
@@ -82,400 +106,387 @@ class RdvDetailView extends StatelessWidget {
         final rawFin = (rdv['heureFin'] as String?) ?? '';
         final heureDebut = rawDebut.length >= 5 ? rawDebut.substring(0, 5) : rawDebut;
         final heureFin = rawFin.length >= 5 ? rawFin.substring(0, 5) : rawFin;
+        final doctorName = 'Dr. ${rdv['medecinPrenom'] ?? ''} ${rdv['medecinNom'] ?? ''}'.trim();
 
-        return CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              expandedHeight: 180,
-              pinned: true,
-              backgroundColor: color,
-              foregroundColor: Colors.white,
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_rounded),
-                onPressed: () => Get.back(),
-              ),
-              flexibleSpace: FlexibleSpaceBar(
-                background: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        color.withValues(alpha: 0.9),
-                        color,
-                      ],
+        return SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: Column(
+            children: [
+              // Ticket Boarding Pass Container
+              Container(
+                decoration: BoxDecoration(
+                  color: DSColors.surface,
+                  borderRadius: BorderRadius.circular(28),
+                  border: Border.all(color: DSColors.borderLight),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 20,
+                      offset: const Offset(0, 6),
                     ),
-                  ),
-                  child: SafeArea(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 20),
-                        Icon(_statusIcon(statut),
-                            size: 48, color: Colors.white),
-                        const SizedBox(height: 10),
-                        Text(
-                          _statusLabel(statut),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  ],
                 ),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Timeline visuelle
-                    _StatusTimeline(statut: statut),
-                    const SizedBox(height: 24),
-
-                    // Info médecin
-                    Text(Tr.doctor.tr, style: AppTextStyles.heading3),
-                    const SizedBox(height: 10),
+                    // Status Badge Top Bar
                     Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
+                        color: color.withValues(alpha: 0.1),
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
                       ),
                       child: Row(
                         children: [
-                          UserAvatar(
-                            photoUrl: rdv['medecinPhoto'] as String?,
-                            initials: '${((rdv['medecinPrenom'] as String?) ?? '').isNotEmpty ? (rdv['medecinPrenom'] as String)[0] : ''}'
-                                '${((rdv['medecinNom'] as String?) ?? '').isNotEmpty ? (rdv['medecinNom'] as String)[0] : ''}',
-                            radius: 26,
-                            fontSize: 16,
+                          Icon(_statusIcon(statut), color: color, size: 22),
+                          const SizedBox(width: 10),
+                          Text(
+                            _statusLabel(statut).toUpperCase(),
+                            style: DSTypography.labelMedium.copyWith(
+                              color: color,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 0.5,
+                            ),
                           ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Dr. ${rdv['medecinPrenom']} ${rdv['medecinNom']}',
-                                  style: AppTextStyles.bodyBold,
-                                ),
-                                Text(
-                                  rdv['medecinSpecialite'] ?? '',
-                                  style: AppTextStyles.caption
-                                      .copyWith(
-                                          color: AppColors.primary),
-                                ),
-                              ],
+                          const Spacer(),
+                          Text(
+                            '#RDV-${rdv['id'] ?? ''}',
+                            style: DSTypography.labelSmall.copyWith(
+                              color: DSColors.textSecondary,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20),
 
-                    // Info date/heure
-                    Text(Tr.dateAndTime.tr, style: AppTextStyles.heading3),
-                    const SizedBox(height: 10),
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
+                    Padding(
+                      padding: const EdgeInsets.all(20),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _DetailRow(
-                            icon: Iconsax.calendar_1,
-                            label: Tr.date.tr,
-                            value: rdv['date'] ?? '',
-                          ),
-                          const Divider(height: 20),
-                          _DetailRow(
-                            icon: Iconsax.clock,
-                            label: Tr.time.tr,
-                            value: '$heureDebut - $heureFin',
-                          ),
-                          const Divider(height: 20),
-                          _DetailRow(
-                            icon: Iconsax.document_text,
-                            label: Tr.reason.tr,
-                            value: rdv['motif'] ?? Tr.notSpecified.tr,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Info cabinet
-                    Text(Tr.cabinet.tr, style: AppTextStyles.heading3),
-                    const SizedBox(height: 10),
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          _DetailRow(
-                            icon: Iconsax.hospital,
-                            label: Tr.name.tr,
-                            value: rdv['cabinetNom'] ?? '',
-                          ),
-                          const Divider(height: 20),
-                          _DetailRow(
-                            icon: Iconsax.location,
-                            label: Tr.address.tr,
-                            value: rdv['cabinetAdresse'] ?? '',
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-
-                    // Bouton annuler
-                    if (controller.canCancel(statut))
-                      CustomButton(
-                        text: Tr.cancelAppointment.tr,
-                        backgroundColor: AppColors.error,
-                        icon: Iconsax.close_circle,
-                        onPressed: () {
-                          Get.dialog(
-                            AlertDialog(
-                              shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(20),
+                          // Doctor Profile Row
+                          Row(
+                            children: [
+                              UserAvatar(
+                                photoUrl: rdv['medecinPhoto'] as String?,
+                                initials:
+                                    '${((rdv['medecinPrenom'] as String?) ?? '').isNotEmpty ? (rdv['medecinPrenom'] as String)[0] : ''}'
+                                    '${((rdv['medecinNom'] as String?) ?? '').isNotEmpty ? (rdv['medecinNom'] as String)[0] : ''}',
+                                radius: 28,
+                                backgroundColor: DSColors.primaryUltraLight,
+                                textColor: DSColors.primary,
+                                fontSize: 18,
                               ),
-                              title: Row(
-                                children: [
-                                  Container(
-                                    padding:
-                                        const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.error
-                                          .withValues(alpha: 0.1),
-                                      shape: BoxShape.circle,
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      doctorName,
+                                      style: DSTypography.headingSmall.copyWith(
+                                        color: DSColors.textPrimary,
+                                        fontWeight: FontWeight.w800,
+                                      ),
                                     ),
-                                    child: const Icon(
-                                        Iconsax.warning_2,
-                                        color: AppColors.error,
-                                        size: 22),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Text(Tr.confirm.tr),
-                                ],
-                              ),
-                              content: Text(
-                                Tr.cancelConfirm.tr,
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Get.back(),
-                                  child:
-                                      Text(Tr.no.tr),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      rdv['medecinSpecialite'] ?? '',
+                                      style: DSTypography.labelMedium.copyWith(
+                                        color: DSColors.primary,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    controller
-                                        .annulerRdv(rdv['id']);
-                                    Get.back();
-                                  },
-                                  style:
-                                      ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        AppColors.error,
-                                  ),
-                                  child: Text(
-                                      Tr.yesCancel.tr),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 20),
+                          const DashedDivider(),
+                          const SizedBox(height: 20),
+
+                          // Date & Time Block
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      Tr.date.tr.toUpperCase(),
+                                      style: DSTypography.labelSmall.copyWith(
+                                        color: DSColors.textLight,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      children: [
+                                        const Icon(Iconsax.calendar_1, size: 16, color: DSColors.primary),
+                                        const SizedBox(width: 6),
+                                        Expanded(
+                                          child: Text(
+                                            DateFormatter.formatFullFrenchDate(rdv['date'] as String?),
+                                            style: DSTypography.labelMedium.copyWith(
+                                              color: DSColors.textPrimary,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                              ],
+                              ),
+                              Container(height: 36, width: 1, color: DSColors.borderLight),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      Tr.time.tr.toUpperCase(),
+                                      style: DSTypography.labelSmall.copyWith(
+                                        color: DSColors.textLight,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      children: [
+                                        const Icon(Iconsax.clock, size: 16, color: DSColors.primary),
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          '$heureDebut - $heureFin',
+                                          style: DSTypography.labelLarge.copyWith(
+                                            color: DSColors.textPrimary,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          // Reason for Visit
+                          Text(
+                            Tr.reason.tr.toUpperCase(),
+                            style: DSTypography.labelSmall.copyWith(
+                              color: DSColors.textLight,
+                              fontWeight: FontWeight.w700,
                             ),
-                          );
-                        },
+                          ),
+                          const SizedBox(height: 6),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: DSColors.primaryUltraLight.withValues(alpha: 0.5),
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: Text(
+                              rdv['motif'] ?? Tr.notSpecified.tr,
+                              style: DSTypography.bodySmall.copyWith(
+                                color: DSColors.textPrimary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 20),
+                          const DashedDivider(),
+                          const SizedBox(height: 20),
+
+                          // Cabinet Address Block
+                          Text(
+                            Tr.cabinet.tr.toUpperCase(),
+                            style: DSTypography.labelSmall.copyWith(
+                              color: DSColors.textLight,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: DSColors.primaryUltraLight,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Icon(Iconsax.hospital, color: DSColors.primary, size: 20),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      rdv['cabinetNom'] ?? '',
+                                      style: DSTypography.labelLarge.copyWith(
+                                        color: DSColors.textPrimary,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    Text(
+                                      rdv['cabinetAdresse'] ?? '',
+                                      style: DSTypography.bodySmall.copyWith(
+                                        color: DSColors.textSecondary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    const SizedBox(height: 30),
+                    ),
                   ],
                 ),
               ),
-            ),
-          ],
+
+              const SizedBox(height: 24),
+
+              // Action Buttons Row
+              if (statut == 'CONFIRME') ...[
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      HapticFeedback.mediumImpact();
+                      CalendarUtils().exportAppointmentToCalendar(
+                        doctorName: doctorName,
+                        specialty: rdv['medecinSpecialite'] ?? '',
+                        date: rdv['date'] ?? '',
+                        timeRange: '$heureDebut - $heureFin',
+                        cabinetAddress: rdv['cabinetAdresse'],
+                      );
+                    },
+                    icon: const Icon(Iconsax.calendar_add, size: 18, color: Colors.white),
+                    label: Text(
+                      'Exporter vers mon agenda',
+                      style: DSTypography.labelLarge.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: DSColors.primary,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 4,
+                      shadowColor: DSColors.primary.withValues(alpha: 0.3),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
+
+              if (controller.canCancel(statut))
+                CustomButton(
+                  text: Tr.cancelAppointment.tr,
+                  backgroundColor: const Color(0xFFEF4444),
+                  icon: Iconsax.close_circle,
+                  onPressed: () {
+                    HapticFeedback.mediumImpact();
+                    _showCancelConfirmationDialog(context, controller, rdv['id']);
+                  },
+                ),
+
+              const SizedBox(height: 30),
+            ],
+          ),
         );
       }),
     );
   }
-}
 
-// ─── DETAIL ROW ────────────────────────────────────────────────
-class _DetailRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  const _DetailRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 18, color: AppColors.primary),
-        const SizedBox(width: 12),
-        SizedBox(
-          width: 60,
-          child: Text(label, style: AppTextStyles.caption),
+  void _showCancelConfirmationDialog(
+    BuildContext context,
+    RendezvousController controller,
+    dynamic rdvId,
+  ) {
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        backgroundColor: DSColors.surface,
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEF4444).withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Iconsax.warning_2, color: Color(0xFFEF4444), size: 22),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              Tr.confirm.tr,
+              style: DSTypography.headingSmall.copyWith(color: DSColors.textPrimary),
+            ),
+          ],
         ),
-        Expanded(
-          child: Text(value, style: AppTextStyles.body),
+        content: Text(
+          Tr.cancelConfirm.tr,
+          style: DSTypography.bodyMedium.copyWith(color: DSColors.textSecondary),
         ),
-      ],
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text(
+              Tr.no.tr,
+              style: DSTypography.labelMedium.copyWith(color: DSColors.textSecondary),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              controller.annulerRdv(rdvId);
+              Get.back();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEF4444),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            ),
+            child: Text(
+              Tr.yesCancel.tr,
+              style: DSTypography.labelMedium.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
-// ─── STATUS TIMELINE ───────────────────────────────────────────
-class _StatusTimeline extends StatelessWidget {
-  final String statut;
-  const _StatusTimeline({required this.statut});
+class DashedDivider extends StatelessWidget {
+  const DashedDivider({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final steps = ['EN_ATTENTE', 'CONFIRME', 'TERMINE'];
-    final isAnnule = statut == 'ANNULE';
-    final currentIndex = steps.indexOf(statut);
-
-    final labels = {
-      'EN_ATTENTE': Tr.statusPending.tr,
-      'CONFIRME': Tr.statusConfirmed.tr,
-      'TERMINE': Tr.statusCompleted.tr,
-    };
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+    return Row(
+      children: List.generate(
+        30,
+        (index) => Expanded(
+          child: Container(
+            color: index % 2 == 0 ? DSColors.borderLight : Colors.transparent,
+            height: 1.5,
           ),
-        ],
+        ),
       ),
-      child: isAnnule
-          ? Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppColors.error.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Iconsax.close_circle,
-                      color: AppColors.error, size: 24),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  Tr.appointmentCancelledText.tr,
-                  style: AppTextStyles.body.copyWith(
-                    color: AppColors.error,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            )
-          : Row(
-              children: List.generate(steps.length, (i) {
-                final isActive = i <= currentIndex;
-                final isLast = i == steps.length - 1;
-                return Expanded(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Container(
-                              width: 32,
-                              height: 32,
-                              decoration: BoxDecoration(
-                                color: isActive
-                                    ? AppColors.primary
-                                    : AppColors.divider,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                isActive
-                                    ? Iconsax.tick_circle5
-                                    : Iconsax.clock,
-                                color: isActive
-                                    ? Colors.white
-                                    : AppColors.textLight,
-                                size: 16,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              labels[steps[i]] ?? '',
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: isActive
-                                    ? FontWeight.w600
-                                    : FontWeight.normal,
-                                color: isActive
-                                    ? AppColors.primary
-                                    : AppColors.textLight,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (!isLast)
-                        Expanded(
-                          child: Container(
-                            height: 2,
-                            margin: const EdgeInsets.only(bottom: 16),
-                            color: i < currentIndex
-                                ? AppColors.primary
-                                : AppColors.divider,
-                          ),
-                        ),
-                    ],
-                  ),
-                );
-              }),
-            ),
     );
   }
 }

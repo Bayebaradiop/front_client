@@ -181,19 +181,7 @@ class _DoctorIntroViewState extends State<DoctorIntroView>
         child: Container(
           width: double.infinity,
           height: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Color(0xFF0A3D1F),
-                Color(0xFF14532D),
-                Color(0xFF1B5E20),
-                Color(0xFF2E7D32),
-              ],
-              stops: [0.0, 0.3, 0.6, 1.0],
-            ),
-          ),
+          color: const Color(0xFF14532D),
           child: Stack(
             children: [
               // Background particles
@@ -221,13 +209,7 @@ class _DoctorIntroViewState extends State<DoctorIntroView>
                         height: 320 * _pulseAnim.value,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          gradient: RadialGradient(
-                            colors: [
-                              Colors.greenAccent.withValues(alpha: 0.12),
-                              Colors.white.withValues(alpha: 0.05),
-                              Colors.transparent,
-                            ],
-                          ),
+                          color: Colors.greenAccent.withValues(alpha: 0.08),
                         ),
                       ),
                     );
@@ -294,15 +276,7 @@ class _DoctorIntroViewState extends State<DoctorIntroView>
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(24, 50, 24, 45),
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent,
-                        Colors.black.withValues(alpha: 0.4),
-                        Colors.black.withValues(alpha: 0.7),
-                      ],
-                    ),
+                    color: Colors.black.withValues(alpha: 0.6),
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -319,22 +293,15 @@ class _DoctorIntroViewState extends State<DoctorIntroView>
                             ),
                           );
                         },
-                        child: ShaderMask(
-                          shaderCallback: (bounds) {
-                            return const LinearGradient(
-                              colors: [Colors.white, Color(0xFFA5D6A7)],
-                            ).createShader(bounds);
-                          },
-                          child: const Text(
-                            'Votre Santé,\nNotre Priorité',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 34,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.white,
-                              height: 1.15,
-                              letterSpacing: 0.8,
-                            ),
+                        child: const Text(
+                          'Votre Santé,\nNotre Priorité',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 34,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                            height: 1.15,
+                            letterSpacing: 0.8,
                           ),
                         ),
                       ),
@@ -421,9 +388,7 @@ class _DoctorIntroViewState extends State<DoctorIntroView>
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 44, vertical: 15),
                             decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Colors.white, Color(0xFFE8F5E9)],
-                              ),
+                              color: Colors.white,
                               borderRadius: BorderRadius.circular(30),
                               boxShadow: [
                                 BoxShadow(
@@ -590,16 +555,7 @@ class _DoctorIntroViewState extends State<DoctorIntroView>
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.white.withValues(alpha: 0.25),
-                                Colors.white.withValues(alpha: 0.08),
-                              ],
-                            ),
-                          ),
+                          color: Colors.white.withValues(alpha: 0.15),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [

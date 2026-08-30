@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
+import '../../../core/utils/calendar_utils.dart';
+import '../../../core/utils/date_formatter.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/shimmer_loading.dart';
 import '../../../core/widgets/user_avatar.dart';
 import '../../../routes/app_routes.dart';
-import '../../../theme/app_colors.dart';
-import '../../../theme/design_system/index.dart';
+import '../../../theme/design_system/colors_ds.dart';
+import '../../../theme/design_system/typography_ds.dart';
 import '../../../translate/translation_keys.dart';
 import '../controllers/rendezvous_controller.dart';
 
@@ -21,50 +24,31 @@ class MesRdvView extends StatelessWidget {
     final controller = Get.find<RendezvousController>();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: DSColors.background,
       appBar: embedded
           ? null
           : AppBar(
               title: Text(
                 Tr.myAppointments.tr,
                 style: DSTypography.headingSmall.copyWith(
-                  color: DSColors.white,
+                  color: DSColors.textPrimary,
+                  fontWeight: FontWeight.w800,
                   fontSize: 20,
                 ),
               ),
-              backgroundColor: AppColors.primary,
-              foregroundColor: DSColors.white,
+              backgroundColor: DSColors.background,
               elevation: 0,
               centerTitle: true,
             ),
       body: Column(
         children: [
-          if (embedded)
-            SafeArea(
-              bottom: false,
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(
-                  DSSpacing.screenMargin,
-                  DSSpacing.lg,
-                  DSSpacing.screenMargin,
-                  0,
-                ),
-                child: _RdvHero(controller: controller),
-              ),
-            )
-          else
-            Padding(
-              padding: EdgeInsets.fromLTRB(
-                DSSpacing.screenMargin,
-                DSSpacing.lg,
-                DSSpacing.screenMargin,
-                0,
-              ),
-              child: _RdvIntro(controller: controller),
-            ),
-          SizedBox(height: DSSpacing.lg),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: DSSpacing.screenMargin),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: _RdvHero(controller: controller),
+          ),
+          const SizedBox(height: 14),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Obx(
               () => _RdvFilterBar(
                 selectedIndex: controller.selectedTabIndex.value,
@@ -72,15 +56,13 @@ class MesRdvView extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: DSSpacing.md),
+          const SizedBox(height: 10),
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value) {
-                return Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: DSSpacing.screenMargin,
-                  ),
-                  child: const ShimmerLoading(itemCount: 4, height: 168),
+                return const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: ShimmerLoading(itemCount: 4, height: 168),
                 );
               }
 
@@ -89,21 +71,18 @@ class MesRdvView extends StatelessWidget {
                 return EmptyState(
                   icon: Iconsax.calendar_1,
                   title: Tr.noAppointments.tr,
-                  subtitle: 'Planifiez votre premier rendez-vous.',
+                  subtitle: 'Planifiez votre premier rendez-vous avec un praticien.',
                 );
               }
 
               return RefreshIndicator(
-                color: AppColors.primary,
+                color: DSColors.primary,
                 onRefresh: () async => controller.refresh(),
                 child: AnimationLimiter(
                   child: ListView.builder(
-                    padding: EdgeInsets.only(
-                      left: DSSpacing.screenMargin,
-                      right: DSSpacing.screenMargin,
-                      top: DSSpacing.xs,
-                      bottom: DSSpacing.bottomSafe,
-                    ),
+                    // Marge inférieure généreuse (140px) pour éviter le chevauchement avec la barre de navigation
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 140),
+                    physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                     itemCount: list.length,
                     itemBuilder: (context, index) {
                       final rdv = list[index];
@@ -141,6 +120,7 @@ class MesRdvView extends StatelessWidget {
   }
 }
 
+// ─── HERO CARTE D'ENTÊTE ─────────────────────────────────────
 class _RdvHero extends StatelessWidget {
   final RendezvousController controller;
   const _RdvHero({required this.controller});
@@ -148,95 +128,66 @@ class _RdvHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(DSSpacing.lg),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.primaryDark, AppColors.primary],
-        ),
-        borderRadius: BorderRadius.circular(28),
+        color: DSColors.primaryDark,
+        borderRadius: BorderRadius.circular(26),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryDark.withAlpha(24),
-            blurRadius: 22,
-            offset: const Offset(0, 10),
+            color: const Color(0xFF0F172A).withValues(alpha: 0.25),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            Tr.myAppointments.tr,
-            style: DSTypography.labelLarge.copyWith(
-              color: DSColors.white.withAlpha(225),
-            ),
+          Row(
+            children: [
+              const Icon(Iconsax.calendar_tick, color: Color(0xFF10B981), size: 22),
+              const SizedBox(width: 8),
+              Text(
+                'ESPACE RENDEZ-VOUS',
+                style: DSTypography.labelSmall.copyWith(
+                  color: Colors.white70,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.8,
+                ),
+              ),
+            ],
           ),
-          SizedBox(height: DSSpacing.sm),
+          const SizedBox(height: 8),
           Text(
-            'Vos rendez-vous, plus simplement.',
+            'Gestion Simplifiée des Consultations',
             style: DSTypography.headingSmall.copyWith(
-              color: DSColors.white,
-              fontSize: 22,
-              height: 1.2,
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
             ),
           ),
-          SizedBox(height: DSSpacing.sm),
-          Text(
-            'Vos réservations sont instantanément confirmées.',
-            style: DSTypography.bodyMedium.copyWith(
-              color: DSColors.white.withAlpha(214),
-            ),
-          ),
-          SizedBox(height: DSSpacing.lg),
+          const SizedBox(height: 14),
           Obx(
-            () => Wrap(
-              spacing: DSSpacing.sm,
-              runSpacing: DSSpacing.sm,
+            () => Row(
               children: [
                 _HeroPill(
                   value: '${controller.tousLesRdv.length}',
-                  label: Tr.all.tr,
+                  label: 'Total',
+                  color: const Color(0xFF38BDF8),
                 ),
+                const SizedBox(width: 8),
                 _HeroPill(
                   value: '${controller.rdvConfirmes.length}',
-                  label: Tr.confirmed.tr,
+                  label: 'Confirmés',
+                  color: const Color(0xFF10B981),
                 ),
+                const SizedBox(width: 8),
                 _HeroPill(
                   value: '${controller.rdvHistorique.length}',
-                  label: Tr.history.tr,
+                  label: 'Historique',
+                  color: const Color(0xFFF59E0B),
                 ),
               ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _RdvIntro extends StatelessWidget {
-  final RendezvousController controller;
-  const _RdvIntro({required this.controller});
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(
-      () => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            Tr.myAppointments.tr,
-            style: DSTypography.headingSmall.copyWith(
-              color: DSColors.textPrimary,
-            ),
-          ),
-          SizedBox(height: DSSpacing.xs),
-          Text(
-            '${controller.tousLesRdv.length} rendez-vous dans votre espace.',
-            style: DSTypography.bodyMedium.copyWith(
-              color: DSColors.textSecondary,
             ),
           ),
         ],
@@ -248,32 +199,39 @@ class _RdvIntro extends StatelessWidget {
 class _HeroPill extends StatelessWidget {
   final String value;
   final String label;
+  final Color color;
 
-  const _HeroPill({required this.value, required this.label});
+  const _HeroPill({
+    required this.value,
+    required this.label,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: DSSpacing.md,
-        vertical: DSSpacing.sm,
-      ),
-      decoration: BoxDecoration(
-        color: DSColors.white.withAlpha(18),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: DSColors.white.withAlpha(28)),
-      ),
-      child: RichText(
-        text: TextSpan(
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+        ),
+        child: Column(
           children: [
-            TextSpan(
-              text: '$value ',
-              style: DSTypography.labelLarge.copyWith(color: DSColors.white),
+            Text(
+              value,
+              style: DSTypography.headingSmall.copyWith(
+                color: color,
+                fontWeight: FontWeight.w800,
+                fontSize: 16,
+              ),
             ),
-            TextSpan(
-              text: label,
-              style: DSTypography.bodySmall.copyWith(
-                color: DSColors.white.withAlpha(214),
+            Text(
+              label,
+              style: DSTypography.labelSmall.copyWith(
+                color: Colors.white70,
+                fontSize: 10,
               ),
             ),
           ],
@@ -283,6 +241,7 @@ class _HeroPill extends StatelessWidget {
   }
 }
 
+// ─── BARRE DE FILTRES SEGMENTÉE ──────────────────────────────
 class _RdvFilterBar extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onChanged;
@@ -294,10 +253,10 @@ class _RdvFilterBar extends StatelessWidget {
     final items = [Tr.confirmed.tr, Tr.history.tr, Tr.all.tr];
 
     return Container(
-      padding: EdgeInsets.all(DSSpacing.xs),
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: DSColors.surface,
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: DSColors.borderLight),
       ),
       child: Row(
@@ -305,19 +264,24 @@ class _RdvFilterBar extends StatelessWidget {
           final isSelected = selectedIndex == index;
           return Expanded(
             child: GestureDetector(
-              onTap: () => onChanged(index),
+              onTap: () {
+                HapticFeedback.selectionClick();
+                onChanged(index);
+              },
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 220),
-                padding: EdgeInsets.symmetric(vertical: DSSpacing.sm),
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.primary : Colors.transparent,
-                  borderRadius: BorderRadius.circular(18),
+                  color: isSelected ? DSColors.primary : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   items[index],
                   textAlign: TextAlign.center,
                   style: DSTypography.labelSmall.copyWith(
-                    color: isSelected ? DSColors.white : DSColors.textSecondary,
+                    color: isSelected ? Colors.white : DSColors.textSecondary,
+                    fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                    fontSize: 12,
                   ),
                 ),
               ),
@@ -329,6 +293,7 @@ class _RdvFilterBar extends StatelessWidget {
   }
 }
 
+// ─── CARTE DE RENDEZ-VOUS (ROBUSTE & DEFENSIVE) ──────────────
 class _RdvCard extends StatelessWidget {
   final Map<String, dynamic> rdv;
   final RendezvousController controller;
@@ -337,15 +302,15 @@ class _RdvCard extends StatelessWidget {
   Color _statusColor(String statut) {
     switch (statut) {
       case 'EN_ATTENTE':
-        return AppColors.statusEnAttente;
+        return const Color(0xFFF59E0B);
       case 'CONFIRME':
-        return AppColors.statusConfirme;
+        return const Color(0xFF10B981);
       case 'TERMINE':
-        return AppColors.statusTermine;
+        return DSColors.primary;
       case 'ANNULE':
-        return AppColors.statusAnnule;
+        return const Color(0xFFEF4444);
       default:
-        return AppColors.textLight;
+        return DSColors.textLight;
     }
   }
 
@@ -366,26 +331,40 @@ class _RdvCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statut = (rdv['statut'] as String?) ?? 'EN_ATTENTE';
-    final color = _statusColor(statut);
-    final rawDebut = (rdv['heureDebut'] as String?) ?? '';
-    final rawFin = (rdv['heureFin'] as String?) ?? '';
-    final heureDebut = rawDebut.length >= 5
-        ? rawDebut.substring(0, 5)
-        : rawDebut;
-    final heureFin = rawFin.length >= 5 ? rawFin.substring(0, 5) : rawFin;
+    final String statut = rdv['statut']?.toString() ?? 'EN_ATTENTE';
+    final Color color = _statusColor(statut);
+    
+    final String rawDebut = rdv['heureDebut']?.toString() ?? '';
+    final String rawFin = rdv['heureFin']?.toString() ?? '';
+    final String heureDebut = rawDebut.length >= 5 ? rawDebut.substring(0, 5) : rawDebut;
+    final String heureFin = rawFin.length >= 5 ? rawFin.substring(0, 5) : rawFin;
+
+    final String doctorPrenom = rdv['medecinPrenom']?.toString() ?? '';
+    final String doctorNom = rdv['medecinNom']?.toString() ?? '';
+    final String doctorSpecialite = rdv['medecinSpecialite']?.toString() ?? '';
+    final String cabinetNom = rdv['cabinetNom']?.toString() ?? '';
+    final String cabinetAdresse = rdv['cabinetAdresse']?.toString() ?? '';
+    final String dateStr = rdv['date']?.toString() ?? '';
+    final String photoUrl = rdv['medecinPhoto']?.toString() ?? '';
+    
+    final String doctorName = 'Dr. $doctorPrenom $doctorNom'.trim();
+
+    String initials = '';
+    if (doctorPrenom.isNotEmpty) initials += doctorPrenom[0].toUpperCase();
+    if (doctorNom.isNotEmpty) initials += doctorNom[0].toUpperCase();
+    if (initials.isEmpty) initials = 'DR';
 
     return Container(
-      margin: EdgeInsets.only(bottom: DSSpacing.md),
+      margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
         color: DSColors.surface,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: DSColors.borderLight),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(10),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 16,
-            offset: const Offset(0, 8),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -393,60 +372,57 @@ class _RdvCard extends StatelessWidget {
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(24),
         child: InkWell(
-          onTap: () =>
-              Get.toNamed(AppRoutes.rdvDetail, arguments: {'rdv': rdv}),
+          onTap: () {
+            HapticFeedback.selectionClick();
+            Get.toNamed(AppRoutes.rdvDetail, arguments: {'rdv': rdv});
+          },
           borderRadius: BorderRadius.circular(24),
           child: Padding(
-            padding: EdgeInsets.all(DSSpacing.lg),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // En-tête Médecin + Statut Badge
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      padding: EdgeInsets.all(DSSpacing.xs),
-                      decoration: BoxDecoration(
-                        color: color.withAlpha(18),
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: UserAvatar(
-                        photoUrl: rdv['medecinPhoto'] as String?,
-                        initials:
-                            '${((rdv['medecinPrenom'] as String?) ?? '').isNotEmpty ? (rdv['medecinPrenom'] as String)[0] : ''}'
-                            '${((rdv['medecinNom'] as String?) ?? '').isNotEmpty ? (rdv['medecinNom'] as String)[0] : ''}',
-                        radius: 22,
-                        backgroundColor: color,
-                        textColor: DSColors.white,
-                        fontSize: 14,
-                      ),
+                    UserAvatar(
+                      photoUrl: photoUrl.isNotEmpty ? photoUrl : null,
+                      initials: initials,
+                      radius: 24,
+                      backgroundColor: DSColors.primaryUltraLight,
+                      textColor: DSColors.primary,
+                      fontSize: 14,
                     ),
-                    SizedBox(width: DSSpacing.md),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Dr. ${rdv['medecinPrenom'] ?? ''} ${rdv['medecinNom'] ?? ''}',
-                            style: DSTypography.labelLarge.copyWith(
+                            doctorName.isEmpty ? 'Praticien MediBook' : doctorName,
+                            style: DSTypography.headingSmall.copyWith(
                               color: DSColors.textPrimary,
-                              height: 1.2,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w800,
                             ),
                           ),
-                          SizedBox(height: DSSpacing.xs),
+                          const SizedBox(height: 2),
                           Text(
-                            rdv['medecinSpecialite'] ?? '',
-                            style: DSTypography.bodyMedium.copyWith(
-                              color: AppColors.primary,
+                            doctorSpecialite,
+                            style: DSTypography.bodySmall.copyWith(
+                              color: DSColors.primary,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 12,
                             ),
                           ),
-                          if (((rdv['cabinetNom'] ?? '') as String)
-                              .isNotEmpty) ...[
-                            SizedBox(height: DSSpacing.xs),
+                          if (cabinetNom.isNotEmpty) ...[
+                            const SizedBox(height: 2),
                             Text(
-                              rdv['cabinetNom'] ?? '',
+                              cabinetNom,
                               style: DSTypography.bodySmall.copyWith(
                                 color: DSColors.textSecondary,
+                                fontSize: 11,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -455,31 +431,37 @@ class _RdvCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(width: DSSpacing.sm),
+                    const SizedBox(width: 8),
+                    // Statut Badge
                     Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: DSSpacing.sm,
-                        vertical: DSSpacing.xs,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: color.withAlpha(16),
-                        borderRadius: BorderRadius.circular(999),
+                        color: color.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: color.withValues(alpha: 0.4)),
                       ),
                       child: Text(
-                        _statusLabel(statut),
-                        style: DSTypography.labelSmall.copyWith(color: color),
+                        _statusLabel(statut).toUpperCase(),
+                        style: DSTypography.labelSmall.copyWith(
+                          color: color,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 10,
+                        ),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: DSSpacing.md),
+
+                const SizedBox(height: 14),
+
+                // Informations de Date & Heure (Box Immersive)
                 Container(
-                  padding: EdgeInsets.all(DSSpacing.md),
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.primaryUltraLight,
-                    borderRadius: BorderRadius.circular(18),
+                    color: DSColors.primaryUltraLight,
+                    borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: AppColors.primaryLight.withAlpha(60),
+                      color: DSColors.primaryLight.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Column(
@@ -489,65 +471,111 @@ class _RdvCard extends StatelessWidget {
                           Expanded(
                             child: _MetaItem(
                               icon: Iconsax.calendar_1,
-                              label: Tr.date.tr,
-                              value: rdv['date'] ?? '',
+                              label: 'Date',
+                              value: DateFormatter.formatFullFrenchDate(dateStr),
                             ),
                           ),
-                          SizedBox(width: DSSpacing.sm),
+                          Container(
+                            height: 28,
+                            width: 1,
+                            color: DSColors.borderLight,
+                          ),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: _MetaItem(
                               icon: Iconsax.clock,
-                              label: Tr.time.tr,
+                              label: 'Heure',
                               value: '$heureDebut - $heureFin',
                             ),
                           ),
                         ],
                       ),
-                      if (((rdv['cabinetAdresse'] ?? '') as String)
-                          .isNotEmpty) ...[
-                        SizedBox(height: DSSpacing.sm),
+                      if (cabinetAdresse.isNotEmpty) ...[
+                        const Divider(height: 16),
                         _MetaItem(
                           icon: Iconsax.location,
-                          label: Tr.address.tr,
-                          value: rdv['cabinetAdresse'] ?? '',
+                          label: 'Adresse',
+                          value: cabinetAdresse,
                         ),
                       ],
                     ],
                   ),
                 ),
-                if (controller.canCancel(statut)) ...[
-                  SizedBox(height: DSSpacing.md),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () => _showCancelDialog(context),
-                          icon: const Icon(
-                            Iconsax.close_circle,
-                            size: 16,
-                            color: AppColors.error,
-                          ),
-                          label: Text(
-                            Tr.cancel.tr,
-                            style: DSTypography.labelMedium.copyWith(
-                              color: AppColors.error,
-                            ),
-                          ),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: AppColors.error,
-                            side: const BorderSide(color: AppColors.error),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            padding: EdgeInsets.symmetric(
-                              vertical: DSSpacing.sm,
-                            ),
+
+                const SizedBox(height: 12),
+
+                // Barre d'Actions Intégrée (Billet, Agenda, Annuler)
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          HapticFeedback.mediumImpact();
+                          Get.toNamed(AppRoutes.rdvDetail, arguments: {'rdv': rdv});
+                        },
+                        icon: const Icon(Iconsax.ticket, size: 14, color: Colors.white),
+                        label: Text(
+                          'Voir Billet',
+                          style: DSTypography.labelSmall.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 11,
                           ),
                         ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: DSColors.primary,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          HapticFeedback.mediumImpact();
+                          CalendarUtils().exportAppointmentToCalendar(
+                            doctorName: doctorName,
+                            specialty: doctorSpecialite,
+                            date: dateStr,
+                            timeRange: '$heureDebut - $heureFin',
+                            cabinetAddress: cabinetAdresse,
+                          );
+                        },
+                        icon: const Icon(
+                          Iconsax.calendar_add,
+                          size: 14,
+                          color: DSColors.primary,
+                        ),
+                        label: Text(
+                          'Agenda',
+                          style: DSTypography.labelSmall.copyWith(
+                            color: DSColors.primary,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 11,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: DSColors.primary,
+                          side: const BorderSide(color: DSColors.primaryLight),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                        ),
+                      ),
+                    ),
+                    if (controller.canCancel(statut)) ...[
+                      const SizedBox(width: 8),
+                      IconButton(
+                        onPressed: () {
+                          HapticFeedback.heavyImpact();
+                          _showCancelDialog(context);
+                        },
+                        icon: const Icon(Iconsax.close_circle, color: Color(0xFFEF4444), size: 22),
+                        tooltip: 'Annuler Rendez-vous',
                       ),
                     ],
-                  ),
-                ],
+                  ],
+                ),
               ],
             ),
           ),
@@ -560,26 +588,24 @@ class _RdvCard extends StatelessWidget {
     Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        backgroundColor: Colors.white,
         title: Row(
           children: [
             Container(
-              padding: EdgeInsets.all(DSSpacing.sm),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppColors.error.withAlpha(20),
+                color: const Color(0xFFEF4444).withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Iconsax.warning_2,
-                color: AppColors.error,
-                size: 22,
-              ),
+              child: const Icon(Iconsax.warning_2, color: Color(0xFFEF4444), size: 22),
             ),
-            SizedBox(width: DSSpacing.sm),
+            const SizedBox(width: 10),
             Expanded(
               child: Text(
                 Tr.cancelRdv.tr,
                 style: DSTypography.labelLarge.copyWith(
                   color: DSColors.textPrimary,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
             ),
@@ -592,11 +618,34 @@ class _RdvCard extends StatelessWidget {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: Text(Tr.noKeep.tr)),
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text(
+              Tr.noKeep.tr,
+              style: DSTypography.labelMedium.copyWith(
+                color: DSColors.textSecondary,
+              ),
+            ),
+          ),
           ElevatedButton(
-            onPressed: () => controller.annulerRdv(rdv['id']),
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            child: Text(Tr.yesCancel.tr),
+            onPressed: () {
+              Get.back();
+              final id = rdv['id'];
+              if (id != null && id is int) {
+                controller.annulerRdv(id);
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEF4444),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: Text(
+              Tr.yesCancel.tr,
+              style: DSTypography.labelMedium.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
           ),
         ],
       ),
@@ -620,23 +669,27 @@ class _MetaItem extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 16, color: AppColors.primary),
-        SizedBox(width: DSSpacing.sm),
+        Icon(icon, size: 16, color: DSColors.primary),
+        const SizedBox(width: 8),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                label,
+                label.toUpperCase(),
                 style: DSTypography.labelSmall.copyWith(
-                  color: DSColors.textSecondary,
+                  color: DSColors.textLight,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 9,
                 ),
               ),
-              SizedBox(height: 2),
+              const SizedBox(height: 2),
               Text(
                 value,
-                style: DSTypography.bodyMedium.copyWith(
+                style: DSTypography.bodySmall.copyWith(
                   color: DSColors.textPrimary,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
