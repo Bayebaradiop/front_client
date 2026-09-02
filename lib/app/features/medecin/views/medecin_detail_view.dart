@@ -40,7 +40,7 @@ class MedecinDetailView extends StatelessWidget {
               slivers: [
                 // Executive Header
                 SliverAppBar(
-                  expandedHeight: 250,
+                  expandedHeight: 340,
                   pinned: true,
                   backgroundColor: DSColors.primaryDark,
                   foregroundColor: Colors.white,
@@ -63,16 +63,29 @@ class MedecinDetailView extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const SizedBox(height: 16),
-                            UserAvatar(
-                              photoUrl: medecin['photo'] as String?,
-                              initials:
-                                  '${(medecin['prenom'] as String)[0]}${(medecin['nom'] as String)[0]}',
-                              radius: 44,
-                              backgroundColor: Colors.white24,
-                              textColor: Colors.white,
-                              fontSize: 26,
+                            Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.white, width: 4),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.25),
+                                    blurRadius: 16,
+                                    offset: const Offset(0, 6),
+                                  ),
+                                ],
+                              ),
+                              child: UserAvatar(
+                                photoUrl: medecin['photo'] as String?,
+                                initials:
+                                    '${(medecin['prenom'] as String)[0]}${(medecin['nom'] as String)[0]}',
+                                radius: 80,
+                                backgroundColor: Colors.white24,
+                                textColor: Colors.white,
+                                fontSize: 44,
+                              ),
                             ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 12),
                             Text(
                               doctorName,
                               style: DSTypography.headingMedium.copyWith(
@@ -444,7 +457,7 @@ class MedecinDetailView extends StatelessWidget {
                             ),
                             const SizedBox(width: 10),
                             Text(
-                              '${Tr.consultationReason.tr} (Optionnel)',
+                              Tr.consultationReason.tr,
                               style: DSTypography.headingSmall.copyWith(
                                 color: DSColors.textPrimary,
                                 fontWeight: FontWeight.w800,
