@@ -264,17 +264,17 @@ class _HomeContent extends StatelessWidget {
               Obx(
                 () => controller.isLoading.value
                     ? SizedBox(
-                        height: 210,
+                        height: 225,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           padding: const EdgeInsets.only(left: 16),
                           itemCount: 3,
                           itemBuilder: (_, __) =>
-                              const ShimmerCard(width: 170, height: 200),
+                              const ShimmerCard(width: 180, height: 215),
                         ),
                       )
                     : SizedBox(
-                        height: 210,
+                        height: 225,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           padding: const EdgeInsets.only(left: 16),
@@ -371,10 +371,10 @@ class _HomeHero extends StatelessWidget {
                   initials:
                       '${(user?.prenom ?? '').isNotEmpty ? user!.prenom![0] : ''}'
                       '${(user?.nom ?? '').isNotEmpty ? user!.nom![0] : ''}',
-                  radius: 20,
+                  radius: 26,
                   backgroundColor: Colors.white.withValues(alpha: 0.2),
                   textColor: DSColors.white,
-                  fontSize: 14,
+                  fontSize: 16,
                 ),
               ),
               const SizedBox(width: 10),
@@ -665,15 +665,28 @@ class _ProchainRdvCardState extends State<_ProchainRdvCard> {
             // Doctor Details Row
             Row(
               children: [
-                UserAvatar(
-                  photoUrl: rdv.medecinPhoto,
-                  initials:
-                      '${(rdv.medecinPrenom ?? '').isNotEmpty ? rdv.medecinPrenom![0] : ''}'
-                      '${(rdv.medecinNom ?? '').isNotEmpty ? rdv.medecinNom![0] : ''}',
-                  radius: 24,
-                  backgroundColor: Colors.white.withValues(alpha: 0.15),
-                  textColor: Colors.white,
-                  fontSize: 16,
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 1.5),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: UserAvatar(
+                    photoUrl: rdv.medecinPhoto,
+                    initials:
+                        '${(rdv.medecinPrenom ?? '').isNotEmpty ? rdv.medecinPrenom![0] : ''}'
+                        '${(rdv.medecinNom ?? '').isNotEmpty ? rdv.medecinNom![0] : ''}',
+                    radius: 30,
+                    backgroundColor: Colors.white.withValues(alpha: 0.15),
+                    textColor: Colors.white,
+                    fontSize: 18,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -910,7 +923,7 @@ class _MedecinHorizontalCard extends StatelessWidget {
         },
       ),
       child: Container(
-        width: 170,
+        width: 180,
         margin: const EdgeInsets.only(right: 12),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
