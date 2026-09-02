@@ -8,8 +8,8 @@ class AuthBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<ApiService>(() => ApiService(), fenix: true);
-    Get.lazyPut<AuthRepository>(() => AuthRepository(Get.find<ApiService>()));
-    Get.lazyPut<AuthViewModel>(() => AuthViewModel(Get.find<AuthRepository>()));
-    Get.lazyPut<AuthController>(() => AuthController(Get.find<AuthViewModel>()));
+    Get.lazyPut<AuthRepository>(() => AuthRepository(Get.find<ApiService>()), fenix: true);
+    Get.lazyPut<AuthViewModel>(() => AuthViewModel(Get.find<AuthRepository>()), fenix: true);
+    Get.lazyPut<AuthController>(() => AuthController(Get.find<AuthViewModel>()), fenix: true);
   }
 }
