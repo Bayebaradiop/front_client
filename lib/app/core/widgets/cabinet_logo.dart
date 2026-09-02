@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/design_system/colors_ds.dart';
 
 /// Widget réutilisable pour afficher le logo d'un cabinet.
 /// Affiche l'image réseau si disponible, sinon retourne à une icône stylisée.
@@ -26,11 +27,19 @@ class CabinetLogo extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: hasLogo ? Colors.white : accentColor.withValues(alpha: 0.1),
+        color: hasLogo ? Colors.white : accentColor.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(borderRadius),
-        border: hasLogo
-            ? Border.all(color: Colors.grey.shade200, width: 1)
-            : null,
+        border: Border.all(
+          color: hasLogo ? DSColors.borderLight : accentColor.withValues(alpha: 0.25),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       clipBehavior: Clip.antiAlias,
       child: hasLogo

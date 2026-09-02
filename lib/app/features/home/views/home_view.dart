@@ -829,8 +829,8 @@ class _CabinetHorizontalCard extends StatelessWidget {
               children: [
                 CabinetLogo(
                   logoUrl: cabinet.logo,
-                  size: 34,
-                  borderRadius: 10,
+                  size: 44,
+                  borderRadius: 12,
                   accentColor: accentColor,
                 ),
                 const Spacer(),
@@ -930,22 +930,35 @@ class _MedecinHorizontalCard extends StatelessWidget {
             // Avatar avec indicateur disponible (point vert)
             Stack(
               children: [
-                UserAvatar(
-                  photoUrl: medecin.photo,
-                  initials:
-                      '${(medecin.prenom ?? '').isNotEmpty ? medecin.prenom![0] : ''}'
-                      '${(medecin.nom ?? '').isNotEmpty ? medecin.nom![0] : ''}',
-                  radius: 26,
-                  backgroundColor: DSColors.primaryUltraLight,
-                  textColor: DSColors.primary,
-                  fontSize: 16,
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: DSColors.borderLight, width: 2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.06),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: UserAvatar(
+                    photoUrl: medecin.photo,
+                    initials:
+                        '${(medecin.prenom ?? '').isNotEmpty ? medecin.prenom![0] : ''}'
+                        '${(medecin.nom ?? '').isNotEmpty ? medecin.nom![0] : ''}',
+                    radius: 32,
+                    backgroundColor: DSColors.primaryUltraLight,
+                    textColor: DSColors.primary,
+                    fontSize: 18,
+                  ),
                 ),
                 Positioned(
-                  right: 0,
-                  bottom: 0,
+                  right: 1,
+                  bottom: 1,
                   child: Container(
-                    width: 12,
-                    height: 12,
+                    width: 13,
+                    height: 13,
                     decoration: BoxDecoration(
                       color: const Color(0xFF10B981),
                       shape: BoxShape.circle,

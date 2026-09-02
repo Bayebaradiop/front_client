@@ -82,9 +82,11 @@ class CabinetsView extends StatelessWidget {
                                 children: [
                                   CabinetLogo(
                                     logoUrl: cabinet.logo,
-                                    size: 54,
+                                    size: 68,
+                                    borderRadius: 18,
+                                    accentColor: DSColors.primary,
                                   ),
-                                  const SizedBox(width: 14),
+                                  const SizedBox(width: 16),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,

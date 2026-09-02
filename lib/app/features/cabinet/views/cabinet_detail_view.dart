@@ -28,7 +28,7 @@ class CabinetDetailView extends StatelessWidget {
         slivers: [
           // En-tête Plat Moderne sans Dégradé
           SliverAppBar(
-            expandedHeight: 220,
+            expandedHeight: 260,
             pinned: true,
             backgroundColor: DSColors.primaryDark,
             foregroundColor: Colors.white,
@@ -54,13 +54,26 @@ class CabinetDetailView extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const SizedBox(height: 16),
-                          CabinetLogo(
-                            logoUrl: cabinet?.logo,
-                            size: 72,
-                            borderRadius: 20,
-                            accentColor: DSColors.primary,
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(26),
+                              border: Border.all(color: Colors.white, width: 3.5),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.3),
+                                  blurRadius: 18,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                            child: CabinetLogo(
+                              logoUrl: cabinet?.logo,
+                              size: 92,
+                              borderRadius: 22,
+                              accentColor: DSColors.primary,
+                            ),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 14),
                           Text(
                             cabinet?.nom ?? '',
                             textAlign: TextAlign.center,
@@ -69,7 +82,7 @@ class CabinetDetailView extends StatelessWidget {
                             style: DSTypography.headingMedium.copyWith(
                               color: Colors.white,
                               fontWeight: FontWeight.w800,
-                              fontSize: 20,
+                              fontSize: 21,
                             ),
                           ),
                         ],
@@ -358,17 +371,30 @@ class _MedecinCardItem extends StatelessWidget {
       ),
       child: Row(
         children: [
-          UserAvatar(
-            photoUrl: medecin.photo,
-            initials:
-                '${(medecin.prenom ?? '').isNotEmpty ? medecin.prenom![0] : ''}'
-                '${(medecin.nom ?? '').isNotEmpty ? medecin.nom![0] : ''}',
-            radius: 24,
-            backgroundColor: DSColors.primaryUltraLight,
-            textColor: DSColors.primary,
-            fontSize: 16,
+          Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: DSColors.borderLight, width: 2),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: UserAvatar(
+              photoUrl: medecin.photo,
+              initials:
+                  '${(medecin.prenom ?? '').isNotEmpty ? medecin.prenom![0] : ''}'
+                  '${(medecin.nom ?? '').isNotEmpty ? medecin.nom![0] : ''}',
+              radius: 32,
+              backgroundColor: DSColors.primaryUltraLight,
+              textColor: DSColors.primary,
+              fontSize: 18,
+            ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

@@ -137,32 +137,45 @@ class MedecinsView extends StatelessWidget {
                                     // Avatar médecin avec pastille de disponibilité
                                     Stack(
                                       children: [
-                                        UserAvatar(
-                                          photoUrl: med['photo'] as String?,
-                                          initials:
-                                              '${((med['prenom'] as String?) ?? '').isNotEmpty ? (med['prenom'] as String)[0] : ''}'
-                                              '${((med['nom'] as String?) ?? '').isNotEmpty ? (med['nom'] as String)[0] : ''}',
-                                          radius: 26,
-                                          backgroundColor: DSColors.primaryUltraLight,
-                                          textColor: DSColors.primary,
-                                          fontSize: 16,
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: Border.all(color: DSColors.borderLight, width: 2),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withValues(alpha: 0.06),
+                                                blurRadius: 10,
+                                                offset: const Offset(0, 4),
+                                              ),
+                                            ],
+                                          ),
+                                          child: UserAvatar(
+                                            photoUrl: med['photo'] as String?,
+                                            initials:
+                                                '${((med['prenom'] as String?) ?? '').isNotEmpty ? (med['prenom'] as String)[0] : ''}'
+                                                '${((med['nom'] as String?) ?? '').isNotEmpty ? (med['nom'] as String)[0] : ''}',
+                                            radius: 34,
+                                            backgroundColor: DSColors.primaryUltraLight,
+                                            textColor: DSColors.primary,
+                                            fontSize: 20,
+                                          ),
                                         ),
                                         Positioned(
-                                          right: 0,
-                                          bottom: 0,
+                                          right: 2,
+                                          bottom: 2,
                                           child: Container(
-                                            width: 12,
-                                            height: 12,
+                                            width: 14,
+                                            height: 14,
                                             decoration: BoxDecoration(
                                               color: const Color(0xFF10B981),
                                               shape: BoxShape.circle,
-                                              border: Border.all(color: Colors.white, width: 2),
+                                              border: Border.all(color: Colors.white, width: 2.5),
                                             ),
                                           ),
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(width: 12),
+                                    const SizedBox(width: 14),
                                     Expanded(
                                       child: Column(
                                         crossAxisAlignment:
