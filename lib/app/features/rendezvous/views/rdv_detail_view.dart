@@ -6,6 +6,7 @@ import 'package:iconsax/iconsax.dart';
 import '../../../core/utils/calendar_utils.dart';
 import '../../../core/utils/date_formatter.dart';
 import '../../../core/widgets/custom_button.dart';
+import '../../../core/widgets/shimmer_loading.dart';
 import '../../../core/widgets/user_avatar.dart';
 import '../../../theme/design_system/colors_ds.dart';
 import '../../../theme/design_system/typography_ds.dart';
@@ -90,6 +91,9 @@ class RdvDetailView extends StatelessWidget {
         centerTitle: true,
       ),
       body: Obx(() {
+        if (controller.isLoading.value) {
+          return const RdvDetailSkeleton();
+        }
         final rdv = controller.selectedRdv.value;
         if (rdv == null) {
           return Center(

@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/user_avatar.dart';
+import '../../../core/widgets/shimmer_loading.dart';
 import '../../../theme/design_system/colors_ds.dart';
 import '../../../theme/design_system/typography_ds.dart';
 import '../../../translate/translation_keys.dart';
@@ -26,9 +27,7 @@ class MedecinDetailView extends StatelessWidget {
       body: Obx(() {
         final medecin = controller.selectedMedecin.value;
         if (medecin == null) {
-          return const Center(
-            child: CircularProgressIndicator(color: DSColors.primary),
-          );
+          return const DoctorDetailSkeleton();
         }
 
         final doctorName = 'Dr. ${medecin['prenom']} ${medecin['nom']}';
@@ -225,11 +224,9 @@ class MedecinDetailView extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 16),
                                 if (controller.isLoadingCreneaux.value)
-                                  const SizedBox(
-                                    height: 96,
-                                    child: Center(
-                                      child: CircularProgressIndicator(color: DSColors.primary),
-                                    ),
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 20),
+                                    child: CreneauxSkeleton(),
                                   )
                                 else
                                   SizedBox(
@@ -370,12 +367,7 @@ class MedecinDetailView extends StatelessWidget {
 
                         Obx(() {
                           if (controller.isLoadingCreneaux.value) {
-                            return const Center(
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 32),
-                                child: CircularProgressIndicator(color: DSColors.primary),
-                              ),
-                            );
+                            return const CreneauxSkeleton();
                           }
                           if (controller.selectedDate.value == null || controller.creneaux.isEmpty) {
                             return EmptyState(
@@ -452,7 +444,7 @@ class MedecinDetailView extends StatelessWidget {
                             ),
                             const SizedBox(width: 10),
                             Text(
-                              Tr.consultationReason.tr,
+                              '${Tr.consultationReason.tr} (Optionnel)',
                               style: DSTypography.headingSmall.copyWith(
                                 color: DSColors.textPrimary,
                                 fontWeight: FontWeight.w800,

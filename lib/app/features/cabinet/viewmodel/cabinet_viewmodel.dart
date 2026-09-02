@@ -34,8 +34,9 @@ class CabinetViewModel extends GetxController {
         final List data = raw is List
             ? raw
             : (raw is Map && raw.containsKey('content') ? List.from(raw['content']) : []);
-        cabinets.value =
-            data.map((e) => CabinetModel.fromJson(e)).toList();
+        cabinets.value = List<CabinetModel>.from(
+          data.map((e) => CabinetModel.fromJson(e)),
+        );
         return null;
       } else {
         final msg = ErrorUtils.extractApiError(response, Tr.loadingCabinetsError.tr);
@@ -60,8 +61,9 @@ class CabinetViewModel extends GetxController {
         final List data = response.body is List
             ? response.body
             : (response.body['data'] ?? []);
-        specialitesDuCabinet.value =
-            data.map((e) => SpecialiteModel.fromJson(e)).toList();
+        specialitesDuCabinet.value = List<SpecialiteModel>.from(
+          data.map((e) => SpecialiteModel.fromJson(e)),
+        );
         return null;
       } else {
         final msg = ErrorUtils.extractApiError(response, Tr.loadingSpecialtiesError.tr);

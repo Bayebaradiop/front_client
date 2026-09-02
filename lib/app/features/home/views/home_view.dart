@@ -205,6 +205,18 @@ class _HomeContent extends StatelessWidget {
 
               // Rendez-vous à venir (Prochain RDV)
               Obx(() {
+                if (controller.isLoading.value) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ProchainRdvSkeleton(),
+                        SizedBox(height: 20),
+                      ],
+                    ),
+                  );
+                }
                 final rdv = controller.prochainRdv.value;
                 if (rdv == null) return const SizedBox.shrink();
                 return Padding(
@@ -233,10 +245,7 @@ class _HomeContent extends StatelessWidget {
               const SizedBox(height: 10),
               Obx(
                 () => controller.isLoading.value
-                    ? const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: ShimmerLoading(itemCount: 4, height: 70),
-                      )
+                    ? const FilterPillsSkeleton(itemCount: 5)
                     : _SpecialitesHorizontalList(specialites: controller.specialites),
               ),
 

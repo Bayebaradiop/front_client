@@ -26,7 +26,7 @@ class CabinetsView extends StatelessWidget {
       appBar: CustomAppBar(title: Tr.medicalCabinets.tr),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const ShimmerLoading(itemCount: 5, height: 110);
+          return const CabinetCardSkeleton(itemCount: 5);
         }
         if (controller.cabinets.isEmpty) {
           return EmptyState(

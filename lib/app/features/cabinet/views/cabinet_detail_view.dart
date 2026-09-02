@@ -9,6 +9,7 @@ import '../../../models/medecin_model.dart';
 import '../../../routes/app_routes.dart';
 import '../../../theme/design_system/colors_ds.dart';
 import '../../../theme/design_system/typography_ds.dart';
+import '../../../core/widgets/shimmer_loading.dart';
 import '../controllers/cabinet_controller.dart';
 
 class CabinetDetailView extends StatelessWidget {
@@ -232,6 +233,9 @@ class _SpecialitesSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      if (controller.isLoadingSpecialites.value) {
+        return const FilterPillsSkeleton(itemCount: 4);
+      }
       final specs = controller.specialitesDuCabinet;
       if (specs.isEmpty) return const SizedBox.shrink();
 
@@ -291,6 +295,9 @@ class _EquipeSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      if (controller.isLoading.value) {
+        return const MedecinCardSkeleton(itemCount: 2);
+      }
       final medecins = controller.medecinsDuCabinet;
 
       return Column(

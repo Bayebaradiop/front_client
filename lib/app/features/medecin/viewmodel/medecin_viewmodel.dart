@@ -47,7 +47,9 @@ class MedecinViewModel extends GetxController {
             : (raw is Map && raw.containsKey('content')
                   ? List.from(raw['content'])
                   : []);
-        medecins.value = data.map((e) => MedecinModel.fromJson(e)).toList();
+        medecins.value = List<MedecinModel>.from(
+          data.map((e) => MedecinModel.fromJson(e)),
+        );
         return null;
       } else {
         final msg = ErrorUtils.extractApiError(
@@ -102,9 +104,9 @@ class MedecinViewModel extends GetxController {
         final List data = response.body is List
             ? response.body
             : (response.body['data'] ?? []);
-        disponibilites.value = data
-            .map((e) => CreneauModel.fromJson(e))
-            .toList();
+        disponibilites.value = List<CreneauModel>.from(
+          data.map((e) => CreneauModel.fromJson(e)),
+        );
         return null;
       } else {
         final msg = ErrorUtils.extractApiError(
@@ -160,9 +162,9 @@ class MedecinViewModel extends GetxController {
             : (response.body['data'] ?? []);
         final List data = raw is List ? raw : [];
 
-        weekData[_formatDate(dates[index])] = data
-            .map((e) => CreneauModel.fromJson(e))
-            .toList();
+        weekData[_formatDate(dates[index])] = List<CreneauModel>.from(
+          data.map((e) => CreneauModel.fromJson(e)),
+        );
       }
 
       disponibilitesSemaine.value = weekData;

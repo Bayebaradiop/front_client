@@ -11,22 +11,21 @@ class DSSkeletonLoader extends StatelessWidget {
   final BorderRadius borderRadius;
 
   const DSSkeletonLoader({
-    Key? key,
+    super.key,
     this.width = double.infinity,
     this.height = 16,
     BorderRadius? borderRadius,
-  })  : borderRadius = borderRadius ?? const BorderRadius.all(Radius.circular(8)),
-        super(key: key);
+  }) : borderRadius = borderRadius ?? const BorderRadius.all(Radius.circular(8));
 
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final baseColor = isDarkMode
-        ? DSColors.darkSurface.withOpacity(0.6)
+        ? DSColors.darkSurface.withValues(alpha: 0.6)
         : DSColors.surfaceLight;
     final highlightColor = isDarkMode
-        ? DSColors.darkSurface.withOpacity(0.8)
-        : DSColors.surfaceLight.withOpacity(0.8);
+        ? DSColors.darkSurface.withValues(alpha: 0.8)
+        : DSColors.surfaceLight.withValues(alpha: 0.8);
 
     return Shimmer.fromColors(
       baseColor: baseColor,
@@ -36,7 +35,7 @@ class DSSkeletonLoader extends StatelessWidget {
         height: height,
         decoration: BoxDecoration(
           borderRadius: borderRadius,
-          color: DSColors.textSecondary.withOpacity(0.2),
+          color: DSColors.textSecondary.withValues(alpha: 0.2),
         ),
       ),
     );
@@ -49,16 +48,16 @@ class DSSkeletonCard extends StatelessWidget {
   final double height;
 
   const DSSkeletonCard({
-    Key? key,
+    super.key,
     this.width,
     this.height = 100,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDarkMode
-        ? DSColors.darkSurface.withOpacity(0.5)
+        ? DSColors.darkSurface.withValues(alpha: 0.5)
         : Colors.white;
 
     return Container(
@@ -70,8 +69,8 @@ class DSSkeletonCard extends StatelessWidget {
         color: bgColor,
         border: Border.all(
           color: isDarkMode
-              ? DSColors.darkBorder.withOpacity(0.3)
-              : DSColors.borderLight.withOpacity(0.5),
+              ? DSColors.darkBorder.withValues(alpha: 0.3)
+              : DSColors.borderLight.withValues(alpha: 0.5),
           width: 1,
         ),
       ),
@@ -110,10 +109,10 @@ class DSSkeletonFullScreen extends StatelessWidget {
   final double itemHeight;
 
   const DSSkeletonFullScreen({
-    Key? key,
+    super.key,
     this.itemCount = 5,
     this.itemHeight = 120,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -133,9 +132,9 @@ class DSSkeletonCircle extends StatelessWidget {
   final double size;
 
   const DSSkeletonCircle({
-    Key? key,
+    super.key,
     this.size = 48,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

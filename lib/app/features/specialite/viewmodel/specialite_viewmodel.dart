@@ -20,8 +20,9 @@ class SpecialiteViewModel extends GetxController {
       final response = await _repo.getSpecialites();
       if (response.statusCode == 200) {
         final List data = response.body['data'] ?? [];
-        specialites.value =
-            data.map((e) => SpecialiteModel.fromJson(e)).toList();
+        specialites.value = List<SpecialiteModel>.from(
+          data.map((e) => SpecialiteModel.fromJson(e)),
+        );
         return null;
       } else {
         return ErrorUtils.extractApiError(response, Tr.loadingSpecialtiesError.tr);

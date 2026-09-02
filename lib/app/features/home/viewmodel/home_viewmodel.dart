@@ -54,21 +54,21 @@ class HomeViewModel {
     try {
       final cCab = _storage.read('cached_cabinets');
       if (cCab is List && cabinets.isEmpty) {
-        cabinets.value = cCab
-            .map((e) => CabinetModel.fromJson(Map<String, dynamic>.from(e)))
-            .toList();
+        cabinets.value = List<CabinetModel>.from(
+          cCab.map((e) => CabinetModel.fromJson(Map<String, dynamic>.from(e))),
+        );
       }
       final cSpec = _storage.read('cached_specialites');
       if (cSpec is List && specialites.isEmpty) {
-        specialites.value = cSpec
-            .map((e) => SpecialiteModel.fromJson(Map<String, dynamic>.from(e)))
-            .toList();
+        specialites.value = List<SpecialiteModel>.from(
+          cSpec.map((e) => SpecialiteModel.fromJson(Map<String, dynamic>.from(e))),
+        );
       }
       final cMed = _storage.read('cached_medecins');
       if (cMed is List && medecins.isEmpty) {
-        medecins.value = cMed
-            .map((e) => MedecinModel.fromJson(Map<String, dynamic>.from(e)))
-            .toList();
+        medecins.value = List<MedecinModel>.from(
+          cMed.map((e) => MedecinModel.fromJson(Map<String, dynamic>.from(e))),
+        );
       }
       final cRdv = _storage.read('cached_prochain_rdv');
       if (cRdv is Map && prochainRdv.value == null) {
@@ -107,8 +107,9 @@ class HomeViewModel {
             : (rawCab is Map && rawCab.containsKey('content')
                 ? List.from(rawCab['content'])
                 : []);
-        cabinets.value =
-            dataCab.map((e) => CabinetModel.fromJson(e)).toList();
+        cabinets.value = List<CabinetModel>.from(
+          dataCab.map((e) => CabinetModel.fromJson(e)),
+        );
         _storage.write('cached_cabinets', dataCab);
       }
 
@@ -118,8 +119,9 @@ class HomeViewModel {
         final data = rSpecialites.body is List
             ? rSpecialites.body
             : (rSpecialites.body['data'] ?? []);
-        specialites.value =
-            data.map((e) => SpecialiteModel.fromJson(e)).toList();
+        specialites.value = List<SpecialiteModel>.from(
+          data.map((e) => SpecialiteModel.fromJson(e)),
+        );
         _storage.write('cached_specialites', data);
       }
 
@@ -134,10 +136,11 @@ class HomeViewModel {
             : (rawRdv is Map && rawRdv.containsKey('content')
                 ? List.from(rawRdv['content'])
                 : []);
-        final rdvList = dataRdv
-            .map((e) => RendezVousModel.fromJson(e))
-            .where((r) => isUpcoming(r))
-            .toList();
+        final rdvList = List<RendezVousModel>.from(
+          dataRdv
+              .map((e) => RendezVousModel.fromJson(e))
+              .where((r) => isUpcoming(r)),
+        );
 
         prochainRdv.value = rdvList.isNotEmpty ? rdvList.first : null;
         if (prochainRdv.value != null) {
@@ -158,8 +161,9 @@ class HomeViewModel {
             : (rawMed is Map && rawMed.containsKey('content')
                 ? List.from(rawMed['content'])
                 : []);
-        medecins.value =
-            dataMed.map((e) => MedecinModel.fromJson(e)).toList();
+        medecins.value = List<MedecinModel>.from(
+          dataMed.map((e) => MedecinModel.fromJson(e)),
+        );
         _storage.write('cached_medecins', dataMed);
       }
 

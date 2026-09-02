@@ -64,7 +64,7 @@ class SpecialitesView extends StatelessWidget {
       appBar: CustomAppBar(title: Tr.specialties.tr),
       body: Obx(() {
         if (controller.isLoading) {
-          return const ShimmerLoading(itemCount: 6, height: 100);
+          return const SpecialiteCardSkeleton(itemCount: 6);
         }
         if (controller.specialites.isEmpty) {
           return EmptyState(

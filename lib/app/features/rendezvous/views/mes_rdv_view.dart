@@ -40,12 +40,16 @@ class MesRdvView extends StatelessWidget {
               elevation: 0,
               centerTitle: true,
             ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-            child: _RdvHero(controller: controller),
-          ),
+      body: SafeArea(
+        top: embedded,
+        bottom: false,
+        child: Column(
+          children: [
+            if (embedded) const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              child: _RdvHero(controller: controller),
+            ),
           const SizedBox(height: 14),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -60,10 +64,7 @@ class MesRdvView extends StatelessWidget {
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value) {
-                return const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: ShimmerLoading(itemCount: 4, height: 168),
-                );
+                return const RdvCardSkeleton(itemCount: 4);
               }
 
               final list = _currentList(controller);
@@ -104,8 +105,9 @@ class MesRdvView extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   List<Map<String, dynamic>> _currentList(RendezvousController controller) {
     switch (controller.selectedTabIndex.value) {

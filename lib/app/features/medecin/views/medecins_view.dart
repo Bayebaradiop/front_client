@@ -31,60 +31,65 @@ class MedecinsView extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 10),
             child: SizedBox(
               height: 40,
-              child: Obx(() => ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: controller.specialitesFilter.length,
-                    itemBuilder: (_, i) {
-                      final spec = controller.specialitesFilter[i];
-                      final isSelected =
-                          controller.selectedSpecialiteId.value ==
-                              spec['id'];
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: GestureDetector(
-                          onTap: () => controller.filterBySpecialite(spec['id']),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-                            decoration: BoxDecoration(
+              child: Obx(() {
+                if (controller.isLoading.value) {
+                  return const FilterPillsSkeleton();
+                }
+                return ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: controller.specialitesFilter.length,
+                  itemBuilder: (_, i) {
+                    final spec = controller.specialitesFilter[i];
+                    final isSelected =
+                        controller.selectedSpecialiteId.value ==
+                            spec['id'];
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: GestureDetector(
+                        onTap: () => controller.filterBySpecialite(spec['id']),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? DSColors.primary
+                                : DSColors.primaryUltraLight,
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(
                               color: isSelected
                                   ? DSColors.primary
-                                  : DSColors.primaryUltraLight,
-                              borderRadius: BorderRadius.circular(18),
-                              border: Border.all(
-                                color: isSelected
-                                    ? DSColors.primary
-                                    : DSColors.borderLight,
-                              ),
-                              boxShadow: isSelected
-                                  ? [
-                                      BoxShadow(
-                                        color: DSColors.primary.withValues(alpha: 0.2),
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 3),
-                                      ),
-                                    ]
-                                  : null,
+                                  : DSColors.borderLight,
                             ),
-                            child: Center(
-                              child: Text(
-                                spec['nom'] ?? '',
-                                style: DSTypography.labelSmall.copyWith(
-                                  color: isSelected
-                                      ? DSColors.white
-                                      : DSColors.textPrimary,
-                                  fontWeight: isSelected
-                                      ? FontWeight.w700
-                                      : FontWeight.w500,
-                                ),
+                            boxShadow: isSelected
+                                ? [
+                                    BoxShadow(
+                                      color: DSColors.primary.withValues(alpha: 0.2),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                          child: Center(
+                            child: Text(
+                              spec['nom'] ?? '',
+                              style: DSTypography.labelSmall.copyWith(
+                                color: isSelected
+                                    ? DSColors.white
+                                    : DSColors.textPrimary,
+                                fontWeight: isSelected
+                                    ? FontWeight.w700
+                                    : FontWeight.w500,
                               ),
                             ),
                           ),
                         ),
-                      );
-                    },
-                  )),
+                      ),
+                    );
+                  },
+                );
+              }),
             ),
           ),
 
@@ -94,10 +99,7 @@ class MedecinsView extends StatelessWidget {
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value) {
-                return const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: ShimmerLoading(itemCount: 4, height: 110),
-                );
+                return const MedecinCardSkeleton(itemCount: 5);
               }
               final medecins = controller.medecinsFiltres;
               if (medecins.isEmpty) {

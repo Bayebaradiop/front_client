@@ -28,6 +28,13 @@ class HomeController extends GetxController with SnackbarMixin {
   final searchQuery = ''.obs;
   final searchFilter = 'all'.obs; // 'all', 'doctors', 'cabinets', 'specialties'
 
+  @override
+  void onInit() {
+    super.onInit();
+    _viewModel.loadFromCache();
+    refresh();
+  }
+
   List<MedecinModel> get filteredMedecins {
     if (searchQuery.value.isEmpty) return medecins;
     final q = searchQuery.value.toLowerCase();

@@ -198,19 +198,11 @@ class MedecinController extends GetxController with SnackbarMixin {
       showError(Tr.selectSlotError.tr);
       return;
     }
-    if (motif.isEmpty) {
-      showError(Tr.enterReasonError.tr);
-      return;
-    }
-    if (motif.length < 3) {
-      showError(Tr.motifTooShort.tr);
-      return;
-    }
 
     isBooking.value = true;
     final error = await _rdvViewModel.createRdv({
       'creneauId': selectedCreneau.value!['id'],
-      'motif': motif,
+      'motif': motif.isNotEmpty ? motif : 'Consultation',
     });
     isBooking.value = false;
 

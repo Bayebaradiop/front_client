@@ -36,8 +36,9 @@ class RendezvousViewModel extends GetxController {
         final List data = raw is List
             ? raw
             : (raw is Map && raw.containsKey('content') ? List.from(raw['content']) : []);
-        tousLesRdv.value =
-            data.map((e) => RendezVousModel.fromJson(e)).toList();
+        tousLesRdv.value = List<RendezVousModel>.from(
+          data.map((e) => RendezVousModel.fromJson(e)),
+        );
         // Dériver les sous-listes depuis la liste complète
         rdvEnAttente.value =
             tousLesRdv.where((r) => r.statut == 'EN_ATTENTE').toList();
