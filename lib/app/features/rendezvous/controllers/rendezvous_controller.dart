@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import '../../../core/mixins/snackbar_mixin.dart';
 import '../../../translate/translation_keys.dart';
 import '../viewmodel/rendezvous_viewmodel.dart';
+import '../../home/controllers/home_controller.dart';
 
 class RendezvousController extends GetxController with SnackbarMixin {
   final RendezvousViewModel _viewModel;
@@ -104,6 +105,9 @@ class RendezvousController extends GetxController with SnackbarMixin {
     if (selectedRdv.value?['id'] == rdvId) {
       selectedRdv.value = {...selectedRdv.value!, 'statut': 'ANNULE'};
     }
+    try {
+      Get.find<HomeController>().refresh();
+    } catch (_) {}
     showSuccess(Tr.appointmentCancelled.tr, Tr.appointmentCancelledMsg.tr);
   }
 

@@ -73,6 +73,9 @@ class HomeController extends GetxController with SnackbarMixin {
 
   void changeTab(int index) {
     currentIndex.value = index;
+    if (index == 0) {
+      refresh();
+    }
   }
 
   Future<void> refresh() async {

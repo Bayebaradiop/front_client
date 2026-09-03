@@ -214,9 +214,14 @@ class MedecinController extends GetxController with SnackbarMixin {
     motifController.clear();
     selectedCreneau.value = null;
 
-    // Retourner à home et afficher l'onglet RDV
+    // Retourner à home et rafraîchir les données instantanément
     Get.until((route) => route.settings.name == AppRoutes.home);
-    Get.find<HomeController>().changeTab(1);
+    try {
+      final homeCtrl = Get.find<HomeController>();
+      homeCtrl.refresh();
+      homeCtrl.changeTab(1);
+    } catch (_) {}
+
     // Rafraîchir la liste des RDV
     try {
       Get.find<RendezvousController>().refresh();
