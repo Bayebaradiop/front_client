@@ -36,6 +36,7 @@ class MedecinDetailView extends StatelessWidget {
         return Stack(
           children: [
             CustomScrollView(
+              controller: controller.scrollController,
               physics: const BouncingScrollPhysics(),
               slivers: [
                 // Executive Header
@@ -468,6 +469,8 @@ class MedecinDetailView extends StatelessWidget {
                         const SizedBox(height: 12),
                         TextField(
                           controller: controller.motifController,
+                          focusNode: controller.motifFocusNode,
+                          onTap: () => controller.scrollToMotifField(),
                           maxLines: 3,
                           style: DSTypography.bodyMedium.copyWith(color: DSColors.textPrimary),
                           decoration: InputDecoration(

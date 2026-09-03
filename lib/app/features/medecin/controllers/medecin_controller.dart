@@ -28,6 +28,8 @@ class MedecinController extends GetxController with SnackbarMixin {
   final selectedDate = Rxn<DateTime>();
   final selectedCreneau = Rxn<Map<String, dynamic>>();
   final motifController = TextEditingController();
+  final motifFocusNode = FocusNode();
+  final scrollController = ScrollController();
   final isBooking = false.obs;
 
   // Médecins convertis en Map pour les vues
@@ -60,6 +62,7 @@ class MedecinController extends GetxController with SnackbarMixin {
   @override
   void onInit() {
     super.onInit();
+    motifFocusNode.addListener(_onMotifFocusChange);
     final args = Get.arguments;
     if (args != null && args is Map) {
       if (args.containsKey('specialiteId')) {
@@ -77,9 +80,30 @@ class MedecinController extends GetxController with SnackbarMixin {
     _loadMedecins();
   }
 
+  void _onMotifFocusChange() {
+    if (motifFocusNode.hasFocus) {
+      scrollToMotifField();
+    }
+  }
+
+  void scrollToMotifField() {
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (scrollController.hasClients) {
+        scrollController.animateTo(
+          scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
   @override
   void onClose() {
+    motifFocusNode.removeListener(_onMotifFocusChange);
+    motifFocusNode.dispose();
     motifController.dispose();
+    scrollController.dispose();
     super.onClose();
   }
 
